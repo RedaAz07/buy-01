@@ -1,0 +1,16 @@
+services:
+  # -------------------------------------------------------------
+  # USER MONGODB
+  # -------------------------------------------------------------
+  user-db:
+    image: mongo:7.0
+    container_name: mongodb_user
+    restart: always
+    env_file:
+      - ../user/.env
+    ports:
+      - "27017:27017"
+    volumes:
+      - user_mongodb_data:/data/db
+volumes:
+  user_mongodb_data:

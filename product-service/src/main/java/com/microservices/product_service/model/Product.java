@@ -8,9 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 @Data
-@Document(value="product")
+@Document(value = "product")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,4 +19,6 @@ public class Product {
     private String name;
     private String description;
     private long price;
+    private int quantity;
+    private String userId;
 }

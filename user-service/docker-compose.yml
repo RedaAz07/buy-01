@@ -7,7 +7,7 @@ services:
     container_name: mongodb_user
     restart: always
     env_file:
-      - ../user/.env
+      - .env
     ports:
       - "27017:27017"
     volumes:

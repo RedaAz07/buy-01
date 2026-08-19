@@ -1,6 +1,6 @@
 package com.user_service.model;
 
 public enum Roles {
-    CLIENT,
-    SELLER
+    ROLE_CLIENT,
+    ROLE_SELLER
 }

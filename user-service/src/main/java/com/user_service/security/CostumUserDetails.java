@@ -8,14 +8,14 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import com.user_service.model.User;
-import com.user_service.repository.UserRespository;
+import com.user_service.repository.UserRepository;
 
 public class CostumUserDetails implements UserDetailsService {
 
-    private final UserRespository userRepository;
+    private final UserRepository userRepository;
 
-    public CostumUserDetails(UserRespository userRespository) {
-        this.userRepository = userRespository;
+    public CostumUserDetails(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Override

@@ -10,7 +10,7 @@ import lombok.Data;
 @Data
 @Document(value="product")
 @Builder
-public class productModel {
+public class Product {
     @Id
     private String id;
     private String name;

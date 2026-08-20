@@ -1,6 +1,5 @@
 package com.user_service.controller;
 
-import java.security.Principal;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.user_service.dto.request.AvatarRequestDTO;
 import com.user_service.dto.response.UserResponseDTO;
 import com.user_service.service.UserService;
 
@@ -39,8 +39,8 @@ public class UserController {
     }
 
     @PutMapping()
-    public ResponseEntity<UserResponseDTO> updateAvatar(@RequestBody String avatar) {
-        UserResponseDTO user = userService.updateAvatar(avatar);
+    public ResponseEntity<UserResponseDTO> updateAvatar(@RequestBody AvatarRequestDTO avatar, @AuthenticationPrincipal UserDetails userDetails) {
+        UserResponseDTO user = userService.updateAvatar(avatar, userDetails.getUsername());
         return ResponseEntity.ok(user);
     }
 

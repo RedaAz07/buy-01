@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.user_service.dto.request.AvatarRequestDTO;
 import com.user_service.dto.request.LoginRequestDTO;
 import com.user_service.dto.request.RegisterRequestDTO;
 import com.user_service.dto.response.AuthResponseDTO;
@@ -77,9 +78,12 @@ public class UserService {
         return userMapper.userToDto(user);
     }
 
-    public UserResponseDTO updateAvatar(String avatar) {
-        // call media service
-        return userMapper.userToDto(null);
+    public UserResponseDTO updateAvatar(AvatarRequestDTO avatar, String name) {
+        User user = userRepository.findByName(name)
+                .orElseThrow(() -> ApiException.notFound("User not found"));
+        user.setAvatar(avatar.avatar());
+        userRepository.save(user);
+        return userMapper.userToDto(user);
     }
 
 }

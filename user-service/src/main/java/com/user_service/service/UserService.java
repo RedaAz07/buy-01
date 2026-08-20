@@ -3,10 +3,13 @@ package com.user_service.service;
 import com.user_service.mapper.UserMapper;
 import javax.management.relation.Role;
 
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.user_service.dto.request.LoginRequestDTO;
 import com.user_service.dto.request.RegisterRequestDTO;
 import com.user_service.dto.response.AuthResponseDTO;
 import com.user_service.exceptions.ApiException;
@@ -23,26 +26,25 @@ public class UserService {
     private final UserRepository userRepository;
     private final CostumUserDetails costumUserDetails;
     private final JwtUtil jwtUtil;
+    private final AuthenticationManager auth;
 
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder,
-            CostumUserDetails costumUserDetails, JwtUtil jwtUtil, UserMapper userMapper) {
+            CostumUserDetails costumUserDetails, JwtUtil jwtUtil, UserMapper userMapper, AuthenticationManager auth) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.costumUserDetails = costumUserDetails;
         this.jwtUtil = jwtUtil;
         this.userMapper = userMapper;
+        this.auth = auth;
     }
 
     public AuthResponseDTO register(RegisterRequestDTO request) {
-
         if (userRepository.existsByName(request.name())) {
             throw ApiException.badRequest("Name already exists");
         }
         if (userRepository.existsByEmail(request.email())) {
             throw ApiException.badRequest("Email already exists");
-
         }
-    
         User nUser = new User();
         nUser.setName(request.name());
         nUser.setEmail(request.email());
@@ -53,6 +55,14 @@ public class UserService {
         final String jwt = jwtUtil.generateToken(userDetails);
         return userMapper.toDto(jwt);
 
+    }
+
+    public AuthResponseDTO login(LoginRequestDTO request) {
+        auth.authenticate(
+                new UsernamePasswordAuthenticationToken(request.name(), request.password()));
+        final UserDetails userDetails = costumUserDetails.loadUserByUsername(request.name());
+        final String jwt = jwtUtil.generateToken(userDetails);
+        return userMapper.toDto(jwt);
     }
 
 }

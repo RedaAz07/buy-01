@@ -42,9 +42,7 @@ public class UserService {
             throw ApiException.badRequest("Email already exists");
 
         }
-        if (!request.role().equals(Roles.ROLE_CLIENT) && !request.role().equals(Roles.ROLE_SELLER)) {
-            throw ApiException.badRequest("Role must be egther SELLER or CLIENT");
-        }
+    
         User nUser = new User();
         nUser.setName(request.name());
         nUser.setEmail(request.email());

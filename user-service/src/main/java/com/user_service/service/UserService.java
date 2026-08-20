@@ -1,7 +1,6 @@
 package com.user_service.service;
 
 import com.user_service.mapper.UserMapper;
-import javax.management.relation.Role;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -12,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.user_service.dto.request.LoginRequestDTO;
 import com.user_service.dto.request.RegisterRequestDTO;
 import com.user_service.dto.response.AuthResponseDTO;
+import com.user_service.dto.response.UserResponseDTO;
 import com.user_service.exceptions.ApiException;
 import com.user_service.model.Roles;
 import com.user_service.model.User;
@@ -63,6 +63,23 @@ public class UserService {
         final UserDetails userDetails = costumUserDetails.loadUserByUsername(request.name());
         final String jwt = jwtUtil.generateToken(userDetails);
         return userMapper.toDto(jwt);
+    }
+
+    public UserResponseDTO me(String name) {
+        User user = userRepository.findByName(name)
+                .orElseThrow(() -> ApiException.notFound("User not found"));
+        return userMapper.userToDto(user);
+    }
+
+    public UserResponseDTO getUserById(String id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> ApiException.notFound("User not found"));
+        return userMapper.userToDto(user);
+    }
+
+    public UserResponseDTO updateAvatar(String avatar) {
+        // call media service
+        return userMapper.userToDto(null);
     }
 
 }

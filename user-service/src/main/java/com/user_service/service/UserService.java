@@ -1,7 +1,6 @@
 package com.user_service.service;
 
 import com.user_service.mapper.UserMapper;
-import javax.management.relation.Role;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

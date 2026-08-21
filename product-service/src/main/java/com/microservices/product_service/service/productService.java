@@ -1,7 +1,6 @@
 package com.microservices.product_service.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -35,6 +34,11 @@ public class productService {
         return products.stream().map(p -> getProduct(p)).toList();
     }
 
+    public productRspons getProduct(String id) {
+        Product product = productRepository.findById(id).orElse(null);
+        return getProduct(product);
+    }
+
     private productRspons getProduct(Product p) {
         productRspons product = productRspons.builder()
                 .id(p.getId())
@@ -49,8 +53,8 @@ public class productService {
         Product product = productRepository.findById(id).orElseThrow();
         System.out.println(productRequest.getPrice());
         product.setName(productRequest.getName());
-        product.setPrice(product.getPrice());
-        product.setDescription(product.getDescription());
+        product.setPrice(productRequest.getPrice());
+        product.setDescription(productRequest.getDescription());
         productRepository.save(product);
 
     }

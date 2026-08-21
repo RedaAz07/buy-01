@@ -13,4 +13,6 @@ public class productRequest {
     private String name;
     private String description;
     private long price;
+    private String userId;
+    private long quantity;
 }

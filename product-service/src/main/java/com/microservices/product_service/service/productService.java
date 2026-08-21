@@ -1,6 +1,7 @@
 package com.microservices.product_service.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -42,5 +43,20 @@ public class productService {
                 .price(p.getPrice())
                 .build();
         return product;
+    }
+
+    public void UpdateProduct(productRequest productRequest, String id) {
+        Product product = productRepository.findById(id).orElseThrow();
+        System.out.println(productRequest.getPrice());
+        product.setName(productRequest.getName());
+        product.setPrice(product.getPrice());
+        product.setDescription(product.getDescription());
+        productRepository.save(product);
+
+    }
+
+    public void DeleteProduct(String id) {
+        Product product = productRepository.findById(id).orElse(null);
+        productRepository.delete(product);
     }
 }

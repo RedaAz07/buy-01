@@ -17,6 +17,7 @@ import com.microservices.product_service.dto.productRequest;
 import com.microservices.product_service.dto.productRspons;
 import com.microservices.product_service.service.productService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -28,8 +29,8 @@ public class productController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void AddProduct(@RequestBody productRequest productRequest) {
-        productService.AddProduct(productRequest);
+    public productRspons AddProduct(@RequestBody @Valid productRequest productRequest) {
+        return productService.AddProduct(productRequest);
     }
 
     @GetMapping
@@ -43,12 +44,12 @@ public class productController {
     }
 
     @PutMapping("/{id}")
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    public void UpdateProduct(@RequestBody productRequest productRequest, @PathVariable("id") String id) {
-        productService.UpdateProduct(productRequest, id);
+    public productRspons UpdateProduct(@RequestBody @Valid productRequest productRequest, @PathVariable("id") String id) {
+        return productService.UpdateProduct(productRequest, id);
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void DeleteProduct(@PathVariable("id") String id) {
         productService.DeleteProduct(id);
 

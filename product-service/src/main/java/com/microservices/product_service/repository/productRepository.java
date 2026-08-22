@@ -1,6 +1,6 @@
 package com.microservices.product_service.repository;
 
-import java.util.Optional;
+import java.util.List;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 
@@ -16,5 +16,5 @@ existsById(id);
 count();
 */
 public interface productRepository extends MongoRepository<Product, String> {
-      Optional<Product> findByName(String username);
+      List<Product> findBySellerId(String sellerId);
 }

@@ -1,5 +1,6 @@
 package com.microservices.product_service.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -17,17 +18,19 @@ import lombok.RequiredArgsConstructor;
 public class productService {
     private final productRepository productRepository;
 
-    public void AddProduct(productRequest productRspons) {
+    public productRspons AddProduct(productRequest productRequest) {
 
         Product product = Product
                 .builder()
-                .name(productRspons.getName())
-                .description(productRspons.getDescription())
-                .price(productRspons.getPrice())
+                .name(productRequest.getName())
+                .description(productRequest.getDescription())
+                .price(productRequest.getPrice())
+                .quantity(productRequest.getQuantity())
+                .sellerId(productRequest.getSellerId())
+                .imageUrls(new ArrayList<>(productRequest.getImageUrls()))
                 .build();
         productRepository.save(product);
-        System.out.println("product" + product.getId() + " has been save");
-
+        return getProduct(product);
     }
 
     public List<productRspons> getall() {
@@ -47,22 +50,33 @@ public class productService {
                 .name(p.getName())
                 .description(p.getDescription())
                 .price(p.getPrice())
+                .quantity(p.getQuantity())
+                .sellerId(p.getSellerId())
+                .imageUrls(copyImageUrls(p.getImageUrls()))
                 .build();
         return product;
     }
 
-    public void UpdateProduct(productRequest productRequest, String id) {
-        Product product = productRepository.findById(id).orElseThrow();
-        System.out.println(productRequest.getPrice());
+    private List<String> copyImageUrls(List<String> imageUrls) {
+        return imageUrls == null ? List.of() : List.copyOf(imageUrls);
+    }
+
+    public productRspons UpdateProduct(productRequest productRequest, String id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> ApiException.notFound("Product not found"));
         product.setName(productRequest.getName());
         product.setPrice(productRequest.getPrice());
         product.setDescription(productRequest.getDescription());
+        product.setQuantity(productRequest.getQuantity());
+        product.setImageUrls(new ArrayList<>(productRequest.getImageUrls()));
         productRepository.save(product);
+        return getProduct(product);
 
     }
 
     public void DeleteProduct(String id) {
-        Product product = productRepository.findById(id).orElse(null);
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> ApiException.notFound("Product not found"));
         productRepository.delete(product);
     }
 }

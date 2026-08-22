@@ -17,6 +17,6 @@ public class Media {
     private String imagePath;
     private String productId;
     private String ownerId;
-    private MediaType type;
+    private UploadType type;
 
 }

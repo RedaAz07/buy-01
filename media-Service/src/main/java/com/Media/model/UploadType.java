@@ -1,6 +1,6 @@
 package com.Media.model;
 
-public enum MediaType {
+public enum UploadType {
     PRODUCT_IMAGE,
     AVATAR
 

@@ -57,8 +57,30 @@ public class JwtUtil {
         return extractClaim(Token, Claims::getExpiration);
     }
 
-    public String generateToken(UserDetails userdetails) {
-        return createToken(new HashMap<>(), userdetails.getUsername());
+    public String generateToken(UserDetails userDetails) {
+
+        Map<String, Object> claims = new HashMap<>();
+
+        claims.put(
+                "role",
+                userDetails.getAuthorities()
+                        .iterator()
+                        .next()
+                        .getAuthority());
+
+        return createToken(claims, userDetails.getUsername());
+    }
+
+    public Map<String, Object> extractUserClaims(String token) {
+
+        Claims claims = extractAllClaims(token);
+
+        Map<String, Object> userClaims = new HashMap<>();
+
+        userClaims.put("username", claims.getSubject());
+        userClaims.put("role", claims.get("role"));
+
+        return userClaims;
     }
 
     public String createToken(Map<String, Object> extractClaims, String username) {

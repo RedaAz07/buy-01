@@ -7,7 +7,7 @@
   - [ ] Configure Kafka (optional, recommended) for `PRODUCT_CREATED` and `IMAGE_UPLOADED` events—for audit trails, cache invalidation, and thumbnail generation.
 
 - [ ] 2. Enhanced Database Design
-  - [ ] Define and document the database design for each service.
+  - [x] Define and document the database design for each service.
 
 - [ ] 3. API Development Enhancement
   - [ ] User Service

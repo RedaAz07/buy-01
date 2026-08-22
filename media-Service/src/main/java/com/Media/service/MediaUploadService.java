@@ -7,6 +7,8 @@ import java.util.Map;
 import org.apache.tika.Tika;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.Media.exceptions.ApiException;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 
@@ -17,14 +19,11 @@ public class MediaUploadService {
 
     private final Tika tika = new Tika();
 
-    private static final long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
     private static final List<String> ALLOWED_MIME_TYPES = List.of(
             "image/jpeg",
             "image/png",
-            "image/webp",
-            "video/mp4",
-            "video/webm");
+            "image/webp");
 
     public MediaUploadService(Cloudinary cloudinary) {
         this.cloudinary = cloudinary;
@@ -32,10 +31,7 @@ public class MediaUploadService {
 
     public String uploadFile(MultipartFile file) throws IOException {
 
-        if (file.getSize() > MAX_FILE_SIZE) {
-            throw ApiException.badRequest(
-                    "File size exceeds 10MB limit");
-        }
+        
 
         String realMimeType = tika.detect(
                 file.getInputStream(),

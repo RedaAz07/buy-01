@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: media-service
+  config:
+    import: optional:file:./.env[.properties]
+  mongodb:
+    host: localhost
+    port: 27018
+    database: ${MONGO_INITDB_DATABASE}
+    username: ${MONGO_INITDB_ROOT_USERNAME}
+    password: ${MONGO_INITDB_ROOT_PASSWORD}
+    authentication-database: admin
+
+application:
+  security:
+    jwt:
+      secret-key: ${JWT_SECRET}
+      expiration: ${JWT_EXPIRATION}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+server:
+  port: ${SERVER_PORT}

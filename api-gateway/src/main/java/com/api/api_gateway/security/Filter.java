@@ -17,7 +17,8 @@ import reactor.core.publisher.Mono;
 @Component
 public class Filter implements GlobalFilter, Ordered {
 
-    private static final List<String> PUBLIC_PATHS = List.of("/api/auth/", "/actuator/");
+    private static final List<String> PUBLIC_PATHS = List.of(
+            "/api/auth/", "/actuator/", "/products", "/api/products");
 
     private final jwtUtil jwtUtil;
 

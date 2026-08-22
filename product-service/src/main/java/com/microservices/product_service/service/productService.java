@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.microservices.product_service.dto.productRequest;
 import com.microservices.product_service.dto.productRspons;
+import com.microservices.product_service.exception.ApiException;
 import com.microservices.product_service.model.Product;
 import com.microservices.product_service.repository.productRepository;
 
@@ -35,7 +36,8 @@ public class productService {
     }
 
     public productRspons getProduct(String id) {
-        Product product = productRepository.findById(id).orElse(null);
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> ApiException.notFound("Product not found"));
         return getProduct(product);
     }
 

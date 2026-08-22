@@ -1,39 +1,60 @@
-- [ ] Create the **User Service**
-  - [ ] Define `User` entity: id, name, email, password, role,avatar.
-  - [ ] Add roles: `CLIENT` and `SELLER`.
-  - [ ] Build registration and login endpoints.
-  - [ ] Secure passwords with BCrypt.
-  - [ ] Add profile read/update endpoints.
-  - [ ] Add role validation and authorization rules.
-  - [ ] Create its own database/schema.
+# Project To-Do List
 
-- [ ] Create the **Product Service**
-  - [ ] Define `Product` entity: id, name, description, price, stock, sellerId, image URLs/IDs.
-  - [ ] Implement product CRUD endpoints.
-  - [ ] Ensure only the owning `SELLER` can update or delete their products.
-  - [ ] Store image references only—do not upload image files here.
-  - [ ] Add validation for required fields, price, and stock.
-  - [ ] Create its own database/schema.
+- [ ] 1. Microservices Setup
+  - [ ] Create a User Service for authentication, profiles, and `CLIENT` / `SELLER` roles.
+  - [ ] Create a Product Service for product CRUD operations and image references.
+  - [ ] Create a Media Service for image upload/download and validation, including a 2 MB limit.
+  - [ ] Configure Kafka (optional, recommended) for `PRODUCT_CREATED` and `IMAGE_UPLOADED` events—for audit trails, cache invalidation, and thumbnail generation.
 
-- [ ] Create the **Media Service**
-  - [ ] Create upload endpoint, e.g. `POST /media`.
-  - [ ] Accept only allowed image formats such as JPEG, PNG, and WebP.
-  - [ ] Reject files larger than **2 MB**.
-  - [ ] Generate a unique filename/ID for each file.
-  - [ ] Store the file locally or in object storage.
-  - [ ] Return an image ID/URL after upload.
-  - [ ] Create download endpoint, e.g. `GET /media/{id}`.
-  - [ ] Add delete endpoint if sellers need to remove product images.
+- [ ] 2. Enhanced Database Design
+  - [ ] Define and document the database design for each service.
 
-- [ ] Connect the services
-  - [ ] Configure API Gateway routes for `/users/**`, `/products/**`, and `/media/**`.
-  - [ ] Have Product Service save the image URL/ID returned by Media Service.
-  - [ ] Pass authenticated user identity from the gateway to protected services.
-  - [ ] Add centralized error responses and request validation.
+- [ ] 3. API Development Enhancement
+  - [ ] User Service
+    - [x] Implement `POST /auth/register` with `CLIENT` or `SELLER` role selection.
+    - [x] Implement `POST /auth/login` returning a JWT/OAuth2 token.
+    - [ ] Implement `GET /me` and `PUT /me` profile endpoints.
+    - [ ] Delegate seller avatar upload/update to the Media Service.
+  - [ ] Product Service
+    - [x] Implement public endpoints: `GET /products` and `GET /products/{id}`.
+    - [ ] Implement seller-only endpoints: `POST /products`, `PUT /products/{id}`, and `DELETE /products/{id}`.
+    - [ ] Enforce seller ownership for product updates and deletions.
+    - [ ] Associate `imageUrls[]`; upload images through Media Service before linking them to products.
+  - [ ] Media Service
+    - [ ] Implement seller-only `POST /media/images`.
+    - [ ] Validate MIME type (`image/*`) and a maximum file size of 2 MB.
+    - [ ] Implement `GET /media/images/{id}` with appropriate caching headers.
+    - [ ] Optionally implement `DELETE /media/images/{id}` and enforce media ownership.
+  - [ ] Expose `/actuator/health` from every service.
+  - [ ] Configure the gateway to route external traffic and apply CORS, auth propagation, and optional rate limiting.
 
-- [ ] Test
-  - [ ] Test registration/login as `CLIENT` and `SELLER`.
-  - [ ] Test that clients cannot modify seller products.
-  - [ ] Test image upload with valid images.
-  - [ ] Test rejection of invalid formats and files over 2 MB.
-  - [ ] Test complete flow: upload image → create product with image reference → retrieve product/image.
+- [ ] 4. Front-End Development with Angular
+  - [ ] Build sign-in and sign-up pages with role selection.
+  - [ ] Allow sellers to upload and update their avatar.
+  - [ ] Build a seller dashboard to create, edit, delete, preview, and remove product images.
+  - [ ] Show form validation messages, including required fields and `price > 0`.
+  - [ ] Build a public product grid/list without search or filtering requirements.
+  - [ ] Build a dedicated media-management view for sellers' product images.
+  - [ ] Validate file type and size in the UI before calling the API.
+  - [ ] Use route guards (`AuthGuard`, `RoleGuard`), HTTP interceptors for tokens and `401`/`403` handling, Reactive Forms, and Angular Material or Bootstrap.
+
+- [ ] 5. Authentication & Authorization
+  - [ ] Use Spring Security with JWT or OAuth2 at the gateway and propagate authentication downstream.
+  - [ ] Support `CLIENT` for browsing and `SELLER` for managing owned products/media.
+  - [ ] Optionally add `ADMIN` for moderation.
+  - [ ] Enforce ownership checks in Product and Media services: `sellerId == auth.subject`.
+
+- [ ] 6. Error Handling & Validation
+  - [ ] Return `400` for invalid input, invalid file type, or files that are too large.
+  - [ ] Return `401` / `403` for unauthenticated or unauthorized requests.
+  - [ ] Return `404` for missing products/media or resources not owned by the requester.
+  - [ ] Add global exception handlers to avoid unhandled `5xx` responses.
+  - [ ] Show inline Angular form errors and toast/snackbar messages for upload failures, oversized files, and forbidden actions.
+
+- [ ] 7. Security Measures
+  - [ ] Configure end-to-end HTTPS, such as with Let's Encrypt certificates.
+  - [x] Hash and salt passwords with BCrypt in User Service; never expose passwords.
+  - [ ] Validate filenames and MIME types, sniff content headers, and reject non-image payloads.
+  - [ ] Ensure only the creating seller can modify or delete products and their images.
+  - [x] Enforce allowed origins and headers through gateway CORS configuration.
+  - [ ] Optionally add gateway rate limiting for authentication and media endpoints.

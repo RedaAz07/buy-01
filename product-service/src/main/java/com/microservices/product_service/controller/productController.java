@@ -20,7 +20,7 @@ import com.microservices.product_service.service.productService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/product")
+@RequestMapping({ "/products", "/api/products" })
 @RequiredArgsConstructor
 public class productController {
 
@@ -28,28 +28,28 @@ public class productController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    private void AddProduct(@RequestBody productRequest productRequest) {
+    public void AddProduct(@RequestBody productRequest productRequest) {
         productService.AddProduct(productRequest);
     }
 
     @GetMapping
-    private List<productRspons> GetallProduct() {
+    public List<productRspons> GetallProduct() {
         return productService.getall();
     }
 
     @GetMapping("/{id}")
-    private productRspons GetProduct(@PathVariable String id) {
+    public productRspons GetProduct(@PathVariable String id) {
         return productService.getProduct(id);
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    private void UpdateProduct(@RequestBody productRequest productRequest, @PathVariable("id") String id) {
+    public void UpdateProduct(@RequestBody productRequest productRequest, @PathVariable("id") String id) {
         productService.UpdateProduct(productRequest, id);
     }
 
     @DeleteMapping("/{id}")
-    private void DeleteProduct(@PathVariable("id") String id) {
+    public void DeleteProduct(@PathVariable("id") String id) {
         productService.DeleteProduct(id);
 
     }

@@ -1,101 +1,63 @@
 # Database Design
 
-Each microservice owns its database. Services must never read or write another
-service's collections directly; they exchange identifiers and communicate through
-their APIs or events.
+This document follows the supplied model: one **User** owns many **Products**,
+and one **Product** has many **Media** records.
 
-## 1. User Service
+```text
+User (1) ───── owns ───── (n) Product (1) ───── has ───── (n) Media
+```
 
-**Database:** MongoDB database `user_service`  
+## User
+
+**Service/database:** User Service / `user_service`
 **Collection:** `users`
 
-| Field | Type | Rules / purpose |
-| --- | --- | --- |
-| `_id` | ObjectId / String | Primary identifier. Exposed as `id`. |
-| `name` | String | Required; unique; 3–15 alphanumeric characters. |
-| `email` | String | Required; unique; normalized to lowercase. |
-| `password` | String | Required BCrypt hash only; never return it in an API response. |
-| `role` | String | Required enum: `ROLE_CLIENT` or `ROLE_SELLER`. |
-| `avatarMediaId` | String, nullable | Media Service image identifier for the user's avatar. |
-| `createdAt` | DateTime | Set when the user is created. |
-| `updatedAt` | DateTime | Updated whenever profile data changes. |
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `id` | String | Yes | Primary key. |
+| `name` | String | Yes | Unique display/login name. |
+| `email` | String | Yes | Unique email address. |
+| `password` | String | Yes | BCrypt password hash; never returned by the API. |
+| `role` | Enum | Yes | `ROLE_CLIENT` or `ROLE_SELLER`. |
+| `avatar` | String | No | Media URL or Media ID for the user's avatar. |
 
-**Indexes**
+**Indexes:** unique `name`; unique `email`.
 
-- Unique index on `name`.
-- Unique index on `email`.
-- Index on `role` only if role-based administration/reporting needs it.
+## Product
 
-`avatarMediaId` is a reference, not a database foreign key. The Media Service
-validates that the seller owns the referenced media before accepting an avatar
-update.
-
-## 2. Product Service
-
-**Database:** MongoDB database `product_service`  
+**Service/database:** Product Service / `product_service`
 **Collection:** `products`
 
-| Field | Type | Rules / purpose |
-| --- | --- | --- |
-| `_id` | ObjectId / String | Primary identifier. Exposed as `id`. |
-| `name` | String | Required product name. |
-| `description` | String | Optional product description. |
-| `price` | Decimal128 | Required and strictly greater than zero; do not use floating point for currency. |
-| `quantity` | Integer | Required; zero or greater. |
-| `sellerId` | String | Required User Service user ID of the creating seller. |
-| `imageMediaIds` | Array<String> | Ordered references to Media Service images. |
-| `createdAt` | DateTime | Set when created. |
-| `updatedAt` | DateTime | Updated when product data changes. |
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `id` | String | Yes | Primary key. |
+| `name` | String | Yes | Product name. |
+| `description` | String | No | Product description. |
+| `price` | Decimal / integer minor units | Yes | Must be greater than zero. |
+| `quantity` | Integer | Yes | Must be zero or greater. |
+| `userId` / `sellerId` | String | Yes | ID of the owning seller from User Service. The current code names it `sellerId`. |
+| `imageUrls` | Array<String> | No | References to images supplied by Media Service. |
 
-**Indexes**
+**Indexes:** `sellerId` (or `userId`) for seller dashboards and ownership checks.
 
-- Index on `sellerId` for a seller dashboard and ownership checks.
-- Index on `{ sellerId: 1, createdAt: -1 }` for recent seller products.
-- Index on `{ createdAt: -1 }` for the public product list.
+## Media
 
-`sellerId` is immutable after creation and must come from the authenticated token,
-never from a request body. `imageMediaIds` only stores Media Service IDs; image
-files are not stored in this collection.
-
-## 3. Media Service
-
-**Database:** MongoDB database `media_service`  
+**Service/database:** Media Service / `media_service`
 **Collection:** `media`
 
-The database stores image metadata. Store image bytes in object storage (for
-example, MinIO or S3) and keep only the object key in MongoDB. This permits
-efficient downloads, CDN caching, and future thumbnail generation.
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `id` | String | Yes | Primary key. |
+| `imagePath` | String | Yes | Object-storage key or public image URL. |
+| `productId` | String | Yes | ID of the product this image belongs to. |
 
-| Field | Type | Rules / purpose |
-| --- | --- | --- |
-| `_id` | ObjectId / String | Primary identifier. Exposed as `id`. |
-| `ownerId` | String | Required User Service seller ID that uploaded the media. |
-| `objectKey` | String | Required; unique object-storage key, not the original filename. |
-| `originalFilename` | String | Sanitized display/audit name; never use as a filesystem path. |
-| `contentType` | String | Required verified image MIME type such as `image/jpeg`, `image/png`, or `image/webp`. |
-| `sizeBytes` | Long | Required; must be at most `2,097,152` bytes. |
-| `checksum` | String | SHA-256 checksum of the uploaded content. |
-| `createdAt` | DateTime | Set when uploaded. |
-| `deletedAt` | DateTime, nullable | Supports soft deletion/audit; omit this field for active media. |
+**Indexes:** `productId` for listing a product's images; unique `imagePath`.
 
-**Indexes**
+## Relationship rules
 
-- Unique index on `objectKey`.
-- Index on `{ ownerId: 1, createdAt: -1 }` for media management.
-- Index on `checksum` if duplicate-upload detection is required.
-- Optional TTL index on `deletedAt` for delayed physical cleanup of soft-deleted
-  media.
-
-The upload flow validates the MIME type and file signature before storing an
-object. The Media Service authorizes reads/deletes using `ownerId`; Product
-Service retains only the media IDs it is allowed to link.
-
-## Cross-service rules
-
-- No cross-database foreign keys or joins.
-- All service-to-service references use stable string IDs.
-- Deleting media that is referenced by a product should be rejected, or the
-  Product Service must remove the reference through an explicit workflow/event.
-- Each service owns its backup, migration, retention, and access policy.
-- Future Kafka events should contain IDs and metadata only—never password hashes
-  or image bytes.
+- A seller can own zero or many products; each product has exactly one seller.
+- A product can have zero or many images; each image belongs to one product.
+- Since the services own separate databases, `sellerId`/`userId` and `productId`
+  are logical references, not database foreign keys.
+- Product Service stores only image references (`imageUrls`); Media Service stores
+  image metadata and the actual object-storage location.

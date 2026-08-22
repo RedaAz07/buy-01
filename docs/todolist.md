@@ -2,7 +2,7 @@
 
 - [ ] 1. Microservices Setup
   - [ ] Create a User Service for authentication, profiles, and `CLIENT` / `SELLER` roles.
-  - [ ] Create a Product Service for product CRUD operations and image references.
+  - [x] Create a Product Service for product CRUD operations and image references.
   - [ ] Create a Media Service for image upload/download and validation, including a 2 MB limit.
   - [ ] Configure Kafka (optional, recommended) for `PRODUCT_CREATED` and `IMAGE_UPLOADED` events—for audit trails, cache invalidation, and thumbnail generation.
 

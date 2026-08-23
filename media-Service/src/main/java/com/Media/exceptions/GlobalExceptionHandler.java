@@ -14,6 +14,8 @@ import org.springframework.security.authentication.LockedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 
 @RestControllerAdvice // Tells Spring: "Send all crashes here!"
@@ -90,6 +92,17 @@ public ResponseEntity<Object> handleBanned(LockedException ex) {
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<Object> handleApiException(ApiException ex) {
         return buildErrorResponse(ex.getStatus(), ex.getMessage());
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<Object> handleMaxUploadSize(MaxUploadSizeExceededException ex) {
+        return buildErrorResponse(HttpStatus.BAD_REQUEST,
+                "File is too large. Maximum allowed size is 2 MB.");
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<Object> handleEndpointNotFound(NoResourceFoundException ex) {
+        return buildErrorResponse(HttpStatus.NOT_FOUND, "The requested endpoint does not exist.");
     }
 
     // ────────────────────────────────────────────────────────

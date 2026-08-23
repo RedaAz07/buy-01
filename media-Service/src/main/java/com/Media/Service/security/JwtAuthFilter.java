@@ -54,11 +54,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                         new UsernamePasswordAuthenticationToken(
                                 username,
                                 null,
-                                List.of(
-                                    new SimpleGrantedAuthority(
-                                        "ROLE_" + role.toUpperCase()
-                                    )
-                                )
+                List.of(
+                    new SimpleGrantedAuthority(
+                        role.toUpperCase().startsWith("ROLE_") ? role.toUpperCase() : "ROLE_" + role.toUpperCase()
+                    )
+                )
                         );
 
                 SecurityContextHolder

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.tika.mime.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -61,6 +60,11 @@ public class MediaService {
                     mediaRepository.save(media);
                 }
 
+            } catch (ApiException e) {
+                if (!uploadedImageUrls.isEmpty()) {
+                    mediaUploadService.deleteOrphanedFiles(uploadedImageUrls);
+                }
+                throw e;
             } catch (Exception e) {
                 if (!uploadedImageUrls.isEmpty()) {
                     mediaUploadService.deleteOrphanedFiles(uploadedImageUrls);

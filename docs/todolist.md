@@ -21,8 +21,8 @@
     - [ ] Enforce seller ownership for product updates and deletions.
     - [ ] Associate `imageUrls[]`; upload images through Media Service before linking them to products.
   - [ ] Media Service
-    - [ ] Implement seller-only `POST /media/images`.
-    - [ ] Validate MIME type (`image/*`) and a maximum file size of 2 MB.
+    - [x] Implement seller-only `POST /media/images`.
+    - [x] Validate MIME type (`image/*`) and a maximum file size of 2 MB.
     - [ ] Implement `GET /media/images/{id}` with appropriate caching headers.
     - [ ] Optionally implement `DELETE /media/images/{id}` and enforce media ownership.
   - [ ] Expose `/actuator/health` from every service.
@@ -54,7 +54,7 @@
 - [ ] 7. Security Measures
   - [ ] Configure end-to-end HTTPS, such as with Let's Encrypt certificates.
   - [x] Hash and salt passwords with BCrypt in User Service; never expose passwords.
-  - [ ] Validate filenames and MIME types, sniff content headers, and reject non-image payloads.
+  - [x] Validate filenames and MIME types, sniff content headers, and reject non-image payloads.
   - [ ] Ensure only the creating seller can modify or delete products and their images.
   - [x] Enforce allowed origins and headers through gateway CORS configuration.
   - [ ] Optionally add gateway rate limiting for authentication and media endpoints.

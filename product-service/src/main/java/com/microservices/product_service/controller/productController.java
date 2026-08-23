@@ -21,7 +21,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping({ "/products", "/api/products" })
+@RequestMapping("/api/products")
 @RequiredArgsConstructor
 public class productController {
 
@@ -35,6 +35,7 @@ public class productController {
 
     @GetMapping
     public List<productRspons> GetallProduct() {
+        System.out.println("11");
         return productService.getall();
     }
 

@@ -6,12 +6,20 @@ RUN_DIR="$ROOT/.run"
 LOG_DIR="$ROOT/logs"
 mkdir -p "$RUN_DIR" "$LOG_DIR"
 
-NAMES=(registry api-gateway product-service user-service)
+NAMES=(registry api-gateway product-service user-service media-service)
 declare -A PORT=(
   [registry]=8761
   [api-gateway]=8080
   [product-service]=8082
   [user-service]=8081
+  [media-service]=8083
+)
+declare -A DIR=(
+  [registry]=registry
+  [api-gateway]=api-gateway
+  [product-service]=product-service
+  [user-service]=user-service
+  [media-service]=media-Service
 )
 
 port_open() { timeout 1 bash -c "</dev/tcp/127.0.0.1/$1" 2>/dev/null; }
@@ -32,11 +40,17 @@ wait_port() {
 ensure_mongo() {
   if docker ps --format '{{.Names}}' | grep -qx 'product-service'; then
     echo "[mongo] container already running"
-    return 0
+  else
+    echo "[mongo] starting container..."
+    docker compose --env-file "$ROOT/product-service/.env" \
+      -f "$ROOT/product-service/docker-compose.yml" up -d
   fi
-  echo "[mongo] starting container..."
-  docker compose --env-file "$ROOT/product-service/.env" \
-    -f "$ROOT/product-service/docker-compose.yml" up -d
+  if docker ps --format '{{.Names}}' | grep -qx 'mongodb_media'; then
+    echo "[media-db] container already running"
+  else
+    echo "[media-db] starting container..."
+    docker compose -f "$ROOT/docker-compose.yml" up -d media-db
+  fi
 }
 
 start_one() {
@@ -47,7 +61,7 @@ start_one() {
   fi
   echo "[$name] starting..."
   (
-    cd "$ROOT/$name" || exit 1
+    cd "$ROOT/${DIR[$name]}" || exit 1
     if [ -f .env ]; then
       set -a
       . ./.env
@@ -90,6 +104,9 @@ status_all() {
   docker ps --format '{{.Names}}' | grep -qx 'product-service' &&
     printf '%-18s %-6s %s\n' mongo-docker :27017 UP ||
     printf '%-18s %-6s %s\n' mongo-docker :27017 DOWN
+  docker ps --format '{{.Names}}' | grep -qx 'mongodb_media' &&
+    printf '%-18s %-6s %s\n' media-db :27018 UP ||
+    printf '%-18s %-6s %s\n' media-db :27018 DOWN
 }
 
 case "${1:-help}" in
@@ -97,12 +114,12 @@ case "${1:-help}" in
     ensure_mongo
     start_one registry
     wait_port registry 8761 60
-    for n in api-gateway product-service user-service; do start_one "$n"; done
-    for n in api-gateway product-service user-service; do wait_port "$n" "${PORT[$n]}" 120; done
+    for n in api-gateway product-service user-service media-service; do start_one "$n"; done
+    for n in api-gateway product-service user-service media-service; do wait_port "$n" "${PORT[$n]}" 120; done
     echo "logs: $LOG_DIR/<service>.log"
     ;;
   stop)
-    for n in user-service product-service api-gateway registry; do stop_one "$n"; done
+    for n in media-service user-service product-service api-gateway registry; do stop_one "$n"; done
     ;;
   restart)
     "$0" stop

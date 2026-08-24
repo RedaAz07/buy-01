@@ -22,6 +22,17 @@ services:
       - "27018:27017"
     volumes:
       - media_mongodb_data:/data/db
+  product-db:
+    image: mongo:latest
+    container_name: product-service
+    restart: always
+    env_file:
+      - ./product-service/.env
+    ports:
+      - "27019:27017"
+    volumes:
+      - product_mongodb_data:/data/db
 volumes:
   user_mongodb_data:
   media_mongodb_data:
+  product_mongodb_data:

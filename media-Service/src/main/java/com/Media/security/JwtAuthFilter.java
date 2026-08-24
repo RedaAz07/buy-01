@@ -1,4 +1,4 @@
-package com.Media.Service.security;
+package com.Media.security;
 
 import java.io.IOException;
 import java.util.List;
@@ -15,6 +15,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+
 @Component
 @Slf4j
 public class JwtAuthFilter extends OncePerRequestFilter {
@@ -29,8 +30,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(
             HttpServletRequest request,
             HttpServletResponse response,
-            FilterChain filterChain
-    ) throws ServletException, IOException {
+            FilterChain filterChain) throws ServletException, IOException {
 
         String authHeader = request.getHeader("Authorization");
 
@@ -42,25 +42,18 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         try {
             String token = authHeader.substring(7);
 
-            Map<String, Object> user =
-                    jwtService.extractUserClaims(token);
+            Map<String, Object> details = jwtService.extractUserClaims(token);
 
             if (SecurityContextHolder.getContext().getAuthentication() == null) {
 
-                String username = user.get("username").toString();
-                String role = user.get("role").toString();
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                        details.get("username"),
+                        null,
+                        List.of(
+                                new SimpleGrantedAuthority(
+                                        details.get("role").toString().toUpperCase())));
 
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(
-                                username,
-                                null,
-                List.of(
-                    new SimpleGrantedAuthority(
-                        role.toUpperCase().startsWith("ROLE_") ? role.toUpperCase() : "ROLE_" + role.toUpperCase()
-                    )
-                )
-                        );
-
+                                    
                 SecurityContextHolder
                         .getContext()
                         .setAuthentication(authToken);

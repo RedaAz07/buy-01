@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,8 +30,16 @@ public class MediaController {
             @RequestPart("media") List<MultipartFile> media,
             @RequestParam(required = false) String productId,
             @RequestParam UploadType type, Principal principal) {
-        Map<String, String> response = mediaService.create(media, productId, type , principal.getName());
+        Map<String, String> response = mediaService.create(media, productId, type, principal.getName());
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Map<String, String>> getImage(@PathVariable String id) {
+
+        Map<String, String> response = mediaService.getImage(id);
+        return ResponseEntity.ok(response);
+
     }
 
 }

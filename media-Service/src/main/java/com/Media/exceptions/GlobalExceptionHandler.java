@@ -14,9 +14,7 @@ import org.springframework.security.authentication.LockedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.multipart.MaxUploadSizeExceededException;
-import org.springframework.web.servlet.resource.NoResourceFoundException;
-
+import org.springframework.web.multipart.MultipartException;
 
 @RestControllerAdvice // Tells Spring: "Send all crashes here!"
 public class GlobalExceptionHandler {
@@ -40,12 +38,19 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(MultipartException.class)
+    public ResponseEntity<Object> handleMultipartException(MultipartException ex) {
+        return buildErrorResponse(
+                HttpStatus.BAD_REQUEST,
+                "Invalid multipart request. Please provide a valid file.");
+    }
+
     // ────────────────────────────────────────────────────────
     // 2. 404 NOT FOUND (When a DB search comes up empty)
     // ────────────────────────────────────────────────────────
     // @ExceptionHandler(EntityNotFoundException.class)
     // public ResponseEntity<Object> handleNotFound(EntityNotFoundException ex) {
-    //     return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    // return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     // }
 
     // ────────────────────────────────────────────────────────
@@ -75,11 +80,11 @@ public class GlobalExceptionHandler {
     // ────────────────────────────────────────────────────────
     // 5. 423 FORBIDDEN (Logged in, but not allowed to do this)
     // ────────────────────────────────────────────────────────
-@ExceptionHandler(LockedException.class)
-public ResponseEntity<Object> handleBanned(LockedException ex) {
-    return buildErrorResponse(HttpStatus.LOCKED, "you are banned");
-}
-// Method 2 (You probably have something like this right next to it)
+    @ExceptionHandler(LockedException.class)
+    public ResponseEntity<Object> handleBanned(LockedException ex) {
+        return buildErrorResponse(HttpStatus.LOCKED, "you are banned");
+    }
+    // Method 2 (You probably have something like this right next to it)
 
     // ────────────────────────────────────────────────────────
     // 6. 400 BAD REQUEST (For your custom RuntimeExceptions)
@@ -89,28 +94,27 @@ public ResponseEntity<Object> handleBanned(LockedException ex) {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
-    @ExceptionHandler(ApiException.class)
-    public ResponseEntity<Object> handleApiException(ApiException ex) {
-        return buildErrorResponse(ex.getStatus(), ex.getMessage());
-    }
+    // @ExceptionHandler(ApiException.class)
+    // public ResponseEntity<Object> handleApiException(ApiException ex) {
+    //     return buildErrorResponse(ex.getStatus(), ex.getMessage());
+    // }
 
-    @ExceptionHandler(MaxUploadSizeExceededException.class)
-    public ResponseEntity<Object> handleMaxUploadSize(MaxUploadSizeExceededException ex) {
-        return buildErrorResponse(HttpStatus.BAD_REQUEST,
-                "File is too large. Maximum allowed size is 2 MB.");
-    }
+    // @ExceptionHandler(MaxUploadSizeExceededException.class)
+    // public ResponseEntity<Object> handleMaxUploadSize(MaxUploadSizeExceededException ex) {
+    //     return buildErrorResponse(HttpStatus.BAD_REQUEST,
+    //             "File is too large. Maximum allowed size is 2 MB.");
+    // }
 
-    @ExceptionHandler(NoResourceFoundException.class)
-    public ResponseEntity<Object> handleEndpointNotFound(NoResourceFoundException ex) {
-        return buildErrorResponse(HttpStatus.NOT_FOUND, "The requested endpoint does not exist.");
-    }
+    // @ExceptionHandler(NoResourceFoundException.class)
+    // public ResponseEntity<Object> handleEndpointNotFound(NoResourceFoundException ex) {
+    //     return buildErrorResponse(HttpStatus.NOT_FOUND, "The requested endpoint does not exist.");
+    // }
 
     // ────────────────────────────────────────────────────────
     // 7. 500 INTERNAL SERVER ERROR (The Catch-All for unknown bugs)
     // ────────────────────────────────────────────────────────
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleAllOtherExceptions(Exception ex) {
-
 
         return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred on the server.");
     }
@@ -121,7 +125,6 @@ public ResponseEntity<Object> handleBanned(LockedException ex) {
                 "Your account has been banned or disabled. Please contact support.");
     }
 
-   
     private ResponseEntity<Object> buildErrorResponse(HttpStatus status, String message) {
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", LocalDateTime.now());

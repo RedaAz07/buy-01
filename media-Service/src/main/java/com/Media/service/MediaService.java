@@ -94,7 +94,7 @@ public class MediaService {
 
         // TODO: get the id of the product from user service ;
 
-        Media media = mediaRepository.findByUserIdAndOwnerId(id, name)
+        Media media = mediaRepository.findByIdAndOwnerId(id, name)
                 .orElseThrow(() -> ApiException.notFound("Media not found"));
 
         mediaRepository.delete(media);

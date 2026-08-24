@@ -8,6 +8,7 @@ spring:
     name: media-service
   config:
     import: optional:file:./.env[.properties]
+  
   mongodb:
     host: localhost
     port: 27018

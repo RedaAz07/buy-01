@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.Media.dto.response.MediaResponseDTO;
 import com.Media.exceptions.ApiException;
 import com.Media.model.Media;
 import com.Media.model.UploadType;
@@ -88,4 +89,16 @@ public class MediaService {
                 .orElseThrow(() -> ApiException.notFound("Media not found"));
         return Map.of("image", media.getImagePath());
     }
+
+    public Map<String, String> deleteImage(String id, String name) {
+
+        // TODO: get the id of the product from user service ;
+
+        Media media = mediaRepository.findByUserIdAndOwnerId(id, name)
+                .orElseThrow(() -> ApiException.notFound("Media not found"));
+
+        mediaRepository.delete(media);
+        return Map.of("image", media.getImagePath());
+    }
+
 }

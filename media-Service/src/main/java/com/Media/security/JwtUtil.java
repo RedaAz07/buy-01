@@ -1,4 +1,4 @@
-package com.Media.Service.security;
+package com.Media.security;
 
 import java.security.Key;
 import java.util.HashMap;

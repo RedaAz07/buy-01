@@ -1,4 +1,4 @@
-package com.Media.Service.security;
+package com.Media.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

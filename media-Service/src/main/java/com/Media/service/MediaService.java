@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.Media.dto.response.MediaResponseDTO;
 import com.Media.exceptions.ApiException;
 import com.Media.model.Media;
 import com.Media.model.UploadType;
@@ -22,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 public class MediaService {
-
+    private final MediaEventProducer mediaEventProducer;
     private final MediaUploadService mediaUploadService;
     private final MediaRepository mediaRepository;
 
@@ -68,6 +67,7 @@ public class MediaService {
 
                 media.setImagePath(result.url());
                 mediaRepository.save(media);
+                mediaEventProducer.sendAvatarUploadedEvent(media.getOwnerId(), result.url());
             }
 
         } catch (Exception e) {

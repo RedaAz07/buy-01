@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.user_service.dto.request.LoginRequestDTO;
 import com.user_service.dto.request.RegisterRequestDTO;
 import com.user_service.dto.response.AuthResponseDTO;
+import com.user_service.dto.response.UserResponseDTO;
 import com.user_service.exceptions.ApiException;
 import com.user_service.model.Roles;
 import com.user_service.model.User;
@@ -64,4 +65,14 @@ public class UserService {
         return userMapper.toDto(jwt);
     }
 
+    public UserResponseDTO getMe(String username) {
+        User user = userRepository
+                .findByName(username)
+                .orElseThrow(() -> ApiException.notFound("User not found"));
+        return new UserResponseDTO(
+                user.getId(),
+                user.getName(),
+                user.getEmail(),
+                user.getAvatar());
+    }
 }

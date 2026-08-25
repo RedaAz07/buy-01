@@ -1,6 +1,8 @@
+version: '3.8'
+
 services:
   # -------------------------------------------------------------
-  # USER MONGODB
+  # MONGODB SERVICES
   # -------------------------------------------------------------
   user-db:
     image: mongo:7.0
@@ -12,6 +14,7 @@ services:
       - "27017:27017"
     volumes:
       - user_mongodb_data:/data/db
+
   media-db:
     image: mongo:7.0
     container_name: mongodb_media
@@ -22,9 +25,10 @@ services:
       - "27018:27017"
     volumes:
       - media_mongodb_data:/data/db
+
   product-db:
-    image: mongo:latest
-    container_name: product-service
+    image: mongo:7.0
+    container_name: mongodb_product  # Fixed name conflict
     restart: always
     env_file:
       - ./product-service/.env
@@ -32,7 +36,48 @@ services:
       - "27019:27017"
     volumes:
       - product_mongodb_data:/data/db
+
+  # -------------------------------------------------------------
+  # KAFKA & KAFKA UI
+  # -------------------------------------------------------------
+  kafka:
+    image: apache/kafka:4.0.0
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      # KRaft Settings
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+
+      # Dual Listeners: Host (9092) and Docker Internal (29092)
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,INTERNAL://0.0.0.0:29092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,INTERNAL://kafka:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,INTERNAL:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+
+      # Single-node development settings
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    ports:
+      - "8085:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local-cluster
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+    depends_on:
+      - kafka
+
 volumes:
   user_mongodb_data:
   media_mongodb_data:
   product_mongodb_data:
+  kafka_data:

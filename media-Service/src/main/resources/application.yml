@@ -9,13 +9,14 @@ spring:
   config:
     import: optional:file:./.env[.properties]
   
-  mongodb:
-    host: localhost
-    port: 27018
-    database: ${MONGO_INITDB_DATABASE}
-    username: ${MONGO_INITDB_ROOT_USERNAME}
-    password: ${MONGO_INITDB_ROOT_PASSWORD}
-    authentication-database: admin
+  data:
+    mongodb:
+      host: localhost
+      port: 27018
+      database: ${MONGO_INITDB_DATABASE}
+      username: ${MONGO_INITDB_ROOT_USERNAME}
+      password: ${MONGO_INITDB_ROOT_PASSWORD}
+      authentication-database: admin
 
 application:
   security:

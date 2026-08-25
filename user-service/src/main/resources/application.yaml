@@ -8,6 +8,8 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: "*"
+        spring.json.value.default.type: "com.user_service.dto.response.AvatarUploadedEvent" # Your local DTO package
+        spring.json.use.type.headers: false # Ignores type headers sent by Media Service
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer

@@ -5,6 +5,7 @@
   - [x] Create a Product Service for product CRUD operations and image references.
   - [x] Create a Media Service for image upload/download and validation, including a 2 MB limit.
   - [x] Configure Kafka for `avatar-uploaded-topic` and `user-deleted-topic` events.
+  - [x] Configure Kafka for `product-deleted-topic` and `media-uploaded-topic` events (Product ↔ Media).
   - [ ] Dockerize all Java services with Dockerfiles and a unified docker-compose.
   - [ ] Fix `UserEventProducer.sendUserDeletedEvent()` — currently defined but never invoked.
 
@@ -21,8 +22,9 @@
   - [ ] Product Service
     - [x] Implement public endpoints: `GET /api/products` and `GET /api/products/{id}`.
     - [x] Implement seller-only endpoints: `POST /api/products`, `PUT /api/products/{id}`, and `DELETE /api/products/{id}`.
-    - [ ] Enforce seller ownership — extract `sellerId` from JWT, not from request body.
-    - [ ] Associate `imageUrls[]`; upload images through Media Service before linking them to products.
+    - [x] Enforce seller ownership — extract `sellerId` from JWT, not from request body.
+    - [x] Enforce ownership on update/delete — sellers can only modify their own products.
+    - [x] Associate `imageUrls[]` via Kafka — `media-uploaded-topic` auto-links uploaded images to products.
   - [ ] Media Service
     - [x] Implement seller-only `POST /api/media/images`.
     - [x] Validate MIME type (`image/*`) and a maximum file size of 2 MB.
@@ -49,7 +51,7 @@
   - [x] Use Spring Security with JWT at the gateway and propagate authentication downstream.
   - [x] Support `CLIENT` for browsing and `SELLER` for managing owned products/media.
   - [ ] Optionally add `ADMIN` for moderation.
-  - [ ] Enforce ownership checks in Product Service — `sellerId == auth.subject`.
+  - [x] Enforce ownership checks in Product Service — `sellerId == auth.subject`.
   - [x] Enforce ownership checks in Media Service on DELETE.
 
 - [ ] 6. Error Handling & Validation
@@ -64,7 +66,7 @@
   - [ ] Configure end-to-end HTTPS, such as with Let's Encrypt certificates.
   - [x] Hash and salt passwords with BCrypt in User Service; never expose passwords.
   - [x] Validate filenames and MIME types, sniff content headers, and reject non-image payloads.
-  - [ ] Ensure only the creating seller can modify or delete products and their images.
+  - [x] Ensure only the creating seller can modify or delete products and their images.
   - [x] Enforce allowed origins and headers through gateway CORS configuration.
   - [ ] Add gateway rate limiting for authentication and media endpoints.
 

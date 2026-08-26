@@ -1,6 +1,5 @@
 package com.microservices.product_service.exception;
 
-import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,6 +8,10 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -61,7 +64,10 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.CONFLICT, "Database conflict: Duplicate entry or foreign key violation.");
     }
 
- 
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<Object> handleBadCredentials(BadCredentialsException ex) {
+        return buildErrorResponse(HttpStatus.UNAUTHORIZED, "Invalid username or password.");
+    }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<Object> handleAccessDenied(AccessDeniedException ex) {
@@ -70,7 +76,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(TooManyRequests.class)
     public ResponseEntity<Object> handleToManyRequest(TooManyRequests ex) {
-        return buildErrorResponse(HttpStatus.TOO_MANY_REQUESTS, "to many request");
+        return buildErrorResponse(HttpStatus.TOO_MANY_REQUESTS, "Too many requests");
+    }
+
+    @ExceptionHandler(LockedException.class)
+    public ResponseEntity<Object> handleBanned(LockedException ex) {
+        return buildErrorResponse(HttpStatus.LOCKED, "you are banned");
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
@@ -81,6 +92,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<Object> handleApiException(ApiException ex) {
         return buildErrorResponse(ex.getStatus(), ex.getMessage());
+    }
+
+    @ExceptionHandler(DisabledException.class)
+    public ResponseEntity<Object> handleDisabledAccount(DisabledException ex) {
+        return buildErrorResponse(HttpStatus.LOCKED,
+                "Your account has been banned or disabled. Please contact support.");
     }
 
     @ExceptionHandler(Exception.class)

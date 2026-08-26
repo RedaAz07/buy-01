@@ -1,6 +1,7 @@
 package com.microservices.product_service.controller;
 
 import java.util.List;
+import java.security.Principal;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,8 +30,8 @@ public class productController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public productRspons AddProduct(@RequestBody @Valid productRequest productRequest) {
-        return productService.AddProduct(productRequest);
+    public productRspons AddProduct(@RequestBody @Valid productRequest productRequest, Principal principal) {
+        return productService.AddProduct(productRequest, principal.getName());
     }
 
     @GetMapping
@@ -45,15 +46,14 @@ public class productController {
 
     @PutMapping("/{id}")
     public productRspons UpdateProduct(@RequestBody @Valid productRequest productRequest,
-            @PathVariable("id") String id) {
-        return productService.UpdateProduct(productRequest, id);
+            @PathVariable("id") String id, Principal principal) {
+        return productService.UpdateProduct(productRequest, id, principal.getName());
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void DeleteProduct(@PathVariable("id") String id) {
-        productService.DeleteProduct(id);
-
+    public void DeleteProduct(@PathVariable("id") String id, Principal principal) {
+        productService.DeleteProduct(id, principal.getName());
     }
 
     @GetMapping("/test-security")

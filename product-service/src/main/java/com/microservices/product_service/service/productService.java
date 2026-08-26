@@ -20,15 +20,20 @@ public class productService {
     private final productRepository productRepository;
     private final ProductEventProducer productEventProducer;
 
-    public productRspons AddProduct(productRequest productRequest) {
+    public productRspons AddProduct(productRequest productRequest, String sellerId) {
+        if (productRequest.getDescription() == null || productRequest.getDescription().isEmpty()
+                || productRequest.getName() == null || productRequest.getName().isEmpty()
+                || productRequest.getPrice() == 0 || productRequest.getQuantity() == 0) {
+            throw ApiException.badRequest("all fields are required");
 
+        }
         Product product = Product
                 .builder()
                 .name(productRequest.getName())
                 .description(productRequest.getDescription())
                 .price(productRequest.getPrice())
                 .quantity(productRequest.getQuantity())
-                .sellerId(productRequest.getSellerId())
+                .sellerId(sellerId)
                 .imageUrls(new ArrayList<>(productRequest.getImageUrls()))
                 .build();
         productRepository.save(product);
@@ -37,7 +42,6 @@ public class productService {
 
     public List<productRspons> getall() {
         List<Product> products = productRepository.findAll();
-        System.out.println(products);
         return products.stream().map(p -> getProduct(p)).toList();
     }
 
@@ -64,9 +68,12 @@ public class productService {
         return imageUrls == null ? List.of() : List.copyOf(imageUrls);
     }
 
-    public productRspons UpdateProduct(productRequest productRequest, String id) {
+    public productRspons UpdateProduct(productRequest productRequest, String id, String sellerId) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> ApiException.notFound("Product not found"));
+        if (!product.getSellerId().equals(sellerId)) {
+            throw ApiException.forbidden("You are not allowed to update this product");
+        }
         product.setName(productRequest.getName());
         product.setPrice(productRequest.getPrice());
         product.setDescription(productRequest.getDescription());
@@ -77,9 +84,12 @@ public class productService {
 
     }
 
-    public void DeleteProduct(String id) {
+    public void DeleteProduct(String id, String sellerId) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> ApiException.notFound("Product not found"));
+        if (!product.getSellerId().equals(sellerId)) {
+            throw ApiException.forbidden("You are not allowed to delete this product");
+        }
         productRepository.delete(product);
         productEventProducer.sendProductDeletedEvent(id);
     }

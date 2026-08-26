@@ -4,29 +4,36 @@
   - [x] Create a User Service for authentication, profiles, and `CLIENT` / `SELLER` roles.
   - [x] Create a Product Service for product CRUD operations and image references.
   - [x] Create a Media Service for image upload/download and validation, including a 2 MB limit.
-  - [x] Configure Kafka (optional, recommended) for `PRODUCT_CREATED` and `IMAGE_UPLOADED` events—for audit trails, cache invalidation, and thumbnail generation.
+  - [x] Configure Kafka for `avatar-uploaded-topic` and `user-deleted-topic` events.
+  - [ ] Dockerize all Java services with Dockerfiles and a unified docker-compose.
+  - [ ] Fix `UserEventProducer.sendUserDeletedEvent()` — currently defined but never invoked.
 
 - [ ] 2. Enhanced Database Design
   - [x] Define and document the database design for each service.
 
 - [ ] 3. API Development Enhancement
   - [ ] User Service
-    - [x] Implement `POST /auth/register` with `CLIENT` or `SELLER` role selection.
-    - [x] Implement `POST /auth/login` returning a JWT/OAuth2 token.
-    - [ ] Implement `GET /me` and `PUT /me` profile endpoints.
-    - [ ] Delegate seller avatar upload/update to the Media Service.
+    - [x] Implement `POST /api/auth/register` with `CLIENT` or `SELLER` role selection.
+    - [x] Implement `POST /api/auth/login` returning a JWT token.
+    - [x] Implement `GET /api/users/me` returning the authenticated user profile.
+    - [ ] Implement `PUT /api/users/me` profile update endpoint.
+    - [ ] Delegate seller avatar upload/update to the Media Service (trigger flow from User Service).
   - [ ] Product Service
-    - [x] Implement public endpoints: `GET /products` and `GET /products/{id}`.
-    - [x] Implement seller-only endpoints: `POST /products`, `PUT /products/{id}`, and `DELETE /products/{id}`.
-    - [ ] Enforce seller ownership for product updates and deletions.
+    - [x] Implement public endpoints: `GET /api/products` and `GET /api/products/{id}`.
+    - [x] Implement seller-only endpoints: `POST /api/products`, `PUT /api/products/{id}`, and `DELETE /api/products/{id}`.
+    - [ ] Enforce seller ownership — extract `sellerId` from JWT, not from request body.
     - [ ] Associate `imageUrls[]`; upload images through Media Service before linking them to products.
   - [ ] Media Service
-    - [x] Implement seller-only `POST /media/images`.
+    - [x] Implement seller-only `POST /api/media/images`.
     - [x] Validate MIME type (`image/*`) and a maximum file size of 2 MB.
-    - [ ] Implement `GET /media/images/{id}` with appropriate caching headers.
-    - [ ] Optionally implement `DELETE /media/images/{id}` and enforce media ownership.
-  - [ ] Expose `/actuator/health` from every service.
-  - [ ] Configure the gateway to route external traffic and apply CORS, auth propagation, and optional rate limiting.
+    - [x] Implement `GET /api/media/images/{id}` returning the Cloudinary URL.
+    - [x] Implement `DELETE /api/media/images/{id}` with ownership enforcement.
+    - [ ] Add `Cache-Control` and `ETag` headers to `GET /api/media/images/{id}`.
+    - [ ] Delete the image from Cloudinary on `DELETE` (currently only removes the DB record).
+    - [ ] Add `GET /api/media/images?productId=X` to list images by product.
+  - [ ] Expose `/actuator/health` from every service (currently only the API Gateway has actuator).
+  - [x] Configure the gateway to route external traffic and apply CORS and auth propagation.
+  - [ ] Add gateway rate limiting for authentication and media endpoints.
 
 - [ ] 4. Front-End Development with Angular
   - [ ] Build sign-in and sign-up pages with role selection.
@@ -39,16 +46,18 @@
   - [ ] Use route guards (`AuthGuard`, `RoleGuard`), HTTP interceptors for tokens and `401`/`403` handling, Reactive Forms, and Angular Material or Bootstrap.
 
 - [ ] 5. Authentication & Authorization
-  - [x] Use Spring Security with JWT or OAuth2 at the gateway and propagate authentication downstream.
-  - [ ] Support `CLIENT` for browsing and `SELLER` for managing owned products/media.
+  - [x] Use Spring Security with JWT at the gateway and propagate authentication downstream.
+  - [x] Support `CLIENT` for browsing and `SELLER` for managing owned products/media.
   - [ ] Optionally add `ADMIN` for moderation.
-  - [ ] Enforce ownership checks in Product and Media services: `sellerId == auth.subject`.
+  - [ ] Enforce ownership checks in Product Service — `sellerId == auth.subject`.
+  - [x] Enforce ownership checks in Media Service on DELETE.
 
 - [ ] 6. Error Handling & Validation
-  - [ ] Return `400` for invalid input, invalid file type, or files that are too large.
-  - [ ] Return `401` / `403` for unauthenticated or unauthorized requests.
-  - [ ] Return `404` for missing products/media or resources not owned by the requester.
-  - [ ] Add global exception handlers to avoid unhandled `5xx` responses.
+  - [x] Return `400` for invalid input, invalid file type, or files that are too large.
+  - [x] Return `401` / `403` for unauthenticated or unauthorized requests.
+  - [x] Return `404` for missing products/media or resources not found.
+  - [x] Add global exception handlers to avoid unhandled `5xx` responses.
+  - [ ] Align Media Service exception handlers with User/Product Services (missing `HttpMessageNotReadableException`, `MethodArgumentTypeMismatchException`, `ApiException` handlers).
   - [ ] Show inline Angular form errors and toast/snackbar messages for upload failures, oversized files, and forbidden actions.
 
 - [ ] 7. Security Measures
@@ -57,4 +66,10 @@
   - [x] Validate filenames and MIME types, sniff content headers, and reject non-image payloads.
   - [ ] Ensure only the creating seller can modify or delete products and their images.
   - [x] Enforce allowed origins and headers through gateway CORS configuration.
-  - [ ] Optionally add gateway rate limiting for authentication and media endpoints.
+  - [ ] Add gateway rate limiting for authentication and media endpoints.
+
+- [ ] 8. Code Quality & Housekeeping
+  - [ ] Add Dockerfiles for user-service, product-service, and media-service.
+  - [ ] Create a unified docker-compose that starts all services and infrastructure together.
+  - [ ] Fix naming inconsistencies (`productController` → `ProductController`, `productRspons` → `ProductResponse`, `media-Service` → `media-service`).
+  - [ ] Add API tests for all services.

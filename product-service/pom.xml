@@ -64,6 +64,11 @@
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
+		<!-- Kafka -->
+		<dependency>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka</artifactId>
+		</dependency>
 		<!-- JWT -->
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>

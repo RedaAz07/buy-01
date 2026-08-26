@@ -10,6 +10,7 @@ import com.microservices.product_service.dto.productRspons;
 import com.microservices.product_service.exception.ApiException;
 import com.microservices.product_service.model.Product;
 import com.microservices.product_service.repository.productRepository;
+import com.microservices.product_service.service.kafka.ProductEventProducer;
 
 import lombok.RequiredArgsConstructor;
 
@@ -17,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class productService {
     private final productRepository productRepository;
+    private final ProductEventProducer productEventProducer;
 
     public productRspons AddProduct(productRequest productRequest) {
 
@@ -79,5 +81,6 @@ public class productService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> ApiException.notFound("Product not found"));
         productRepository.delete(product);
+        productEventProducer.sendProductDeletedEvent(id);
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import com.Media.dto.response.AvatarUploadedEvent;
+import com.Media.dto.response.MediaUploadedEvent;
 
 @Service
 @RequiredArgsConstructor
@@ -18,5 +19,11 @@ public class MediaEventProducer {
         AvatarUploadedEvent event = new AvatarUploadedEvent(userId, avatarUrl);
         log.info("Publishing AvatarUploadedEvent for userId: {}", userId);
         kafkaTemplate.send("avatar-uploaded-topic", userId, event);
+    }
+
+    public void sendMediaUploadedEvent(String productId, String imageUrl) {
+        MediaUploadedEvent event = new MediaUploadedEvent(productId, imageUrl);
+        log.info("Publishing MediaUploadedEvent for productId: {}", productId);
+        kafkaTemplate.send("media-uploaded-topic", productId, event);
     }
 }

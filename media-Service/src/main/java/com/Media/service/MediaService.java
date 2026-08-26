@@ -67,7 +67,12 @@ public class MediaService {
 
                 media.setImagePath(result.url());
                 mediaRepository.save(media);
-                mediaEventProducer.sendAvatarUploadedEvent(media.getOwnerId(), result.url());
+
+                if (type.equals(UploadType.AVATAR)) {
+                    mediaEventProducer.sendAvatarUploadedEvent(media.getOwnerId(), result.url());
+                } else if (productId != null) {
+                    mediaEventProducer.sendMediaUploadedEvent(productId, result.url());
+                }
             }
 
         } catch (Exception e) {

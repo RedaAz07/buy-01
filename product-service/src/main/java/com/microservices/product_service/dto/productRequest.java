@@ -27,9 +27,6 @@ public class productRequest {
     @Positive(message = "Price must be greater than zero")
     private long price;
 
-    @NotBlank(message = "Seller ID is required")
-    private String sellerId;
-
     @PositiveOrZero(message = "Quantity must be zero or greater")
     private int quantity;
 

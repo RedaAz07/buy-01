@@ -3,6 +3,7 @@ package com.Media.service;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
+import com.Media.dto.response.ProductDeletedEvent;
 import com.Media.dto.response.UserDeletedEvent;
 import com.Media.repository.MediaRepository;
 
@@ -19,5 +20,11 @@ public class MediaEventConsumer {
     public void handleUserDeleted(UserDeletedEvent event) {
         log.info("Kafka Event Received: Deleting all media for ownerId: {}", event.userId());
         mediaRepository.deleteByOwnerId(event.userId());
+    }
+
+    @KafkaListener(topics = "product-deleted-topic", groupId = "media-service-group")
+    public void handleProductDeleted(ProductDeletedEvent event) {
+        log.info("Kafka Event Received: Deleting all media for productId: {}", event.productId());
+        mediaRepository.deleteByProductId(event.productId());
     }
 }

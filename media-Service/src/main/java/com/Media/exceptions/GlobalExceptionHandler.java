@@ -94,10 +94,10 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
-    // @ExceptionHandler(ApiException.class)
-    // public ResponseEntity<Object> handleApiException(ApiException ex) {
-    //     return buildErrorResponse(ex.getStatus(), ex.getMessage());
-    // }
+    @ExceptionHandler(ApiException.class)
+    public ResponseEntity<Object> handleApiException(ApiException ex) {
+        return buildErrorResponse(ex.getStatus(), ex.getMessage());
+    }
 
     // @ExceptionHandler(MaxUploadSizeExceededException.class)
     // public ResponseEntity<Object> handleMaxUploadSize(MaxUploadSizeExceededException ex) {

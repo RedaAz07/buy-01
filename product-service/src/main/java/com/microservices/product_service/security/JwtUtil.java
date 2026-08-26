@@ -4,7 +4,6 @@ import java.security.Key;
 import java.util.HashMap;
 import java.util.Map;
 
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +36,7 @@ public class JwtUtil {
 
         userClaims.put("username", claims.getSubject());
         userClaims.put("role", claims.get("role"));
+        userClaims.put("userId", claims.get("userId"));
 
         return userClaims;
     }

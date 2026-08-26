@@ -1,0 +1,170 @@
+/* Register Component */
+.register-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.register-card {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  background: #fff;
+}
+
+.register-header {
+  background-color: #2d5a45;
+  padding: 10px;
+  text-align: center;
+  color: #fff;
+}
+
+.register-header h2 {
+  margin: 2px 0 2px;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.register-header p {
+  margin: 0;
+  font-size: 13px;
+  opacity: 0.75;
+}
+
+.register-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 2px solid rgba(176, 228, 204, 0.4);
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.register-avatar mat-icon {
+  font-size: 28px;
+  height: 28px;
+  width: 28px;
+}
+
+.register-body {
+  padding: 10px 28px 10px;
+}
+
+.fields-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 8px;
+}
+
+.field-wrapper {
+  margin-bottom: 8px;
+}
+
+.field-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.field-label mat-icon {
+  color: #2d5a45;
+}
+
+.register-field {
+  width: 100%;
+  --mdc-outlined-text-field-container-shape: 8px;
+  --mdc-outlined-text-field-outline-color: #d1d5db;
+  --mdc-outlined-text-field-hover-outline-color: #2d5a45;
+  --mdc-outlined-text-field-focus-outline-color: #2d5a45;
+  --mat-form-field-focus-state-layer-opacity: 0;
+}
+
+.register-field mat-icon[matprefix],
+.register-field mat-icon[matPrefix] {
+  color: #2d5a45;
+  opacity: 0.7;
+  margin-right: 8px;
+}
+
+.register-field input[matinput],
+.register-field input[matInput] {
+  font-size: 14px;
+  color: #111827;
+}
+
+.pwd-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  color: #2d5a45;
+  opacity: 0.7;
+  padding: 0;
+}
+
+.pwd-toggle:hover {
+  opacity: 1;
+}
+
+button[type='submit'] {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: #74c69d;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  transition: background 0.2s, opacity 0.2s;
+}
+
+button[type='submit']:hover:not(:disabled) {
+  background: #52b788;
+}
+
+button[type='submit']:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.register-redirect {
+  text-align: center;
+  margin-top: 14px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.register-redirect a {
+  color: #2d5a45;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.register-redirect a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+  .register-card {
+    width: min(100%, 530px);
+    margin: 0 12px;
+  }
+
+  .fields-row {
+    grid-template-columns: 1fr;
+  }
+}

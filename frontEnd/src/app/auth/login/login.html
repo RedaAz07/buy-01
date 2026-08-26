@@ -1,1 +1,75 @@
-<p>login works!</p>
+<div class="login-container">
+  <div class="login-card">
+
+    <div class="login-header">
+      <div class="login-avatar">
+        <mat-icon style="color: rgb(176,228,204)">person</mat-icon>
+      </div>
+      <h2>Welcome Back</h2>
+      <p>Sign in to your account</p>
+    </div>
+
+    <div class="login-body">
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
+        <div class="field-wrapper">
+          <label class="field-label">
+            <mat-icon style="font-size:14px;height:14px;width:14px">person_outline</mat-icon>
+            Username
+          </label>
+          <div class="input-wrap">
+            <span class="input-icon">
+              <mat-icon style="font-size:18px;height:18px;width:18px">person_outline</mat-icon>
+            </span>
+            <input class="login-input" type="text" formControlName="username" placeholder="Enter username">
+          </div>
+          <span class="field-error" *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched">
+            <mat-icon style="font-size:12px;height:12px;width:12px">error_outline</mat-icon>
+            Username is required!
+          </span>
+        </div>
+
+        <div class="field-wrapper">
+          <label class="field-label">
+            <mat-icon style="font-size:14px;height:14px;width:14px">lock_outline</mat-icon>
+            Password
+          </label>
+          <div class="input-wrap">
+            <span class="input-icon">
+              <mat-icon style="font-size:18px;height:18px;width:18px">lock_outline</mat-icon>
+            </span>
+            <input class="login-input" [type]="showPassword ? 'text' : 'password'" formControlName="password"
+              placeholder="Enter password">
+            <button class="pwd-toggle" type="button" (click)="showPassword = !showPassword">
+              <mat-icon style="font-size:18px;height:18px;width:18px">
+                {{ showPassword ? 'visibility_off' : 'visibility' }}
+              </mat-icon>
+            </button>
+          </div>
+          <span class="field-error" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+            <mat-icon style="font-size:12px;height:12px;width:12px">error_outline</mat-icon>
+            Password must be at least 4 characters!
+          </span>
+        </div>
+
+        <div class="forgot-link">
+          <a href="#">Forgot password?</a>
+        </div>
+
+        <div class="error-banner" *ngIf="errorMessage">
+          <mat-icon style="font-size:16px;height:16px;width:16px">warning_amber</mat-icon>
+          {{ errorMessage }}
+        </div>
+
+        <button type="submit" [disabled]="loginForm.invalid">
+          Login
+        </button>
+        <div class="login-redirect">
+          you dont have an account? <a routerLink="/register">Sign up</a>
+        </div>
+
+      </form>
+    </div>
+
+  </div>
+</div>

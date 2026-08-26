@@ -1,9 +1,107 @@
-import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
+import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router, RouterModule } from '@angular/router';
+import { Auth } from '../../core/services/auth';
 
 @Component({
   selector: 'app-register',
-  imports: [],
+  imports: [CommonModule,
+    ReactiveFormsModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatInputModule,
+    RouterModule,],
   templateUrl: './register.html',
   styleUrl: './register.css',
 })
-export class Register {}
+export class Register {
+  registerForm: FormGroup;
+  errorMessage: string = '';
+  showPassword: boolean = false;
+  snackbar = inject(MatSnackBar);
+  fb = inject(FormBuilder);
+  authService = inject(Auth);
+  router = inject(Router);
+
+constructor() {
+  this.registerForm = this.fb.group({
+    username: [
+      '',
+      [
+        Validators.required,
+        Validators.pattern('^[a-zA-Z]+$'),
+        Validators.minLength(3),
+        Validators.maxLength(15),
+      ],
+    ],
+
+    email: [
+      '',
+      [
+        Validators.required,
+        Validators.email,
+      ],
+    ],
+
+    password: [
+      '',
+      [
+        Validators.required,
+        Validators.minLength(8),
+        Validators.maxLength(20),
+      ],
+    ],
+
+    role: [
+      '',
+      [
+        Validators.required,
+        Validators.pattern('ROLE_CLIENT|ROLE_SELLER'),
+      ],
+    ],
+  });
+}
+  get username(): AbstractControl | null {
+    return this.registerForm.get('username');
+  }
+  get email(): AbstractControl | null {
+    return this.registerForm.get('email');
+  }
+  get password(): AbstractControl | null {
+    return this.registerForm.get('password');
+  }
+
+  get role(): AbstractControl | null {
+    return this.registerForm.get('birthDate');
+  }
+
+  hasError(controlName: string, errorName: string): boolean {
+    const control = this.registerForm.get(controlName);
+    return !!control && control.hasError(errorName) && (control.touched || control.dirty);
+  }
+
+  onSubmit() {
+    if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
+      return;
+    }
+
+    const userData = this.registerForm.value;
+
+    this.authService.register(userData).subscribe({
+      next: () => {
+        this.router.navigate(['/login']);
+        this.snackbar.open('Registration successful! Please log in.', 'Close', { duration: 3000 });
+      },
+      error: (err) => {
+        const ErrorMessage = 'Registration failed. Please try again.';
+        this.snackbar.open(ErrorMessage, 'Close', { duration: 3000 });
+      },
+    });
+  }
+}

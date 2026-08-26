@@ -1,1 +1,100 @@
-<p>register works!</p>
+<div class="register-container">
+  <div class="register-card">
+    <div class="register-header">
+      <div class="register-avatar">
+        <mat-icon style="color: rgb(176, 228, 204)">person_add</mat-icon>
+      </div>
+      <h2>Create Account</h2>
+      <p>Fill in the details to register</p>
+    </div>
+
+    <div class="register-body">
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+        <div class="fields-row">
+
+
+        </div>
+
+        <div class="field-wrapper">
+          <label class="field-label">
+            <mat-icon style="font-size: 14px; height: 14px; width: 14px">person_outline</mat-icon>
+            Username
+          </label>
+          <mat-form-field appearance="outline" class="register-field">
+            <mat-icon matPrefix>person_outline</mat-icon>
+            <input matInput type="text" formControlName="username" placeholder="Enter username" />
+            <mat-error *ngIf="hasError('username', 'required')">Username is required.</mat-error>
+            <mat-error *ngIf="hasError('username', 'minlength') || hasError('username', 'maxlength')">
+              Username must be between 3 and 15 characters.
+            </mat-error>
+            <mat-error *ngIf="hasError('username', 'pattern')">
+              Username can only contain letters.
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="field-wrapper">
+          <label class="field-label">
+            <mat-icon style="font-size: 14px; height: 14px; width: 14px">email</mat-icon>
+            Email
+          </label>
+          <mat-form-field appearance="outline" class="register-field">
+            <mat-icon matPrefix>email</mat-icon>
+            <input matInput type="email" formControlName="email" placeholder="Enter email" />
+            <mat-error *ngIf="hasError('email', 'required')">Email is required.</mat-error>
+            <mat-error *ngIf="hasError('email', 'email')">Invalid email address.</mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="field-wrapper">
+          <label class="field-label">
+            <mat-icon style="font-size: 14px; height: 14px; width: 14px">cake</mat-icon>
+            Birth Date
+          </label>
+          <mat-form-field appearance="outline" class="register-field">
+            <mat-icon matPrefix>cake</mat-icon>
+            <input matInput type="date" formControlName="birthDate" />
+            <mat-error *ngIf="hasError('birthDate', 'required')">Birth date is required.</mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="field-wrapper">
+          <label class="field-label">
+            <mat-icon style="font-size: 14px; height: 14px; width: 14px">lock_outline</mat-icon>
+            Password
+          </label>
+          <mat-form-field appearance="outline" class="register-field">
+            <mat-icon matPrefix>lock_outline</mat-icon>
+            <input
+              matInput
+              [type]="showPassword ? 'text' : 'password'"
+              formControlName="password"
+              placeholder="Enter password"
+            />
+            <button
+              matSuffix
+              class="pwd-toggle"
+              type="button"
+              (click)="showPassword = !showPassword"
+              [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+            >
+              <mat-icon style="font-size: 18px; height: 18px; width: 18px">
+                {{ showPassword ? 'visibility_off' : 'visibility' }}
+              </mat-icon>
+            </button>
+            <mat-error *ngIf="hasError('password', 'required')">Password is required.</mat-error>
+            <mat-error *ngIf="hasError('password', 'minlength') || hasError('password', 'maxlength')">
+              Password must be between 8 and 20 characters.
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <button type="submit" [disabled]="registerForm.invalid">Register</button>
+
+        <div class="register-redirect">
+          Already have an account? <a routerLink="/login">Sign in</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

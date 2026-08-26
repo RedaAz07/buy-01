@@ -36,7 +36,7 @@ public class JwtUtil {
 
         userClaims.put("username", claims.getSubject());
         userClaims.put("role", claims.get("role"));
-
+        userClaims.put("userId", claims.get("userId"));
         return userClaims;
     }
 

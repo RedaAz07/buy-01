@@ -5,6 +5,7 @@ import com.user_service.mapper.UserMapper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -52,7 +53,7 @@ public class UserService {
         nUser.setPassword(passwordEncoder.encode(request.password()));
         userRepository.save(nUser);
         final UserDetails userDetails = costumUserDetails.loadUserByUsername(request.name());
-        final String jwt = jwtUtil.generateToken(userDetails);
+        final String jwt = jwtUtil.generateToken(userDetails, nUser.getId());
         return userMapper.toDto(jwt);
 
     }
@@ -61,7 +62,10 @@ public class UserService {
         auth.authenticate(
                 new UsernamePasswordAuthenticationToken(request.name(), request.password()));
         final UserDetails userDetails = costumUserDetails.loadUserByUsername(request.name());
-        final String jwt = jwtUtil.generateToken(userDetails);
+        User user = userRepository.findByName(request.name())
+                .orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
+
+        final String jwt = jwtUtil.generateToken(userDetails, user.getId());
         return userMapper.toDto(jwt);
     }
 

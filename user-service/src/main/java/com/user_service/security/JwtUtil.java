@@ -57,10 +57,13 @@ public class JwtUtil {
         return extractClaim(Token, Claims::getExpiration);
     }
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(UserDetails userDetails, String id) {
 
         Map<String, Object> claims = new HashMap<>();
 
+        claims.put(
+                "userId",
+                id);
         claims.put(
                 "role",
                 userDetails.getAuthorities()

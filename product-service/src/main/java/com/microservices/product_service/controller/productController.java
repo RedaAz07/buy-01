@@ -35,7 +35,6 @@ public class productController {
 
     @GetMapping
     public List<productRspons> GetallProduct() {
-        System.out.println("11");
         return productService.getall();
     }
 
@@ -45,7 +44,8 @@ public class productController {
     }
 
     @PutMapping("/{id}")
-    public productRspons UpdateProduct(@RequestBody @Valid productRequest productRequest, @PathVariable("id") String id) {
+    public productRspons UpdateProduct(@RequestBody @Valid productRequest productRequest,
+            @PathVariable("id") String id) {
         return productService.UpdateProduct(productRequest, id);
     }
 
@@ -54,5 +54,10 @@ public class productController {
     public void DeleteProduct(@PathVariable("id") String id) {
         productService.DeleteProduct(id);
 
+    }
+
+    @GetMapping("/test-security")
+    public String testSecurity() {
+        return "PRODUCT SERVICE SECURITY TEST";
     }
 }

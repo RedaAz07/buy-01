@@ -1,10 +1,10 @@
 # Project To-Do List
 
 - [ ] 1. Microservices Setup
-  - [ ] Create a User Service for authentication, profiles, and `CLIENT` / `SELLER` roles.
+  - [x] Create a User Service for authentication, profiles, and `CLIENT` / `SELLER` roles.
   - [x] Create a Product Service for product CRUD operations and image references.
-  - [ ] Create a Media Service for image upload/download and validation, including a 2 MB limit.
-  - [ ] Configure Kafka (optional, recommended) for `PRODUCT_CREATED` and `IMAGE_UPLOADED` events—for audit trails, cache invalidation, and thumbnail generation.
+  - [x] Create a Media Service for image upload/download and validation, including a 2 MB limit.
+  - [x] Configure Kafka (optional, recommended) for `PRODUCT_CREATED` and `IMAGE_UPLOADED` events—for audit trails, cache invalidation, and thumbnail generation.
 
 - [ ] 2. Enhanced Database Design
   - [x] Define and document the database design for each service.
@@ -17,7 +17,7 @@
     - [ ] Delegate seller avatar upload/update to the Media Service.
   - [ ] Product Service
     - [x] Implement public endpoints: `GET /products` and `GET /products/{id}`.
-    - [ ] Implement seller-only endpoints: `POST /products`, `PUT /products/{id}`, and `DELETE /products/{id}`.
+    - [x] Implement seller-only endpoints: `POST /products`, `PUT /products/{id}`, and `DELETE /products/{id}`.
     - [ ] Enforce seller ownership for product updates and deletions.
     - [ ] Associate `imageUrls[]`; upload images through Media Service before linking them to products.
   - [ ] Media Service
@@ -39,7 +39,7 @@
   - [ ] Use route guards (`AuthGuard`, `RoleGuard`), HTTP interceptors for tokens and `401`/`403` handling, Reactive Forms, and Angular Material or Bootstrap.
 
 - [ ] 5. Authentication & Authorization
-  - [ ] Use Spring Security with JWT or OAuth2 at the gateway and propagate authentication downstream.
+  - [x] Use Spring Security with JWT or OAuth2 at the gateway and propagate authentication downstream.
   - [ ] Support `CLIENT` for browsing and `SELLER` for managing owned products/media.
   - [ ] Optionally add `ADMIN` for moderation.
   - [ ] Enforce ownership checks in Product and Media services: `sellerId == auth.subject`.

@@ -9,7 +9,7 @@ services:
     container_name: mongodb_user
     restart: always
     env_file:
-      - ./user-service/.env
+      - ./Backend/user-service/.env
     ports:
       - "27017:27017"
     volumes:
@@ -20,7 +20,7 @@ services:
     container_name: mongodb_media
     restart: always
     env_file:
-      - ./media-Service/.env
+      - ./Backend/media-Service/.env
     ports:
       - "27018:27017"
     volumes:
@@ -31,7 +31,7 @@ services:
     container_name: mongodb_product  # Fixed name conflict
     restart: always
     env_file:
-      - ./product-service/.env
+      - ./Backend/product-service/.env
     ports:
       - "27019:27017"
     volumes:

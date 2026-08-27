@@ -2,8 +2,8 @@
 set -u
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-RUN_DIR="$ROOT/.run"
-LOG_DIR="$ROOT/logs"
+RUN_DIR="$ROOT/docs/.run"
+LOG_DIR="$ROOT/docs/logs"
 mkdir -p "$RUN_DIR" "$LOG_DIR"
 
 NAMES=(registry api-gateway product-service user-service media-service)
@@ -15,11 +15,11 @@ declare -A PORT=(
   [media-service]=8083
 )
 declare -A DIR=(
-  [registry]=registry
-  [api-gateway]=api-gateway
-  [product-service]=product-service
-  [user-service]=user-service
-  [media-service]=media-Service
+  [registry]=Backend/registry
+  [api-gateway]=Backend/api-gateway
+  [product-service]=Backend/product-service
+  [user-service]=Backend/user-service
+  [media-service]=Backend/media-Service
 )
 
 port_open() { timeout 1 bash -c "</dev/tcp/127.0.0.1/$1" 2>/dev/null; }
@@ -42,8 +42,8 @@ ensure_mongo() {
     echo "[mongo] container already running"
   else
     echo "[mongo] starting container..."
-    docker compose --env-file "$ROOT/product-service/.env" \
-      -f "$ROOT/product-service/docker-compose.yml" up -d
+    docker compose --env-file "$ROOT/Backend/product-service/.env" \
+      -f "$ROOT/Backend/product-service/docker-compose.yml" up -d
   fi
   if docker ps --format '{{.Names}}' | grep -qx 'mongodb_media'; then
     echo "[media-db] container already running"

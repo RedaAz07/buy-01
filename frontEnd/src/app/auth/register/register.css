@@ -1,173 +1,116 @@
-/* Register Component */
-.register-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.register-page {
+  
+  font-family: 'Inter', -apple-system, sans-serif;
   min-height: 100vh;
-  background: #f0f4f2;
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  background: var(--cream);
 }
 
-.register-card {
-  width: 100%;
-  max-width: 420px;
-  margin: 0 12px;
-  border-radius: 16px;
+.register-visual {
+  position: relative;
+  background: radial-gradient(circle at 18% 15%, var(--emerald-700), var(--emerald-950) 65%);
+  color: var(--sage-soft);
+  display: flex;
+  align-items: center;
+  padding: 64px;
   overflow: hidden;
-  box-shadow:
-    0 4px 6px rgba(9, 20, 19, 0.06),
-    0 12px 32px rgba(40, 90, 72, 0.14);
-  background: #fff;
 }
+.visual-glow { position: absolute; border-radius: 50%; filter: blur(60px); opacity: .35; }
+.visual-glow--one { width: 260px; height: 260px; background: var(--sage); top: -60px; right: -60px; }
+.visual-glow--two { width: 320px; height: 320px; background: var(--gold); bottom: -100px; left: -80px; opacity: .18; }
 
-.register-header {
-  background-color: #2d5a45;
-  padding: 2rem;
-  text-align: center;
-  color: #fff;
-}
+.visual-content { position: relative; z-index: 2; max-width: 380px; }
+.brand-mark { letter-spacing: .16em; text-transform: uppercase; font-size: 13px; color: var(--sage); font-weight: 600; }
+.visual-heading { font-family: 'Fraunces', serif; font-size: 44px; line-height: 1.1; margin: 24px 0 16px; color: #fff; font-weight: 500; }
+.visual-copy { font-size: 15px; line-height: 1.6; color: rgba(255,255,255,.72); margin-bottom: 36px; }
+.visual-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 14px; }
+.visual-list li { display: flex; align-items: center; gap: 10px; font-size: 14px; color: rgba(255,255,255,.85); }
+.visual-list .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
 
-.register-header h2 {
-  margin: 0 0 4px;
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: 0.2px;
-}
-
-.register-header p {
-  margin: 0;
-  font-size: 13px;
-  color: #b0e4cc;
-}
-
-.register-avatar {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  border: 2px solid rgba(176, 228, 204, 0.4);
-  background: rgba(176, 228, 204, 0.2);
+.register-panel {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 1rem;
+  padding: 48px 32px;
 }
 
-.register-avatar mat-icon {
-  font-size: 28px;
-  height: 28px;
-  width: 28px;
+.perforation {
+  position: absolute;
+  top: 0; left: 0;
+  transform: translateX(-50%);
+  width: 20px; height: 100%;
+  background-image: radial-gradient(circle, var(--cream) 8px, transparent 9px);
+  background-size: 20px 28px;
+  background-repeat: repeat-y;
+  z-index: 3;
 }
 
-.register-body {
-  padding: 2rem;
-}
+.register-card { width: 100%; max-width: 420px; }
 
-.field-wrapper {
-  margin-bottom: 1.25rem;
+.register-header { text-align: center; margin-bottom: 28px; }
+.register-avatar {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--sage-soft); display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 20px; color: var(--emerald-700);
 }
+.register-header h2 { font-family: 'Fraunces', serif; font-size: 28px; color: var(--ink); margin: 0 0 6px; font-weight: 500; }
+.register-header p { color: var(--ink-soft); font-size: 14px; margin: 0; }
 
+.field-wrapper { margin-bottom: 14px; }
 .field-label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: #2d5a45;
-  margin-bottom: 6px;
+  display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600;
+  color: var(--ink); margin-bottom: 8px;
 }
+.label-icon { font-size: 15px; height: 15px; width: 15px; color: var(--ink-soft); }
 
-.field-label mat-icon {
-  color: #2d5a45;
-}
-
+/* Retheme Material's outlined form field to match the custom login inputs */
 .register-field {
   width: 100%;
-  --mdc-outlined-text-field-container-shape: 8px;
-  --mdc-outlined-text-field-outline-color: #d1d5db;
-  --mdc-outlined-text-field-hover-outline-color: #2d5a45;
-  --mdc-outlined-text-field-focus-outline-color: #2d5a45;
-  --mat-form-field-focus-state-layer-opacity: 0;
+  font-family: 'Inter', sans-serif;
+  --mdc-outlined-text-field-outline-color: #e4e0d8;
+  --mdc-outlined-text-field-hover-outline-color: var(--emerald-700);
+  --mdc-outlined-text-field-focus-outline-color: var(--emerald-700);
+  --mdc-outlined-text-field-container-shape: 12px;
+  --mdc-outlined-text-field-label-text-color: var(--ink-soft);
+  --mdc-outlined-text-field-focus-label-text-color: var(--emerald-700);
+  --mdc-outlined-text-field-input-text-color: var(--ink);
+  --mdc-outlined-text-field-error-outline-color: var(--error);
+  --mat-form-field-container-vertical-padding: 12px;
 }
-
-.register-field mat-icon[matprefix],
 .register-field mat-icon[matPrefix] {
-  color: #2d5a45;
-  opacity: 0.7;
+  color: var(--ink-soft);
   margin-right: 8px;
+  font-size: 18px;
+  height: 18px;
+  width: 18px;
 }
-
-.register-field input[matinput],
-.register-field input[matInput] {
-  font-size: 14px;
-  color: #111827;
+.register-field .mat-mdc-form-field-subscript-wrapper {
+  font-size: 12px;
 }
 
 .pwd-toggle {
-  background: none;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  color: #2d5a45;
-  opacity: 0.7;
-  padding: 0;
+  background: none; border: none; cursor: pointer; color: var(--ink-soft);
+  display: flex; padding: 4px; border-radius: 8px;
 }
+.pwd-toggle:hover { color: var(--emerald-700); background: var(--sage-soft); }
+.pwd-toggle mat-icon { font-size: 18px; height: 18px; width: 18px; }
 
-.pwd-toggle:hover {
-  opacity: 1;
+.submit-btn {
+  width: 100%; padding: 14px; border-radius: var(--radius-md); border: none;
+  background: var(--emerald-800); color: #fff; font-weight: 600; font-size: 15px;
+  cursor: pointer; transition: all .15s; font-family: inherit; margin-top: 6px;
 }
+.submit-btn:hover:not(:disabled) { background: var(--emerald-950); transform: translateY(-1px); box-shadow: 0 8px 20px rgba(11,43,34,.25); }
+.submit-btn:disabled { background: #d7d2c8; color: #a29b8e; cursor: not-allowed; }
 
-button[type='submit'] {
-  width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 8px;
-  background: #2d5a45;
-  color: #fff;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  letter-spacing: 0.3px;
-  transition: background 0.2s, transform 0.1s;
-}
+.register-redirect { text-align: center; margin-top: 20px; font-size: 13px; color: var(--ink-soft); }
+.register-redirect a { color: var(--emerald-700); font-weight: 600; text-decoration: none; }
+.register-redirect a:hover { text-decoration: underline; }
 
-button[type='submit']:hover:not(:disabled) {
-  background: #408a71;
-}
-
-button[type='submit']:active:not(:disabled) {
-  transform: scale(0.98);
-}
-
-button[type='submit']:disabled {
-  background: #b0e4cc;
-  cursor: not-allowed;
-}
-
-.register-redirect {
-  text-align: center;
-  margin-top: 14px;
-  font-size: 13px;
-  color: #6b7280;
-}
-
-.register-redirect a {
-  color: #2d5a45;
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.register-redirect a:hover {
-  text-decoration: underline;
-}
-
-@media (max-width: 480px) {
-  .register-body {
-    padding: 1.5rem;
-  }
-
-  .register-header {
-    padding: 1.5rem;
-  }
+@media (max-width: 860px) {
+  .register-page { grid-template-columns: 1fr; }
+  .register-visual, .perforation { display: none; }
+  .register-panel { padding: 32px 20px; }
 }

@@ -13,7 +13,7 @@
         <div class="field-wrapper">
           <label class="field-label">
             <mat-icon style="font-size: 14px; height: 14px; width: 14px">person_outline</mat-icon>
-            Username
+            name
           </label>
           <div class="input-wrap">
             <span class="input-icon">
@@ -22,14 +22,14 @@
             <input
               class="login-input"
               type="text"
-              formControlName="username"
-              placeholder="Enter username"
+              formControlName="name"
+              placeholder="Enter name"
             />
           </div>
-          @if (loginForm.get('username')?.invalid && loginForm.get('username')?.touched) {
+          @if (loginForm.get('name')?.invalid && loginForm.get('name')?.touched) {
             <span class="field-error">
               <mat-icon style="font-size: 12px; height: 12px; width: 12px">error_outline</mat-icon>
-              Username is required!
+              name is required!
             </span>
           }
         </div>

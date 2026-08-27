@@ -13,19 +13,19 @@
         <div class="field-wrapper">
           <label class="field-label">
             <mat-icon style="font-size: 14px; height: 14px; width: 14px">person_outline</mat-icon>
-            Username
+            name
           </label>
           <mat-form-field appearance="outline" class="register-field">
             <mat-icon matPrefix>person_outline</mat-icon>
-            <input matInput type="text" formControlName="username" placeholder="Enter username" />
-            @if (hasError('username', 'required')) {
-            <mat-error>Username is required.</mat-error>
+            <input matInput type="text" formControlName="name" placeholder="Enter name" />
+            @if (hasError('name', 'required')) {
+            <mat-error>name is required.</mat-error>
             }
-            @if (hasError('username', 'minlength') || hasError('username', 'maxlength')) {
-            <mat-error> Username must be between 3 and 15 characters. </mat-error>
+            @if (hasError('name', 'minlength') || hasError('name', 'maxlength')) {
+            <mat-error> name must be between 3 and 15 characters. </mat-error>
             }
-            @if (hasError('username', 'pattern')) {
-            <mat-error> Username can only contain letters. </mat-error>
+            @if (hasError('name', 'pattern')) {
+            <mat-error> name can only contain letters. </mat-error>
             }
           </mat-form-field>
         </div>

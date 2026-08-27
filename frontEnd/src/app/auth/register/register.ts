@@ -31,7 +31,7 @@ export class Register {
 
   constructor() {
     this.registerForm = this.fb.group({
-      username: [
+      name: [
         '',
         [
           Validators.required,
@@ -48,8 +48,8 @@ export class Register {
       role: ['', [Validators.required, Validators.pattern('ROLE_CLIENT|ROLE_SELLER')]],
     });
   }
-  get username(): AbstractControl | null {
-    return this.registerForm.get('username');
+  get name(): AbstractControl | null {
+    return this.registerForm.get('name');
   }
   get email(): AbstractControl | null {
     return this.registerForm.get('email');

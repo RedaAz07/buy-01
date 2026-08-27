@@ -1,0 +1,22 @@
+<nav class="navbar">
+    <div class="navbar-brand">
+        <a routerLink="/"><span class="brand-dot"></span>buy<span class="brand-accent">01</span></a>
+    </div>
+
+    <div class="navbar-actions">
+        @if (user(); as currentUser) {
+        <span class="user-chip">
+            @if (currentUser.imageUrl) {
+            <img class="avatar-img" [src]="currentUser.imageUrl" alt="Avatar" />
+            } @else {
+            <span class="avatar">{{ currentUser.name.charAt(0).toUpperCase() }}</span>
+            }
+            <span class="username">{{ currentUser.name }}</span>
+        </span>
+        <button class="navbar-logout" (click)="logout()">Logout</button>
+        } @else {
+        <a class="btn btn-ghost" routerLink="/login">Login</a>
+        <a class="btn btn-primary" routerLink="/register">Register</a>
+        }
+    </div>
+</nav>

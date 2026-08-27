@@ -6,8 +6,8 @@
     <div class="navbar-actions">
         @if (user(); as currentUser) {
         <span class="user-chip">
-            @if (currentUser.imageUrl) {
-            <img class="avatar-img" [src]="currentUser.imageUrl" alt="Avatar" />
+            @if (currentUser.avatar) {
+            <img class="avatar-img" [src]="currentUser.avatar" alt="Avatar" />
             } @else {
             <span class="avatar">{{ currentUser.name.charAt(0).toUpperCase() }}</span>
             }

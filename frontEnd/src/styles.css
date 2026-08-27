@@ -1,20 +1,16 @@
 :root {
-  --theme-white: #ffffff;
-  --theme-ink: #091413;
-  --theme-forest: #285a48;
-  --theme-teal: #408a71;
-  --theme-mint: #b0e4cc;
-  --theme-mint10: rgba(176, 228, 204, 0.1);
-  --theme-mint20: rgba(176, 228, 204, 0.2);
-  --theme-mint40: rgba(176, 228, 204, 0.4);
-  --theme-bg: #f0f5f3;
-  --theme-card: #ffffff;
-  --theme-border: rgba(40, 90, 72, 0.15);
-  --theme-muted: #6b8f82;
-  --theme-text-soft: #2d3a35;
-  --theme-shadow: 0 2px 16px rgba(9, 20, 19, 0.08);
+  --emerald-950: #141110;
+  --emerald-800: #2a221e;
+  --emerald-700: #b87d4b;
+  --sage: #e0a96d;
+  --sage-soft: #f7ede2;
+  --gold: #c88242;
+  --cream: #f7f4ee;
+  --ink: #1c1816;
+  --ink-soft: #665b55;
+  --error: #d64545;
+  --radius-md: 12px;
 }
-
 * {
   box-sizing: border-box;
 }

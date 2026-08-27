@@ -76,12 +76,14 @@ export class Register {
     const userData = this.registerForm.value;
 
     this.authService.register(userData).subscribe({
-      next: () => {
-        this.router.navigate(['/login']);
-        this.snackbar.open('Registration successful! Please log in.', 'Close', { duration: 3000 });
+      next: (response) => {
+        localStorage.setItem('jwt_token', response.jwt);
+        this.router.navigate(['/home']);
+        this.snackbar.open('Register successful!', 'Close', { duration: 3000 });
+
       },
       error: (err) => {
-        const ErrorMessage = 'Registration failed. Please try again.';
+        const ErrorMessage = err?.error?.message || 'Registration failed. Please try again.';
         this.snackbar.open(ErrorMessage, 'Close', { duration: 3000 });
       },
     });

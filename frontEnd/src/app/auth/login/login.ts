@@ -39,12 +39,11 @@ export class Login {
     this.authService.login(credentials).subscribe({
       next: (response) => {
         localStorage.setItem('jwt_token', response.jwt);
-
         this.router.navigate(['/home']);
         this.snackbar.open('Login successful!', 'Close', { duration: 3000 });
       },
-      error: () => {
-        const ErrorMessage = 'Login failed. Please try again.';
+      error: (err) => {
+        const ErrorMessage = err?.error?.message || 'Login failed. Please try again.';
         this.snackbar.open(ErrorMessage, 'Close', { duration: 3000 });
       },
     });

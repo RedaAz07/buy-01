@@ -1,1 +1,108 @@
-<p>register works!</p>
+<div class="register-container">
+  <div class="register-card">
+    <div class="register-header">
+      <div class="register-avatar">
+        <mat-icon style="color: rgb(176, 228, 204)">person_add</mat-icon>
+      </div>
+      <h2>Create Account</h2>
+      <p>Fill in the details to register</p>
+    </div>
+
+    <div class="register-body">
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+        <div class="field-wrapper">
+          <label class="field-label">
+            <mat-icon style="font-size: 14px; height: 14px; width: 14px">person_outline</mat-icon>
+            Username
+          </label>
+          <mat-form-field appearance="outline" class="register-field">
+            <mat-icon matPrefix>person_outline</mat-icon>
+            <input matInput type="text" formControlName="username" placeholder="Enter username" />
+            @if (hasError('username', 'required')) {
+            <mat-error>Username is required.</mat-error>
+            }
+            @if (hasError('username', 'minlength') || hasError('username', 'maxlength')) {
+            <mat-error> Username must be between 3 and 15 characters. </mat-error>
+            }
+            @if (hasError('username', 'pattern')) {
+            <mat-error> Username can only contain letters. </mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <div class="field-wrapper">
+          <label class="field-label">
+            <mat-icon style="font-size: 14px; height: 14px; width: 14px">email</mat-icon>
+            Email
+          </label>
+          <mat-form-field appearance="outline" class="register-field">
+            <mat-icon matPrefix>email</mat-icon>
+            <input matInput type="email" formControlName="email" placeholder="Enter email" />
+            @if (hasError('email', 'required')) {
+            <mat-error>Email is required.</mat-error>
+            }
+            @if (hasError('email', 'email')) {
+            <mat-error>Invalid email address.</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <div class="field-wrapper">
+          <label class="field-label">
+            <mat-icon style="font-size: 14px; height: 14px; width: 14px">
+              badge
+            </mat-icon>
+            Role
+          </label>
+
+          <mat-form-field appearance="outline" class="register-field">
+            <mat-icon matPrefix>badge</mat-icon>
+
+            <mat-select formControlName="role" placeholder="Select your role">
+              <mat-option value="ROLE_CLIENT">Client</mat-option>
+              <mat-option value="ROLE_SELLER">Seller</mat-option>
+            </mat-select>
+
+            @if (hasError('role', 'required')) {
+            <mat-error>Role is required.</mat-error>
+            }
+
+            @if (hasError('role', 'pattern')) {
+            <mat-error>Please select a valid role.</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <div class="field-wrapper">
+          <label class="field-label">
+            <mat-icon style="font-size: 14px; height: 14px; width: 14px">lock_outline</mat-icon>
+            Password
+          </label>
+          <mat-form-field appearance="outline" class="register-field">
+            <mat-icon matPrefix>lock_outline</mat-icon>
+            <input matInput [type]="showPassword ? 'text' : 'password'" formControlName="password"
+              placeholder="Enter password" />
+            <button matSuffix class="pwd-toggle" type="button" (click)="showPassword = !showPassword"
+              [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'">
+              <mat-icon style="font-size: 18px; height: 18px; width: 18px">
+                {{ showPassword ? 'visibility_off' : 'visibility' }}
+              </mat-icon>
+            </button>
+            @if (hasError('password', 'required')) {
+            <mat-error>Password is required.</mat-error>
+            }
+            @if (hasError('password', 'minlength') || hasError('password', 'maxlength')) {
+            <mat-error> Password must be between 8 and 20 characters. </mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <button type="submit" [disabled]="registerForm.invalid">Register</button>
+
+        <div class="register-redirect">
+          Already have an account? <a routerLink="/login">Sign in</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

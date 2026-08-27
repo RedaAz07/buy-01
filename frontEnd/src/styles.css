@@ -1,1 +1,84 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  --theme-white: #ffffff;
+  --theme-ink: #091413;
+  --theme-forest: #285a48;
+  --theme-teal: #408a71;
+  --theme-mint: #b0e4cc;
+  --theme-mint10: rgba(176, 228, 204, 0.1);
+  --theme-mint20: rgba(176, 228, 204, 0.2);
+  --theme-mint40: rgba(176, 228, 204, 0.4);
+  --theme-bg: #f0f5f3;
+  --theme-card: #ffffff;
+  --theme-border: rgba(40, 90, 72, 0.15);
+  --theme-muted: #6b8f82;
+  --theme-text-soft: #2d3a35;
+  --theme-shadow: 0 2px 16px rgba(9, 20, 19, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  background: var(--theme-bg);
+  color: var(--theme-ink);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+app-root {
+  display: block;
+  min-height: 100vh;
+}
+
+.cdk-overlay-container .mat-mdc-menu-panel {
+  background: var(--theme-card) !important;
+  color: var(--theme-ink) !important;
+}
+
+.mat-mdc-snack-bar-container .mdc-snackbar__surface {
+  background: var(--theme-card) !important;
+  color: var(--theme-ink) !important;
+  border: 1px solid var(--theme-border);
+}
+
+.mat-mdc-snack-bar-container .mat-mdc-button {
+  color: var(--theme-teal) !important;
+}
+
+/* Smooth transition between routed auth views (e.g. Login <-> Register).
+   Uses the View Transitions API activated via withViewTransitions() in
+   app.config.ts. Keeps the switch subtle: old view fades out, new view
+   fades in with a gentle upward slide so the height change feels
+   intentional rather than a jarring hard cut. */
+::view-transition-old(root) {
+  animation: auth-out 160ms ease forwards;
+}
+
+::view-transition-new(root) {
+  animation: auth-in 200ms ease forwards;
+}
+
+@keyframes auth-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes auth-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+

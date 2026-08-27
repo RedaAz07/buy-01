@@ -1,21 +1,22 @@
-import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router, RouterModule } from '@angular/router';
 import { Auth } from '../../core/services/auth';
+import { MatSelectModule } from '@angular/material/select';
 
 @Component({
   selector: 'app-register',
-  imports: [CommonModule,
-    ReactiveFormsModule,
-    MatIconModule,
-    MatFormFieldModule,
-    MatInputModule,
-    RouterModule,],
+  imports: [ReactiveFormsModule, MatIconModule, MatFormFieldModule, MatInputModule, RouterModule, MatSelectModule],
   templateUrl: './register.html',
   styleUrl: './register.css',
 })
@@ -28,44 +29,25 @@ export class Register {
   authService = inject(Auth);
   router = inject(Router);
 
-constructor() {
-  this.registerForm = this.fb.group({
-    username: [
-      '',
-      [
-        Validators.required,
-        Validators.pattern('^[a-zA-Z]+$'),
-        Validators.minLength(3),
-        Validators.maxLength(15),
+  constructor() {
+    this.registerForm = this.fb.group({
+      username: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern('^[a-zA-Z]+$'),
+          Validators.minLength(3),
+          Validators.maxLength(15),
+        ],
       ],
-    ],
 
-    email: [
-      '',
-      [
-        Validators.required,
-        Validators.email,
-      ],
-    ],
+      email: ['', [Validators.required, Validators.email]],
 
-    password: [
-      '',
-      [
-        Validators.required,
-        Validators.minLength(8),
-        Validators.maxLength(20),
-      ],
-    ],
+      password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(20)]],
 
-    role: [
-      '',
-      [
-        Validators.required,
-        Validators.pattern('ROLE_CLIENT|ROLE_SELLER'),
-      ],
-    ],
-  });
-}
+      role: ['', [Validators.required, Validators.pattern('ROLE_CLIENT|ROLE_SELLER')]],
+    });
+  }
   get username(): AbstractControl | null {
     return this.registerForm.get('username');
   }
@@ -77,7 +59,7 @@ constructor() {
   }
 
   get role(): AbstractControl | null {
-    return this.registerForm.get('birthDate');
+    return this.registerForm.get('role');
   }
 
   hasError(controlName: string, errorName: string): boolean {

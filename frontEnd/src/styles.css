@@ -52,3 +52,33 @@ app-root {
   color: var(--theme-teal) !important;
 }
 
+/* Smooth transition between routed auth views (e.g. Login <-> Register).
+   Uses the View Transitions API activated via withViewTransitions() in
+   app.config.ts. Keeps the switch subtle: old view fades out, new view
+   fades in with a gentle upward slide so the height change feels
+   intentional rather than a jarring hard cut. */
+::view-transition-old(root) {
+  animation: auth-out 160ms ease forwards;
+}
+
+::view-transition-new(root) {
+  animation: auth-in 200ms ease forwards;
+}
+
+@keyframes auth-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes auth-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+

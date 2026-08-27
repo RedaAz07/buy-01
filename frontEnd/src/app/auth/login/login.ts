@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
@@ -8,12 +7,11 @@ import { Auth } from '../../core/services/auth';
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, ReactiveFormsModule, MatIconModule, RouterModule],
+  imports: [ReactiveFormsModule, MatIconModule, RouterModule],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
 export class Login {
-
   loginForm: FormGroup;
 
   errorMessage: string = '';
@@ -21,12 +19,10 @@ export class Login {
   showPassword: boolean = false;
 
   snackbar = inject(MatSnackBar);
- fb =  inject(FormBuilder);
+  fb = inject(FormBuilder);
   authService = inject(Auth);
   router = inject(Router);
-  constructor(
-
-  ) {
+  constructor() {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(6)]],

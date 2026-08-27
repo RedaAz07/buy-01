@@ -4,24 +4,30 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh;
+  background: #f0f4f2;
 }
 
 .register-card {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 12px;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  box-shadow:
+    0 4px 6px rgba(9, 20, 19, 0.06),
+    0 12px 32px rgba(40, 90, 72, 0.14);
   background: #fff;
 }
 
 .register-header {
   background-color: #2d5a45;
-  padding: 10px;
+  padding: 2rem;
   text-align: center;
   color: #fff;
 }
 
 .register-header h2 {
-  margin: 2px 0 2px;
+  margin: 0 0 4px;
   font-size: 22px;
   font-weight: 700;
   letter-spacing: 0.2px;
@@ -30,7 +36,7 @@
 .register-header p {
   margin: 0;
   font-size: 13px;
-  opacity: 0.75;
+  color: #b0e4cc;
 }
 
 .register-avatar {
@@ -38,11 +44,11 @@
   height: 56px;
   border-radius: 50%;
   border: 2px solid rgba(176, 228, 204, 0.4);
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(176, 228, 204, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto;
+  margin: 0 auto 1rem;
 }
 
 .register-avatar mat-icon {
@@ -52,28 +58,22 @@
 }
 
 .register-body {
-  padding: 10px 28px 10px;
-}
-
-.fields-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0 8px;
+  padding: 2rem;
 }
 
 .field-wrapper {
-  margin-bottom: 8px;
+  margin-bottom: 1.25rem;
 }
 
 .field-label {
   display: flex;
   align-items: center;
-  gap: 4px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.8px;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #374151;
+  color: #2d5a45;
   margin-bottom: 6px;
 }
 
@@ -123,21 +123,25 @@ button[type='submit'] {
   padding: 12px;
   border: none;
   border-radius: 8px;
-  background: #74c69d;
+  background: #2d5a45;
   color: #fff;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   letter-spacing: 0.3px;
-  transition: background 0.2s, opacity 0.2s;
+  transition: background 0.2s, transform 0.1s;
 }
 
 button[type='submit']:hover:not(:disabled) {
-  background: #52b788;
+  background: #408a71;
+}
+
+button[type='submit']:active:not(:disabled) {
+  transform: scale(0.98);
 }
 
 button[type='submit']:disabled {
-  opacity: 0.6;
+  background: #b0e4cc;
   cursor: not-allowed;
 }
 
@@ -159,12 +163,11 @@ button[type='submit']:disabled {
 }
 
 @media (max-width: 480px) {
-  .register-card {
-    width: min(100%, 530px);
-    margin: 0 12px;
+  .register-body {
+    padding: 1.5rem;
   }
 
-  .fields-row {
-    grid-template-columns: 1fr;
+  .register-header {
+    padding: 1.5rem;
   }
 }

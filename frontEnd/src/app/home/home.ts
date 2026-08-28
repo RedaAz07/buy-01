@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { Navbar } from '../components/navbar/navbar';
 import { HttpClient } from '@angular/common/http';
-import { Product } from '../core/models/post';
+import { Productdto } from '../core/models/post';
 import { Post } from '../components/post/post';
 
 @Component({
@@ -13,10 +13,10 @@ import { Post } from '../components/post/post';
 export class Home {
   http = inject(HttpClient);
 
-  products = signal<Array<Product>>([]);
+  products = signal<Array<Productdto>>([]);
   ngOnInit() {
     this.http
-      .get<Product[]>("http://localhost:8080/api/products")
+      .get<Productdto[]>("http://localhost:8080/api/products")
       .subscribe(products => {
         this.products.set(products);
         console.log(products);

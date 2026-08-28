@@ -1,14 +1,15 @@
 import { Component, Input } from '@angular/core';
-import { Product } from '../../core/models/post';
+import { Productdto } from '../../core/models/post';
 import { NgIf } from '@angular/common';
+import { RouterLink } from '@angular/router';
 @Component({
   selector: 'app-post',
-  imports: [NgIf],
+  imports: [NgIf,RouterLink],
   templateUrl: './post.html',
   styleUrl: './post.css',
 })
 export class Post {
-  @Input() product!: Product
+  @Input() product!: Productdto
   fixPrice(p: number) {
     if (p >= 1000000) {
       return (p / 1000000).toFixed(2) + "M";
@@ -16,5 +17,8 @@ export class Post {
       return (p / 1000).toFixed(2) + "k";
     }
     return p.toFixed(2);
+  }
+  gotoproduct(){
+    
   }
 }

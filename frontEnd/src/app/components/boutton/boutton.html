@@ -1,0 +1,89 @@
+<button class="creat" (click)="showCard = !showCard">add Product</button>
+
+<section class="creat-card" *ngIf="showCard">
+    <div class="card-inner">
+        <div class="card-header">
+            <h2>New Product</h2>
+            <button class="close-btn" (click)="showCard = false">&times;</button>
+        </div>
+
+        <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+            <div class="field-wrapper">
+                <label class="field-label">Name</label>
+                <mat-form-field appearance="outline" class="card-field">
+                    <mat-icon matPrefix>inventory_2</mat-icon>
+                    <input matInput formControlName="name" placeholder="Product name" />
+                    @if (hasError('name', 'required')) {
+                    <mat-error>Name is required.</mat-error>
+                    }
+                </mat-form-field>
+            </div>
+
+            <div class="field-wrapper">
+                <label class="field-label">Description</label>
+                <mat-form-field appearance="outline" class="card-field">
+                    <mat-icon matPrefix>description</mat-icon>
+                    <textarea matInput formControlName="description" placeholder="Product description"
+                        rows="3"></textarea>
+                    @if (hasError('description', 'required')) {
+                    <mat-error>Description is required.</mat-error>
+                    }
+                </mat-form-field>
+            </div>
+
+            <div class="field-row">
+                <div class="field-wrapper">
+                    <label class="field-label">Price</label>
+                    <mat-form-field appearance="outline" class="card-field">
+                        <mat-icon matPrefix>attach_money</mat-icon>
+                        <input matInput type="number" formControlName="price" placeholder="0.00" />
+                        @if (hasError('price', 'required')) {
+                        <mat-error>Price is required.</mat-error>
+                        }
+                        @if (hasError('price', 'min')) {
+                        <mat-error>Price must be positive.</mat-error>
+                        }
+                    </mat-form-field>
+                </div>
+
+                <div class="field-wrapper">
+                    <label class="field-label">Quantity</label>
+                    <mat-form-field appearance="outline" class="card-field">
+                        <mat-icon matPrefix>numbers</mat-icon>
+                        <input matInput type="number" formControlName="quantity" placeholder="0" />
+                        @if (hasError('quantity', 'required')) {
+                        <mat-error>Quantity is required.</mat-error>
+                        }
+                        @if (hasError('quantity', 'min')) {
+                        <mat-error>Quantity must be at least 1.</mat-error>
+                        }
+                    </mat-form-field>
+                </div>
+            </div>
+
+            <div class="field-wrapper">
+                <label class="field-label">Product Image</label>
+
+                <div class="file-input">
+                    <mat-icon>image</mat-icon>
+
+                    <input type="file" id="imageInput" accept="image/*" (change)="onFileSelected($event)">
+                </div>
+
+                @if (previewUrl) {
+                <div class="media-preview">
+                    <img class="preview-img" [src]="previewUrl" alt="Selected image" />
+                    <div class="preview-meta">
+                        <span class="preview-name">{{ selectedFile?.name }}</span>
+                        <button type="button" class="preview-remove" (click)="removeFile()">&times;</button>
+                    </div>
+                </div>
+                }
+            </div>
+
+            <button class="submit-btn" type="submit" [disabled]="productForm.invalid">
+                Create Product
+            </button>
+        </form>
+    </div>
+</section>

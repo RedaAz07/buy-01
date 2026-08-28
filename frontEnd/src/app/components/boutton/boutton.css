@@ -1,0 +1,138 @@
+.creat {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid #cacbfe;
+    color: #2563eb;
+    background-color: #ffff;
+    box-shadow: 0 1px 2px rgba(37, 99, 235, 0.3);
+}
+
+.creat-card {
+    position: fixed;
+    top: 50vh;
+    left: 50vw;
+    transform: translate(-50%, -50%);
+    width: min(90vw, 480px);
+    max-height: 90vh;
+    overflow-y: auto;
+    z-index: 9999;
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08), 0 24px 48px rgba(0, 0, 0, 0.2);
+    font-family: 'Inter', system-ui, sans-serif;
+}
+
+.card-inner {
+    padding: 24px;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.card-header h2 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #111827;
+    margin: 0;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.6rem;
+    line-height: 1;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 8px;
+    transition: all 0.15s ease;
+}
+
+.close-btn:hover {
+    color: #111827;
+    background: #f3f4f6;
+}
+
+.field-wrapper {
+    margin-bottom: 14px;
+    width: 100%;
+}
+
+.field-row {
+    display: flex;
+    gap: 14px;
+}
+
+.field-row .field-wrapper {
+    flex: 1;
+    width: 50%;
+}
+
+.field-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 8px;
+}
+
+.card-field {
+    width: 100%;
+    font-family: 'Inter', sans-serif;
+    --mdc-outlined-text-field-outline-color: #e4e0d8;
+    --mdc-outlined-text-field-hover-outline-color: #2563eb;
+    --mdc-outlined-text-field-focus-outline-color: #2563eb;
+    --mdc-outlined-text-field-container-shape: 12px;
+    --mdc-outlined-text-field-label-text-color: #6b7280;
+    --mdc-outlined-text-field-focus-label-text-color: #2563eb;
+    --mdc-outlined-text-field-input-text-color: #111827;
+    --mdc-outlined-text-field-error-outline-color: #ef4444;
+}
+
+.card-field mat-icon[matPrefix] {
+    color: #6b7280;
+    margin-right: 8px;
+    font-size: 18px;
+    height: 18px;
+    width: 18px;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 10px;
+    border: none;
+    background: #2563eb;
+    color: #fff;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-family: inherit;
+    margin-top: 6px;
+}
+
+.submit-btn:hover:not(:disabled) {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+}
+
+.submit-btn:disabled {
+    background: #d1d5db;
+    color: #9ca3af;
+    cursor: not-allowed;
+}

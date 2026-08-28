@@ -1,1 +1,16 @@
-<p>post works!</p>
+<section>
+    <div class="product">
+        <div class="image-wrapper">
+            <img class="images" [src]="product.imageUrls?.[0] || 'assets/noProducts.png'" [alt]="product.name" />
+            <span class="badge" *ngIf="product.quantity === 0">Out of stock</span>
+        </div>
+        <div class="p-4">
+            <h2 class="name">{{ product.name }}</h2>
+            <!-- <h5 class="description">{{ product.description }}</h5> -->
+            <div class="footer">
+                <p class="price">$ {{fixPrice(product.price)}} </p>
+                <p class="quantity">{{ product.quantity }} left</p>
+            </div>
+        </div>
+    </div>
+</section>

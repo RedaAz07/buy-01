@@ -1,12 +1,11 @@
-.navbar{
-    background-color: #f8f9fa;
-    padding: 1rem;
-    border-bottom: 1px solid #dee2e6;
-    align-items: center;
-    justify-content: space-between;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
+.navbar {
+    padding-bottom: 3%;
+}
+
+.continer {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 20px;
 }

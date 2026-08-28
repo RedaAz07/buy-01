@@ -1,4 +1,9 @@
 <section>
-    <app-navbar></app-navbar>
+    <app-navbar class="navbar"></app-navbar>
+    <div class="continer">
+        @for( p of products();track p.id){
+        <app-post [product]="p"></app-post>
+        }
+    </div>
 
 </section>

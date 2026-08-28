@@ -38,14 +38,14 @@
   - [ ] Add gateway rate limiting for authentication and media endpoints.
 
 - [ ] 4. Front-End Development with Angular
-  - [ ] Build sign-in and sign-up pages with role selection.
+  - [x] Build sign-in and sign-up pages with role selection.
   - [ ] Allow sellers to upload and update their avatar.
   - [ ] Build a seller dashboard to create, edit, delete, preview, and remove product images.
-  - [ ] Show form validation messages, including required fields and `price > 0`.
-  - [ ] Build a public product grid/list without search or filtering requirements.
+  - [x] Show form validation messages, including required fields and `price > 0`.
+  - [x] Build a public product grid/list without search or filtering requirements.
   - [ ] Build a dedicated media-management view for sellers' product images.
   - [ ] Validate file type and size in the UI before calling the API.
-  - [ ] Use route guards (`AuthGuard`, `RoleGuard`), HTTP interceptors for tokens and `401`/`403` handling, Reactive Forms, and Angular Material or Bootstrap.
+  - [x] Use route guards (`AuthGuard`, `RoleGuard`), HTTP interceptors for tokens and `401`/`403` handling, Reactive Forms, and Angular Material or Bootstrap.
 
 - [ ] 5. Authentication & Authorization
   - [x] Use Spring Security with JWT at the gateway and propagate authentication downstream.

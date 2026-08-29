@@ -16,13 +16,15 @@ import lombok.extern.slf4j.Slf4j;
 public class MediaEventConsumer {
     private final MediaRepository mediaRepository;
 
-    @KafkaListener(topics = "user-deleted-topic", groupId = "media-service-group")
+    @KafkaListener(topics = "user-deleted-topic", groupId = "media-service-group",
+            containerFactory = "userDeletedKafkaListenerContainerFactory")
     public void handleUserDeleted(UserDeletedEvent event) {
         log.info("Kafka Event Received: Deleting all media for ownerId: {}", event.userId());
         mediaRepository.deleteByOwnerId(event.userId());
     }
 
-    @KafkaListener(topics = "product-deleted-topic", groupId = "media-service-group")
+    @KafkaListener(topics = "product-deleted-topic", groupId = "media-service-group",
+            containerFactory = "productDeletedKafkaListenerContainerFactory")
     public void handleProductDeleted(ProductDeletedEvent event) {
         log.info("Kafka Event Received: Deleting all media for productId: {}", event.productId());
         mediaRepository.deleteByProductId(event.productId());

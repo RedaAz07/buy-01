@@ -28,9 +28,13 @@ export class Product {
     this.id.set(this.route.snapshot.paramMap.get('id'));
     this.http.get<Productdto>(`http://localhost:8080/api/products/${this.id()}`).subscribe(
       p => {
-        this.products.set(p);
 
-      }
+        this.products.set(p);
+        console.log(p);
+        
+
+      },
+      
     )
   }
   updetProduct() {

@@ -9,6 +9,9 @@
         </div>
 
         <div class="info">
+            @if(user();as currentUser ){
+            <button *ngIf="products()?.sellerId===currentUser.id" class="btn-delete" (click)="deleteProduct()">x</button>
+            }
             <h1 class="name">{{ product.name }}</h1>
             <p class="description">{{ product.description }}</p>
 
@@ -21,7 +24,12 @@
 
             <div class="actions">
                 <button class="btn-primary" [disabled]="product.quantity === 0">Add to Cart</button>
-                <button class="btn-secondary">Buy Now</button>
+                @if(user();as currentUser ){
+
+                <button *ngIf="products()?.sellerId===currentUser.id" class="btn-secondary"
+                    (click)="updetProduct()">update
+                    product</button>
+                }
             </div>
         </div>
     </div>

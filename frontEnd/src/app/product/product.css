@@ -134,6 +134,31 @@
     border: 1.5px solid #111827;
 }
 
+.btn-delete {
+    position: relative;
+    left: 90%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 3%;
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid #fecaca;
+    background: #ffffff;
+    color: #dc2626;
+
+
+}
+
+.btn-delete:hover {
+    background: #fef2f2;
+    border-color: #fca5a5;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .detail-container {

@@ -1,7 +1,7 @@
 import { NgFor, NgIf } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Productdto } from '../core/models/post';
 import { Navbar } from '../components/navbar/navbar';
 import { Auth } from '../core/services/auth';
@@ -17,7 +17,9 @@ export class Product {
   products = signal<Productdto | null>(null);
   http = inject(HttpClient)
   route = inject(ActivatedRoute)
+  router = inject(Router)
   id = signal<String | null>(null)
+  show = false
   private userService = inject(Auth);
 
   user = toSignal(this.userService.currentUser$, {
@@ -27,23 +29,42 @@ export class Product {
 
     this.id.set(this.route.snapshot.paramMap.get('id'));
     this.http.get<Productdto>(`http://localhost:8080/api/products/${this.id()}`).subscribe(
-      p => {
-
-        this.products.set(p);
-        console.log(p);
-        
-
-      },
-      
+      {
+        next: (p) => {
+          this.products.set(p);
+          console.log(p);
+        },
+        error: (e: HttpErrorResponse) => {
+          if (e.status == 404) {
+            this.router.navigate(['/home']);
+          }
+        }
+      }
     )
   }
   updetProduct() {
+    // this.http.put(`http://localhost:8080/api/products/${this.id()}`, pylode).subscribe({
+    //   next(value) {
+
+    //   },
+    //   error(err) {
+
+    //   },
+    // })
 
   }
   deleteProduct() {
     this.http.delete(`http://localhost:8080/api/products/${this.id()}`).subscribe(
-      (e) => {
-        console.log(e);
+      {
+        next: (p) => {
+          console.log(p);
+          this.router.navigate(['/home']);
+        },
+        error: (e: HttpErrorResponse) => {
+          if (e.status == 404) {
+            this.router.navigate(['/home']);
+          }
+        }
       }
     );
   }

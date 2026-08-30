@@ -1,11 +1,17 @@
-.navbar {
-    padding-bottom: 3%;
+/* ─── home.component.css ────────────────────────────────── */
+.continer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 32px;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 48px 40px 96px;
 }
 
-.continer {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    max-width: 1200px;
-    margin: 0 auto;
+@media (max-width: 640px) {
+  .continer {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 20px;
+    padding: 32px 20px 64px;
+  }
 }

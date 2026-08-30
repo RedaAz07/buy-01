@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Productdto } from '../../core/models/post';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-boutton',
@@ -23,6 +24,7 @@ export class Boutton {
     fb = inject(FormBuilder);
     http = inject(HttpClient);
     snackbar = inject(MatSnackBar);
+    router = inject(Router)
 
     constructor() {
         this.productForm = this.fb.group({
@@ -71,6 +73,7 @@ export class Boutton {
                         .subscribe({
                             next: () => {
                                 this.snackbar.open('Product created successfully!', 'Close', { duration: 3000 });
+
                             },
                             error: () => {
                                 this.snackbar.open('Product created, but image upload failed.', 'Close', { duration: 3000 });

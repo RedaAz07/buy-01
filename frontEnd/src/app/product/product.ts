@@ -89,7 +89,6 @@ export class Product {
     this.http.put(`http://localhost:8080/api/products/${this.id()}`, payload).subscribe({
       next: (value)=> {
         console.log(value);
-        this.products.set(payload as Productdto);
         this.show = false
       },
       error(err) {

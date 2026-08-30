@@ -19,9 +19,11 @@ export class Product {
   router = inject(Router);
   id = signal<String | null>(null);
   show = false;
+  i = signal(0);
   private userService = inject(Auth);
   fb = inject(FormBuilder);
   productForm: FormGroup;
+  Message = false;
 
   constructor() {
     this.productForm = this.fb.group({
@@ -31,7 +33,9 @@ export class Product {
       quantity: [0, [Validators.required, Validators.min(0)]],
     });
   }
-
+  chnge(i: number) {
+    this.i.set(i)
+  }
   lotNo(id: String | string): string {
     const clean = String(id)
       .toLowerCase()

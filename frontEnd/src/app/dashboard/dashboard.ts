@@ -1,6 +1,8 @@
 import { TitleCasePipe } from '@angular/common';
-import { Component, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { UserProfileDTO } from '../core/models/user';
+import { Auth } from '../core/services/auth';
 
 interface Product {
   id: number;
@@ -28,13 +30,14 @@ interface WeekSale {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [FormsModule,TitleCasePipe],
+  imports: [FormsModule, TitleCasePipe],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
-export class Dashboard {
-  // ===================== STATE =====================
+export class Dashboard implements OnInit {
+  private userService = inject(Auth);
 
+  user = signal<UserProfileDTO | null>(null);
   activeTab = signal<'overview' | 'products' | 'orders' | 'settings'>(
     'overview'
   );
@@ -42,15 +45,6 @@ export class Dashboard {
   toastMessage = signal('');
   showToastMessage = signal(false);
   showSaveHint = signal(false);
-
-  avatarUrl = signal<string | null>(null);
-
-  fullName = 'Amélie Rousseau';
-  shopName = 'Rousseau & Co.';
-  email = 'amelie@rousseauco.com';
-  phone = '+212 6 00 00 00 00';
-  bio =
-    'Independent maker of everyday goods — bags, home pieces, and small-batch ceramics.';
 
   // ===================== DATA =====================
 
@@ -172,6 +166,13 @@ export class Dashboard {
   };
 
   // ===================== GETTERS =====================
+  ngOnInit(): void {
+    this.userService.currentUser$.subscribe(user => {
+      this.user.set(user);
+    });
+
+  }
+
 
   get currentTabTitle() {
     return this.tabTitles[this.activeTab()].title;
@@ -182,13 +183,7 @@ export class Dashboard {
   }
 
   get initials(): string {
-    return this.fullName
-      .trim()
-      .split(/\s+/)
-      .map((word) => word[0])
-      .join('')
-      .slice(0, 2)
-      .toUpperCase();
+    return this.user()?.name || "USER"
   }
 
   get maxSales(): number {
@@ -244,7 +239,19 @@ export class Dashboard {
     const reader = new FileReader();
 
     reader.onload = () => {
-      this.avatarUrl.set(reader.result as string);
+      const avatar = reader.result as string;
+
+      this.user.update(user => {
+        if (!user) {
+          return null;
+        }
+
+        return {
+          ...user,
+          avatar,
+        };
+      });
+
       this.showToast('Profile photo updated');
     };
 
@@ -254,31 +261,17 @@ export class Dashboard {
   }
 
   removeAvatar(): void {
-    this.avatarUrl.set(null);
-    this.showToast('Profile photo removed');
+   const  user = this.user();
+    if(user?.avatar){
+      this.user.set({...user,avatar:null})
+      this.showToast('Profile photo removed');
+    }
   }
 
   // ===================== SETTINGS =====================
 
-  saveSettings(): void {
-    const fullName = this.fullName.trim();
-    const shopName = this.shopName.trim();
+  saveAvatar(): void {
 
-    if (!fullName || !shopName) {
-      this.showToast("Name and shop name can't be empty");
-      return;
-    }
-
-    this.fullName = fullName;
-    this.shopName = shopName;
-
-    this.showSaveHint.set(true);
-
-    setTimeout(() => {
-      this.showSaveHint.set(false);
-    }, 2500);
-
-    this.showToast('Profile updated');
   }
 
   // ===================== TOAST =====================

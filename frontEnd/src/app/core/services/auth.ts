@@ -24,7 +24,7 @@ export class Auth {
       this.loadCurrentUser().subscribe({
         error: (e) => {
           console.log(e);
-          
+
          // localStorage.removeItem('jwt_token');
           this.loggedInSubject.next(false);
         },
@@ -60,7 +60,8 @@ export class Auth {
 
   loadCurrentUser(): Observable<UserProfileDTO> {
     return this.http.get<UserProfileDTO>(`http://localhost:8080/api/users/me`).pipe(
-      tap((user) => {        
+      tap((user) => {
+        
         this.currentUserSubject.next(user);
       }),
     );

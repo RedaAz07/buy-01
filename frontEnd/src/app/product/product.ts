@@ -1,30 +1,27 @@
-import { NgFor, NgIf } from '@angular/common';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Productdto } from '../core/models/post';
-import { Navbar } from '../components/navbar/navbar';
 import { Auth } from '../core/services/auth';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-product',
-  imports: [NgIf, NgFor, Navbar, ReactiveFormsModule],
+  imports: [ReactiveFormsModule],
   templateUrl: './product.html',
   styleUrl: './product.css',
 })
 export class Product {
   products = signal<Productdto | null>(null);
-  http = inject(HttpClient)
-  route = inject(ActivatedRoute)
-  router = inject(Router)
-  id = signal<String | null>(null)
-  show = false
+  http = inject(HttpClient);
+  route = inject(ActivatedRoute);
+  router = inject(Router);
+  id = signal<String | null>(null);
+  show = false;
   private userService = inject(Auth);
   fb = inject(FormBuilder);
   productForm: FormGroup;
-
 
   constructor() {
     this.productForm = this.fb.group({
@@ -35,9 +32,10 @@ export class Product {
     });
   }
 
-
   lotNo(id: String | string): string {
-    const clean = String(id).toLowerCase().replace(/[^0-9a-f]/g, '');
+    const clean = String(id)
+      .toLowerCase()
+      .replace(/[^0-9a-f]/g, '');
     if (!clean) {
       return '000';
     }
@@ -46,30 +44,27 @@ export class Product {
   }
 
   user = toSignal(this.userService.currentUser$, {
-    initialValue: null
+    initialValue: null,
   });
   ngOnInit() {
-
     this.id.set(this.route.snapshot.paramMap.get('id'));
-    this.http.get<Productdto>(`http://localhost:8080/api/products/${this.id()}`).subscribe(
-      {
-        next: (p) => {
-          this.products.set(p);
-          console.log(p);
-          this.productForm.patchValue({
-            name: p.name,
-            description: p.description,
-            price: p.price,
-            quantity: p.quantity
-          });
-        },
-        error: (e: HttpErrorResponse) => {
-          if (e.status == 404) {
-            this.router.navigate(['/home']);
-          }
+    this.http.get<Productdto>(`http://localhost:8080/api/products/${this.id()}`).subscribe({
+      next: (p) => {
+        this.products.set(p);
+        console.log(p);
+        this.productForm.patchValue({
+          name: p.name,
+          description: p.description,
+          price: p.price,
+          quantity: p.quantity,
+        });
+      },
+      error: (e: HttpErrorResponse) => {
+        if (e.status == 404) {
+          this.router.navigate(['/home']);
         }
-      }
-    )
+      },
+    });
   }
   updetProduct() {
     if (this.productForm.invalid) {
@@ -84,35 +79,29 @@ export class Product {
       description: value.description,
       price: value.price,
       quantity: value.quantity,
-
     };
     this.http.put(`http://localhost:8080/api/products/${this.id()}`, payload).subscribe({
-      next: (value)=> {
+      next: (value) => {
         console.log(value);
         this.products.set(payload as Productdto);
-        this.show = false
+        this.show = false;
       },
       error(err) {
         console.log(err);
-
       },
-    })
-
+    });
   }
   deleteProduct() {
-    this.http.delete(`http://localhost:8080/api/products/${this.id()}`).subscribe(
-      {
-        next: (p) => {
-          console.log(p);
+    this.http.delete(`http://localhost:8080/api/products/${this.id()}`).subscribe({
+      next: (p) => {
+        console.log(p);
+        this.router.navigate(['/home']);
+      },
+      error: (e: HttpErrorResponse) => {
+        if (e.status == 404) {
           this.router.navigate(['/home']);
-        },
-        error: (e: HttpErrorResponse) => {
-          if (e.status == 404) {
-            this.router.navigate(['/home']);
-          }
         }
-      }
-    );
+      },
+    });
   }
-
 }

@@ -1,18 +1,20 @@
 import { Component, Input } from '@angular/core';
 import { Productdto } from '../../core/models/post';
-import { NgIf } from '@angular/common';
+
 import { RouterLink } from '@angular/router';
 @Component({
   selector: 'app-post',
-  imports: [NgIf,RouterLink],
+  imports: [RouterLink],
   templateUrl: './post.html',
   styleUrl: './post.css',
 })
 export class Post {
-  @Input() product!: Productdto
+  @Input() product!: Productdto;
 
   lotNo(): string {
-    const id = String(this.product.id).toLowerCase().replace(/[^0-9a-f]/g, '');
+    const id = String(this.product.id)
+      .toLowerCase()
+      .replace(/[^0-9a-f]/g, '');
     if (!id) {
       return '000';
     }
@@ -22,13 +24,11 @@ export class Post {
 
   fixPrice(p: number) {
     if (p >= 1000000) {
-      return (p / 1000000).toFixed(2) + "M";
+      return (p / 1000000).toFixed(2) + 'M';
     } else if (p >= 10000) {
-      return (p / 1000).toFixed(2) + "k";
+      return (p / 1000).toFixed(2) + 'k';
     }
     return p.toFixed(2);
   }
-  gotoproduct(){
-    
-  }
+  gotoproduct() {}
 }

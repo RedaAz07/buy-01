@@ -183,4 +183,9 @@
   .username {
     display: none;
   }
+
+}
+
+#click{
+  cursor: pointer;
 }

@@ -1,20 +1,26 @@
 <section>
-    <div class="product" [routerLink]="['/product', product.id]">
-        <div class="tag-top">
-            <span class="hole"></span>
-            <span class="serial">No. {{ lotNo() }}</span>
-        </div>
-        <div class="image-wrapper">
-            <img class="images" [src]="product.imageUrls[0] || 'assets/noProducts.png'" [alt]="product.name" />
-            <span class="badge" *ngIf="product.quantity === 0">Out of stock</span>
-        </div>
-        <div class="p-4">
-            <h2 class="name">{{ product.name }}</h2>
-            <!-- <h5 class="description">{{ product.description }}</h5> -->
-            <div class="footer">
-                <p class="price">$ {{fixPrice(product.price)}} </p>
-                <p class="quantity">{{ product.quantity }} left</p>
-            </div>
-        </div>
+  <div class="product" [routerLink]="['/product', product.id]">
+    <div class="tag-top">
+      <span class="hole"></span>
+      <span class="serial">No. {{ lotNo() }}</span>
     </div>
+    <div class="image-wrapper">
+      <img
+        class="images"
+        [src]="product.imageUrls[0] || 'assets/noProducts.png'"
+        [alt]="product.name"
+      />
+      @if (product.quantity === 0) {
+        <span class="badge">Out of stock</span>
+      }
+    </div>
+    <div class="p-4">
+      <h2 class="name">{{ product.name }}</h2>
+      <!-- <h5 class="description">{{ product.description }}</h5> -->
+      <div class="footer">
+        <p class="price">$ {{ fixPrice(product.price) }}</p>
+        <p class="quantity">{{ product.quantity }} left</p>
+      </div>
+    </div>
+  </div>
 </section>

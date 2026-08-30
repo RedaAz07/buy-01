@@ -18,9 +18,9 @@ export const routes: Routes = [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
       { path: 'home', component: Home, canActivate: [authGuard] },
       { path: 'product/:id', component: Product, canActivate: [authGuard] },
-      { path: 'dashboard', component: Dashboard, canActivate: [roleGuard] },
     ]
   },
+  { path: 'dashboard', component: Dashboard, canActivate: [roleGuard] },
 
   { path: '**', redirectTo: 'home' },
 ];

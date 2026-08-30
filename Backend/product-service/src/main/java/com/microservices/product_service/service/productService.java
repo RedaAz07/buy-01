@@ -40,6 +40,12 @@ public class productService {
         return getProduct(product);
     }
 
+    public List<productRspons> getMyProducts(String sellerId) {
+        List<Product> products = productRepository.findBySellerId(sellerId);
+        return products.stream().map(p -> getProduct(p)).toList();
+
+    }
+
     public List<productRspons> getall() {
         List<Product> products = productRepository.findAll();
         return products.stream().map(p -> getProduct(p)).toList();

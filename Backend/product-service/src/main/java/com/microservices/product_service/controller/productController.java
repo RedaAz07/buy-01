@@ -44,6 +44,11 @@ public class productController {
         return productService.getProduct(id);
     }
 
+    @GetMapping("/my")
+    public List<productRspons> GetMyProducts(Principal principal) {
+        return productService.getMyProducts(principal.getName());
+    }
+
     @PutMapping("/{id}")
     public productRspons UpdateProduct(@RequestBody @Valid productRequest productRequest,
             @PathVariable("id") String id, Principal principal) {
@@ -56,8 +61,4 @@ public class productController {
         productService.DeleteProduct(id, principal.getName());
     }
 
-    @GetMapping("/test-security")
-    public String testSecurity() {
-        return "PRODUCT SERVICE SECURITY TEST";
-    }
 }

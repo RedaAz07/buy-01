@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 
 import com.user_service.dto.request.LoginRequestDTO;
 import com.user_service.dto.request.RegisterRequestDTO;
+import com.user_service.dto.request.UpdateRequestDTO;
 import com.user_service.dto.response.AuthResponseDTO;
+import com.user_service.dto.response.UpdateResponseDTO;
 import com.user_service.dto.response.UserResponseDTO;
 import com.user_service.exceptions.ApiException;
 import com.user_service.model.Roles;
@@ -78,5 +80,25 @@ public class UserService {
                 user.getName(),
                 user.getEmail(),
                 user.getAvatar());
+    }
+
+    public UpdateResponseDTO updateUser(UpdateRequestDTO request, String username) {
+        User user = userRepository
+                .findByName(username)
+                .orElseThrow(() -> ApiException.notFound("User not found"));
+        if (userRepository.existsByName(request.name())) {
+            throw ApiException.badRequest("Name already exists");
+        }
+        if (userRepository.existsByEmail(request.email())) {
+            throw ApiException.badRequest("Email already exists");
+        }
+        if (request.email() != null) {
+            user.setEmail(request.email());
+        }
+        if (request.name() != null) {
+            user.setName(request.name());
+        }
+        userRepository.save(user);
+        return new UpdateResponseDTO(user.getName(), user.getEmail());
     }
 }

@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -11,15 +10,9 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-boutton',
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    MatIconModule,
-    MatFormFieldModule,
-    MatInputModule
-  ],
+  imports: [ReactiveFormsModule, MatIconModule, MatFormFieldModule, MatInputModule],
   templateUrl: './boutton.html',
-  styleUrl: './boutton.css'
+  styleUrl: './boutton.css',
 })
 export class Boutton {
   showCard = false;
@@ -50,9 +43,7 @@ export class Boutton {
   hasError(controlName: string, errorName: string): boolean {
     const control = this.productForm.get(controlName);
 
-    return !!control &&
-      control.hasError(errorName) &&
-      (control.touched || control.dirty);
+    return !!control && control.hasError(errorName) && (control.touched || control.dirty);
   }
 
   onSubmit() {
@@ -71,15 +62,10 @@ export class Boutton {
     };
 
     // Create product first
-    this.http.post<Productdto>(
-      'http://localhost:8080/api/products',
-      payload
-    ).subscribe({
+    this.http.post<Productdto>('http://localhost:8080/api/products', payload).subscribe({
       next: (product) => {
-
         // Upload images if selected
         if (this.selectedFiles.length > 0) {
-
           const formData = new FormData();
 
           // Append ALL files using the same key
@@ -88,38 +74,23 @@ export class Boutton {
           });
 
           formData.append('type', 'PRODUCT_IMAGE');
-          console.log(formData.get("media"),"---------------------------->");
-
+          console.log(formData.get('media'), '---------------------------->');
 
           this.http
-            .post(
-              `http://localhost:8080/api/media/images?productId=${product.id}`,
-              formData
-            )
+            .post(`http://localhost:8080/api/media/images?productId=${product.id}`, formData)
             .subscribe({
               next: () => {
-                this.snackbar.open(
-                  'Product created successfully!',
-                  'Close',
-                  { duration: 3000 }
-                );
+                this.snackbar.open('Product created successfully!', 'Close', { duration: 3000 });
               },
 
               error: () => {
-                this.snackbar.open(
-                  'Product created, but image upload failed.',
-                  'Close',
-                  { duration: 3000 }
-                );
+                this.snackbar.open('Product created, but image upload failed.', 'Close', {
+                  duration: 3000,
+                });
               },
             });
-
         } else {
-          this.snackbar.open(
-            'Product created successfully!',
-            'Close',
-            { duration: 3000 }
-          );
+          this.snackbar.open('Product created successfully!', 'Close', { duration: 3000 });
         }
 
         // Reset form
@@ -140,12 +111,10 @@ export class Boutton {
       },
 
       error: (err) => {
-        const msg =
-          err?.error?.message ||
-          'Failed to create product. Please try again.';
+        const msg = err?.error?.message || 'Failed to create product. Please try again.';
 
         this.snackbar.open(msg, 'Close', {
-          duration: 3000
+          duration: 3000,
         });
       },
     });
@@ -160,11 +129,9 @@ export class Boutton {
       return;
     }
 
-    this.selectedFiles = [...this.selectedFiles , ...Array.from(input.files)]
+    this.selectedFiles = [...this.selectedFiles, ...Array.from(input.files)];
 
-    this.previewUrls = this.selectedFiles.map((file) =>
-      URL.createObjectURL(file)
-    );
+    this.previewUrls = this.selectedFiles.map((file) => URL.createObjectURL(file));
   }
 
   removeFile(index: number) {

@@ -10,115 +10,167 @@ import { Productdto } from '../../core/models/post';
 import { Router } from '@angular/router';
 
 @Component({
-    selector: 'app-boutton',
-    imports: [CommonModule, ReactiveFormsModule, MatIconModule, MatFormFieldModule, MatInputModule],
-    templateUrl: './boutton.html',
-    styleUrl: './boutton.css'
+  selector: 'app-boutton',
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatInputModule
+  ],
+  templateUrl: './boutton.html',
+  styleUrl: './boutton.css'
 })
 export class Boutton {
-    showCard = false;
-    productForm: FormGroup;
-    selectedFile: File | null = null;
-    previewUrl: string | null = null;
+  showCard = false;
 
-    fb = inject(FormBuilder);
-    http = inject(HttpClient);
-    snackbar = inject(MatSnackBar);
-    router = inject(Router)
+  productForm: FormGroup;
 
-    constructor() {
-        this.productForm = this.fb.group({
-            name: ['', [Validators.required, Validators.maxLength(120)]],
-            description: ['', [Validators.required, Validators.maxLength(5000)]],
-            price: [0, [Validators.required, Validators.min(0.01)]],
-            quantity: [0, [Validators.required, Validators.min(0)]],
-            imageUrl: [''],
-        });
+  // Multiple files
+  selectedFiles: File[] = [];
+
+  // Multiple previews
+  previewUrls: string[] = [];
+
+  fb = inject(FormBuilder);
+  http = inject(HttpClient);
+  snackbar = inject(MatSnackBar);
+  router = inject(Router);
+
+  constructor() {
+    this.productForm = this.fb.group({
+      name: ['', [Validators.required, Validators.maxLength(120)]],
+      description: ['', [Validators.required, Validators.maxLength(5000)]],
+      price: [0, [Validators.required, Validators.min(0.01)]],
+      quantity: [0, [Validators.required, Validators.min(0)]],
+      imageUrl: [''],
+    });
+  }
+
+  hasError(controlName: string, errorName: string): boolean {
+    const control = this.productForm.get(controlName);
+
+    return !!control &&
+      control.hasError(errorName) &&
+      (control.touched || control.dirty);
+  }
+
+  onSubmit() {
+    if (this.productForm.invalid) {
+      this.productForm.markAllAsTouched();
+      return;
     }
-    /*
-    control.touched=> enter the inpute
-    control.dirty=>chenge the value of input
-     */
-    hasError(controlName: string, errorName: string): boolean {
-        const control = this.productForm.get(controlName);
-        return !!control && control.hasError(errorName) && (control.touched || control.dirty);
-    }
 
-    onSubmit() {
-        if (this.productForm.invalid) {
-            this.productForm.markAllAsTouched();
-            return;
-        }
+    const value = this.productForm.value;
 
-        const value = this.productForm.value;
-        const payload = {
-            name: value.name,
-            description: value.description,
-            price: value.price,
-            quantity: value.quantity,
+    const payload = {
+      name: value.name,
+      description: value.description,
+      price: value.price,
+      quantity: value.quantity,
+    };
 
-        };
+    // Create product first
+    this.http.post<Productdto>(
+      'http://localhost:8080/api/products',
+      payload
+    ).subscribe({
+      next: (product) => {
 
-        this.http.post<Productdto>('http://localhost:8080/api/products', payload).subscribe({
-            next: (product) => {
-                if (this.selectedFile) {
-                    const formData = new FormData();
-                    formData.append('media', this.selectedFile, this.selectedFile.name);
+        // Upload images if selected
+        if (this.selectedFiles.length > 0) {
 
-                    this.http
-                        .post(
-                            `http://localhost:8080/api/media/images?productId=${product.id}&type=PRODUCT_IMAGE`,
-                            formData
-                        )
-                        .subscribe({
-                            next: () => {
-                                this.snackbar.open('Product created successfully!', 'Close', { duration: 3000 });
+          const formData = new FormData();
 
-                            },
-                            error: () => {
-                                this.snackbar.open('Product created, but image upload failed.', 'Close', { duration: 3000 });
-                            },
-                        });
-                } else {
-                    this.snackbar.open('Product created successfully!', 'Close', { duration: 3000 });
-                }
+          // Append ALL files using the same key
+          this.selectedFiles.forEach((file) => {
+            formData.append('media', file, file.name);
+          });
 
-                this.showCard = false;
-                this.productForm.reset({
-                    name: '',
-                    description: '',
-                    price: 0,
-                    quantity: 0,
-                    imageUrl: '',
-                });
-                this.selectedFile = null;
-                this.previewUrl = null;
-            },
-            error: (err) => {
-                const msg = err?.error?.message || 'Failed to create product. Please try again.';
-                this.snackbar.open(msg, 'Close', { duration: 3000 });
-            },
-        });
-    }
-    onFileSelected(event: Event) {
-        const input = event.target as HTMLInputElement;
+          formData.append('type', 'PRODUCT_IMAGE');
+          console.log(formData.get("media"),"---------------------------->");
 
-        if (input.files && input.files.length > 0) {
-            this.selectedFile = input.files[0];
-            const reader = new FileReader();
-            reader.onload = () => {
-                this.previewUrl = reader.result as string;
-            };
-            reader.readAsDataURL(this.selectedFile);
+
+          this.http
+            .post(
+              `http://localhost:8080/api/media/images?productId=${product.id}`,
+              formData
+            )
+            .subscribe({
+              next: () => {
+                this.snackbar.open(
+                  'Product created successfully!',
+                  'Close',
+                  { duration: 3000 }
+                );
+              },
+
+              error: () => {
+                this.snackbar.open(
+                  'Product created, but image upload failed.',
+                  'Close',
+                  { duration: 3000 }
+                );
+              },
+            });
+
         } else {
-            this.selectedFile = null;
-            this.previewUrl = null;
+          this.snackbar.open(
+            'Product created successfully!',
+            'Close',
+            { duration: 3000 }
+          );
         }
+
+        // Reset form
+        this.showCard = false;
+
+        this.productForm.reset({
+          name: '',
+          description: '',
+          price: 0,
+          quantity: 0,
+          imageUrl: '',
+        });
+        this.selectedFiles.forEach((_, index) => {
+          URL.revokeObjectURL(this.previewUrls[index]);
+        });
+        this.selectedFiles = [];
+        this.previewUrls = [];
+      },
+
+      error: (err) => {
+        const msg =
+          err?.error?.message ||
+          'Failed to create product. Please try again.';
+
+        this.snackbar.open(msg, 'Close', {
+          duration: 3000
+        });
+      },
+    });
+  }
+
+  onFilesSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+
+    if (!input.files || input.files.length === 0) {
+      this.selectedFiles = [];
+      this.previewUrls = [];
+      return;
     }
 
-    removeFile() {
-        this.selectedFile = null;
-        this.previewUrl = null;
-        this.productForm.patchValue({ imageUrl: '' });
-    }
+    this.selectedFiles = [...this.selectedFiles , ...Array.from(input.files)]
+
+    this.previewUrls = this.selectedFiles.map((file) =>
+      URL.createObjectURL(file)
+    );
+  }
+
+  removeFile(index: number) {
+    URL.revokeObjectURL(this.previewUrls[index]);
+
+    this.selectedFiles.splice(index, 1);
+    this.previewUrls.splice(index, 1);
+  }
 }

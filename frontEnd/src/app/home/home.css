@@ -1,11 +1,11 @@
 /* ─── home.component.css ────────────────────────────────── */
 .continer {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 32px;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 34px;
   max-width: 1280px;
   margin: 0 auto;
-  padding: 48px 40px 96px;
+  padding: 44px 40px 96px;
 }
 
 @media (max-width: 640px) {

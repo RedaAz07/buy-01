@@ -1,138 +1,280 @@
+/* ─── boutton.component.css — the shopkeeper's stock-entry ─ */
 .creat {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 8px 16px;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    border: 1px solid #cacbfe;
-    color: #2563eb;
-    background-color: #ffff;
-    box-shadow: 0 1px 2px rgba(37, 99, 235, 0.3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  color: var(--paper-raised);
+  background: var(--till);
+  border: 1px solid var(--till);
+  box-shadow: 3px 3px 0 rgba(32, 40, 58, 0.25);
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    background 0.15s ease;
 }
 
+.creat:hover {
+  background: var(--till-dark);
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0 rgba(32, 40, 58, 0.25);
+}
+
+/* ── modal: a fresh ledger page ─────────────────────────── */
 .creat-card {
-    position: fixed;
-    top: 50vh;
-    left: 50vw;
-    transform: translate(-50%, -50%);
-    width: min(90vw, 480px);
-    max-height: 90vh;
-    overflow-y: auto;
-    z-index: 9999;
-    background-color: #ffffff;
-    border-radius: 16px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08), 0 24px 48px rgba(0, 0, 0, 0.2);
-    font-family: 'Inter', system-ui, sans-serif;
+  position: fixed;
+  top: 50vh;
+  left: 50vw;
+  transform: translate(-50%, -50%);
+  width: min(92vw, 520px);
+  max-height: 90vh;
+  overflow-y: auto;
+  z-index: 9999;
+  background-color: var(--kraft-soft);
+  background-image: repeating-linear-gradient(
+    to bottom,
+    var(--line) 0 1px,
+    transparent 1px 28px
+  );
+  border: 2px solid var(--ink);
+  border-radius: 3px;
+  box-shadow: 12px 12px 0 rgba(20, 25, 38, 0.25);
+  font-family: var(--font-body);
 }
 
 .card-inner {
-    padding: 24px;
+  padding: 26px 30px;
 }
 
 .card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px dashed var(--line-strong);
 }
 
 .card-header h2 {
-    font-size: 1.4rem;
-    font-weight: 800;
-    color: #111827;
-    margin: 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.4rem;
+  color: var(--ink);
+  margin: 0;
 }
 
 .close-btn {
-    background: none;
-    border: none;
-    font-size: 1.6rem;
-    line-height: 1;
-    color: #6b7280;
-    cursor: pointer;
-    padding: 4px 8px;
-    border-radius: 8px;
-    transition: all 0.15s ease;
+  background: none;
+  border: none;
+  font-family: var(--font-mono);
+  font-size: 1.15rem;
+  line-height: 1;
+  color: var(--ink-soft);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 2px;
+  transition: color 0.15s ease;
 }
 
 .close-btn:hover {
-    color: #111827;
-    background: #f3f4f6;
+  color: var(--stamp);
 }
 
+/* ── fields ─────────────────────────────────────────────── */
 .field-wrapper {
-    margin-bottom: 14px;
-    width: 100%;
+  margin-bottom: 14px;
+  width: 100%;
 }
 
 .field-row {
-    display: flex;
-    gap: 14px;
+  display: flex;
+  gap: 16px;
 }
 
 .field-row .field-wrapper {
-    flex: 1;
-    width: 50%;
+  flex: 1;
+  width: 50%;
 }
 
 .field-label {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 13px;
-    font-weight: 600;
-    color: #111827;
-    margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--brass-deep);
+  margin-bottom: 8px;
 }
 
+/* retheme Material's outlined field to the ledger's lines */
 .card-field {
-    width: 100%;
-    font-family: 'Inter', sans-serif;
-    --mdc-outlined-text-field-outline-color: #e4e0d8;
-    --mdc-outlined-text-field-hover-outline-color: #2563eb;
-    --mdc-outlined-text-field-focus-outline-color: #2563eb;
-    --mdc-outlined-text-field-container-shape: 12px;
-    --mdc-outlined-text-field-label-text-color: #6b7280;
-    --mdc-outlined-text-field-focus-label-text-color: #2563eb;
-    --mdc-outlined-text-field-input-text-color: #111827;
-    --mdc-outlined-text-field-error-outline-color: #ef4444;
+  width: 100%;
+  font-family: var(--font-body);
+  --mat-form-field-container-height: 46px;
+  --mdc-outlined-text-field-outline-color: var(--line-strong);
+  --mdc-outlined-text-field-hover-outline-color: var(--ink);
+  --mdc-outlined-text-field-focus-outline-color: var(--stamp);
+  --mdc-outlined-text-field-container-shape: 2px;
+  --mdc-outlined-text-field-label-text-color: var(--ink-soft);
+  --mdc-outlined-text-field-focus-label-text-color: var(--stamp);
+  --mdc-outlined-text-field-input-text-color: var(--ink);
+  --mdc-outlined-text-field-caret-color: var(--stamp);
+  --mdc-outlined-text-field-error-outline-color: var(--error);
+  --mdc-outlined-text-field-error-focus-outline-color: var(--error);
+  --mdc-outlined-text-field-error-hover-outline-color: var(--error);
+  --mdc-outlined-text-field-supporting-text-color: var(--error);
+}
+
+.card-field .mdc-notched-outline__notch {
+  border-right: none;
+}
+
+.card-field .mat-mdc-form-field-flex {
+  background: var(--paper-raised);
 }
 
 .card-field mat-icon[matPrefix] {
-    color: #6b7280;
-    margin-right: 8px;
-    font-size: 18px;
-    height: 18px;
-    width: 18px;
+  color: var(--brass-deep);
+  margin-right: 8px;
+  font-size: 18px;
+  height: 18px;
+  width: 18px;
 }
 
+/* ── photo ticket ───────────────────────────────────────── */
+.file-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+  border: 1.5px dashed var(--line-strong);
+  border-radius: 2px;
+  background: var(--paper-raised);
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.file-input:hover {
+  border-color: var(--ink);
+}
+
+.file-input mat-icon {
+  color: var(--brass-deep);
+}
+
+.file-input::after {
+  content: 'choose a photo (max 2 MB)';
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.file-input input[type='file'] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.media-preview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--paper-raised);
+}
+
+.preview-img {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 2px;
+  border: 1px solid var(--line-strong);
+}
+
+.preview-meta {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.preview-name {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.preview-remove {
+  border: none;
+  background: none;
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  line-height: 1;
+  color: var(--ink-soft);
+  cursor: pointer;
+  padding: 2px 6px;
+  transition: color 0.15s ease;
+}
+
+.preview-remove:hover {
+  color: var(--error);
+}
+
+/* ── the stamp that commits the entry ───────────────────── */
 .submit-btn {
-    width: 100%;
-    padding: 14px;
-    border-radius: 10px;
-    border: none;
-    background: #2563eb;
-    color: #fff;
-    font-weight: 600;
-    font-size: 15px;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    font-family: inherit;
-    margin-top: 6px;
+  width: 100%;
+  padding: 14px;
+  border-radius: 2px;
+  border: none;
+  background: var(--stamp);
+  color: var(--paper-raised);
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 0.76rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-top: 8px;
+  box-shadow: var(--stamp-shadow);
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    background 0.15s ease;
 }
 
 .submit-btn:hover:not(:disabled) {
-    background: #1d4ed8;
-    transform: translateY(-1px);
-    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+  background: var(--stamp-dark);
+  transform: translate(1px, 1px);
+  box-shadow: 3px 3px 0 rgba(32, 40, 58, 0.22);
 }
 
 .submit-btn:disabled {
-    background: #d1d5db;
-    color: #9ca3af;
-    cursor: not-allowed;
+  background: var(--line);
+  color: var(--ink-soft);
+  box-shadow: none;
+  cursor: not-allowed;
 }

@@ -1,38 +1,143 @@
-// Include theming for Angular Material with `mat.theme()`.
-// This Sass mixin will define CSS variables that are used for styling Angular Material
-// components according to the Material 3 design spec.
-// Learn more about theming and how to use it for your application's
-// custom components at https://material.angular.dev/guide/theming
+// Material 3 theme tuned to the market-hall palette.
+//
+// Angular Material's M3 system is fed a single "primary" palette, so we build a
+// seed-color -> tonal-palette generator and hand it the shop's own ink / stamp /
+// kraft families instead of a generic blue.
+
 @use '@angular/material' as mat;
+@use 'sass:color';
+@use 'sass:map';
+
+// Approximate M3 tone -> white-mix curve. Tones are numbered 0 (black) to 100
+// (white); the value is roughly what share of white Material mixes into the seed
+// colour at that tone.
+$stops: (
+  0: 0,
+  10: 2,
+  20: 6,
+  25: 10,
+  30: 16,
+  35: 24,
+  40: 34,
+  50: 52,
+  60: 70,
+  70: 84,
+  80: 92,
+  90: 96,
+  95: 98,
+  98: 99,
+  100: 100,
+);
+
+@function white-at($tone) {
+  $prev-key: 0;
+  $prev-val: 0;
+  $next-key: 100;
+  $next-val: 100;
+  @each $k, $v in $stops {
+    @if $k <= $tone {
+      $prev-key: $k;
+      $prev-val: $v;
+    }
+    @if $k >= $tone {
+      $next-key: $k;
+      $next-val: $v;
+    }
+  }
+  @if $prev-key == $next-key {
+    @return $prev-val;
+  }
+  $pos: ($tone - $prev-key) / ($next-key - $prev-key);
+  @return $prev-val + $pos * ($next-val - $prev-val);
+}
+
+@function tone($base, $tone) {
+  @if $tone == 0 {
+    @return #000000;
+  }
+  @if $tone == 100 {
+    @return #ffffff;
+  }
+  @return color.mix(#ffffff, $base, $weight: white-at($tone) * 1%);
+}
+
+@function tonal($base) {
+  $p: ();
+  @for $t from 0 through 100 {
+    $p: map.set($p, $t, tone($base, $t));
+  }
+  @return $p;
+}
+
+// A full M3 palette seeded from one colour, with overridable sub-palettes that
+// M3 pulls out of `primary` (neutrals + secondary + error).
+@function market-palette(
+  $seed,
+  $neutral: null,
+  $neutral-variant: null,
+  $secondary: null,
+  $error: null
+) {
+  $p: tonal($seed);
+  @if $neutral {
+    $p: map.set($p, neutral, tonal($neutral));
+  }
+  @if $neutral-variant {
+    $p: map.set($p, neutral-variant, tonal($neutral-variant));
+  }
+  @if $secondary {
+    $p: map.set($p, secondary, tonal($secondary));
+  }
+  @if $error {
+    $p: map.set($p, error, tonal($error));
+  }
+  @return $p;
+}
+
+// ink:        stamp-navy (structure, controls)
+// neutral:    warm paper, so surfaces land on the ticket-paper tone
+// secondary:  brass (metadata / support)
+// error:      stamp red, the same colour that prices are printed in
+$primary-palette: market-palette(
+  #28324c,
+  $neutral: #b7a986,
+  $neutral-variant: #a7966f,
+  $secondary: #8f7a3c,
+  $error: #b23a2e
+);
+
+// tertiary:   stamp red — brand accents without flooding the whole UI
+$tertiary-palette: tonal(#b23a2e);
 
 html {
   height: 100%;
+
   @include mat.theme(
     (
       color: (
-        primary: mat.$azure-palette,
-        tertiary: mat.$blue-palette,
+        primary: $primary-palette,
+        tertiary: $tertiary-palette,
+        theme-type: light,
       ),
-      typography: Roboto,
+      typography: (
+        plain-family: ('Archivo', 'Helvetica Neue', sans-serif),
+        brand-family: ('Fraunces', Georgia, serif),
+        regular-weight: 400,
+        medium-weight: 500,
+        bold-weight: 600,
+      ),
       density: 0,
     )
   );
 }
 
 body {
-  // Default the application to a light color theme. This can be changed to
-  // `dark` to enable the dark color theme, or to `light dark` to defer to the
-  // user's system settings.
   color-scheme: light;
 
-  // Set a default background, font and text colors for the application using
-  // Angular Material's system-level CSS variables. Learn more about these
-  // variables at https://material.angular.dev/guide/system-variables
   background-color: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
   font: var(--mat-sys-body-medium);
 
-  // Reset the user agent margin.
   margin: 0;
   height: 100%;
 }

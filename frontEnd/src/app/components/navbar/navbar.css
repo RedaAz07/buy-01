@@ -1,4 +1,4 @@
-/* ─── navbar.component.css ──────────────────────────────── */
+/* ─── navbar.component.css — the market-hall stall front ─── */
 .navbar {
   position: sticky;
   top: 0;
@@ -6,16 +6,33 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 40px;
+  gap: 24px;
+  padding: 16px 40px;
   background: var(--paper-raised);
-  border-bottom: 1px dashed var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+/* bunting-style awning stripe along the top edge */
+.navbar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--stamp) 0 34px,
+    transparent 34px 44px
+  );
+  border-bottom: 1px solid var(--paper-dark);
 }
 
 .navbar-brand a {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-family: 'Fraunces', serif;
+  gap: 10px;
+  font-family: var(--font-display);
   font-weight: 700;
   font-size: 1.3rem;
   color: var(--ink);
@@ -23,15 +40,29 @@
   letter-spacing: -0.01em;
 }
 
+/* the brand wears its own punched hole, echoing the product tags */
 .brand-dot {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  background: var(--gold);
+  background: var(--paper);
+  box-shadow: inset 0 0 0 1.5px var(--line-strong);
+  flex: none;
 }
 
+/* "01" rubber-stamped in stamp red */
 .brand-accent {
-  color: var(--forest);
+  display: inline-block;
+  padding: 1px 7px;
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--paper-raised);
+  background: var(--stamp);
+  border-radius: 2px;
+  transform: rotate(-2deg);
+  box-shadow: 2px 2px 0 rgba(32, 40, 58, 0.25);
 }
 
 .navbar-actions {
@@ -40,13 +71,14 @@
   gap: 14px;
 }
 
+/* signed-in seller chip reads as a price ticket */
 .user-chip {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 6px 14px 6px 6px;
-  border: 1px solid var(--line);
-  border-radius: 24px;
+  padding: 5px 14px 5px 5px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 3px;
   background: var(--paper);
 }
 
@@ -62,45 +94,59 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--forest);
-  color: var(--paper);
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.8rem;
+  background: var(--till);
+  color: var(--paper-raised);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
   font-weight: 600;
 }
 
 .username {
-  font-size: 0.88rem;
+  font-size: 0.85rem;
   font-weight: 500;
   color: var(--ink);
 }
 
+/* stamped-bordered logout */
 .navbar-logout {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.85rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
   font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   background: none;
-  border: 1px solid var(--line);
+  border: 1px solid var(--line-strong);
   color: var(--ink-soft);
   padding: 9px 16px;
   border-radius: 2px;
   cursor: pointer;
-  transition: border-color 0.15s ease, color 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    color 0.15s ease;
 }
 
 .navbar-logout:hover {
-  border-color: var(--brick);
-  color: var(--brick);
+  border-color: var(--stamp);
+  color: var(--stamp);
 }
 
+/* shared mono login/register buttons */
 .btn {
-  font-size: 0.88rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
   font-weight: 600;
-  padding: 10px 20px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 10px 18px;
   border-radius: 2px;
   text-decoration: none;
   border: 1px solid transparent;
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.1s ease,
+    box-shadow 0.1s ease;
 }
 
 .btn-ghost {
@@ -110,14 +156,31 @@
 
 .btn-ghost:hover {
   background: var(--ink);
-  color: var(--paper);
+  color: var(--paper-raised);
 }
 
 .btn-primary {
-  background: var(--forest);
-  color: var(--paper);
+  background: var(--stamp);
+  color: var(--paper-raised);
+  box-shadow: var(--stamp-shadow);
 }
 
 .btn-primary:hover {
-  background: var(--forest-dark);
+  background: var(--stamp-dark);
+  transform: translate(1px, 1px);
+  box-shadow: 3px 3px 0 rgba(32, 40, 58, 0.22);
+}
+
+@media (max-width: 640px) {
+  .navbar {
+    padding: 14px 18px;
+  }
+
+  .navbar-brand a {
+    font-size: 1.15rem;
+  }
+
+  .username {
+    display: none;
+  }
 }

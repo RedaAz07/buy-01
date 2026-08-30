@@ -1,16 +1,67 @@
+/* ────────────────────────────────────────────────────────────
+   Buy-01 market-hall tokens — the single source of truth.
+   Everything below is global and inherited by every component;
+   component styles only refer to these variables.
+   ──────────────────────────────────────────────────────────── */
 :root {
-  --emerald-950: #141110;
-  --emerald-800: #2a221e;
-  --emerald-700: #b87d4b;
-  --sage: #e0a96d;
-  --sage-soft: #f7ede2;
-  --gold: #c88242;
-  --cream: #f7f4ee;
-  --ink: #1c1816;
-  --ink-soft: #665b55;
-  --error: #d64545;
-  --radius-md: 12px;
+  /* ── Palette ─────────────────────────────────────────── */
+  --paper: #f4efe5;         /* stock-ticket paper — page & card bases */
+  --paper-raised: #fbf8f1;  /* raised paper — tags, chips, field fills */
+  --paper-dark: #e7dcc6;    /* worn paper for recessed wells */
+
+  --ink: #20283a;           /* stamp-navy — text, structure */
+  --ink-soft: #5b6275;      /* secondary text */
+
+  --stamp: #b23a2e;         /* the loud one — prices, serials, primary */
+  --stamp-dark: #8e2b22;
+  --stamp-soft: #f3e0dc;    /* stamp wash for error/sold tints */
+
+  --kraft: #a9805b;         /* tag strings, secondary surfaces */
+  --kraft-soft: #e9dfc9;    /* ledger sheet — form/detail backgrounds */
+
+  --till: #3e5e4a;          /* till-green — stock, money, success */
+  --till-dark: #2f4a3a;
+  --till-soft: #dde6dc;
+
+  --brass: #8f7a3c;         /* metadata, ghost labels */
+  --brass-deep: #6e5c30;    /* brass dark enough to read on kraft */
+  --brass-soft: #e6ddc3;
+
+  --line: #d9cfba;          /* hairlines */
+  --line-strong: #c2b493;   /* readable rules, perf edges */
+  --error: #a63a2e;
+
+  /* ── Type ────────────────────────────────────────────── */
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'Archivo', 'Helvetica Neue', Helvetica, sans-serif;
+  --font-mono: 'IBM Plex Mono', Menlo, Consolas, monospace;
+
+  /* ── Shape / shadow ──────────────────────────────────── */
+  --radius-sm: 2px;
+  --radius-md: 3px;
+  --stamp-shadow: 4px 4px 0 rgba(32, 40, 58, 0.22);
+
+  /* ── Theme aliases used by shared overlays ───────────── */
+  --theme-bg: var(--paper);
+  --theme-ink: var(--ink);
+  --theme-card: var(--paper-raised);
+  --theme-border: var(--line);
+  --theme-teal: var(--stamp);
+
+  /* ── Legacy aliases (login / register pages) ─────────── */
+  --cream: var(--paper);
+  --sage: var(--brass);
+  --sage-soft: var(--paper-raised);
+  --emerald-700: var(--ink);
+  --emerald-800: var(--ink);
+  --emerald-950: #141926;
+  --gold: var(--brass);
+  --brick: var(--stamp);
+  --forest: var(--till);
+  --forest-dark: var(--till-dark);
+  --radius-md-legacy: 3px;
 }
+
 * {
   box-sizing: border-box;
 }
@@ -23,6 +74,8 @@ body {
 body {
   background: var(--theme-bg);
   color: var(--theme-ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
   transition:
     background-color 0.2s ease,
     color 0.2s ease;
@@ -33,15 +86,30 @@ app-root {
   min-height: 100vh;
 }
 
+::selection {
+  background: var(--stamp);
+  color: var(--paper-raised);
+}
+
+:focus-visible {
+  outline: 2px solid var(--stamp);
+  outline-offset: 2px;
+}
+
+/* ── Shared Material overlays (menu, snackbar) ─────────── */
 .cdk-overlay-container .mat-mdc-menu-panel {
   background: var(--theme-card) !important;
   color: var(--theme-ink) !important;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
 }
 
 .mat-mdc-snack-bar-container .mdc-snackbar__surface {
   background: var(--theme-card) !important;
   color: var(--theme-ink) !important;
-  border: 1px solid var(--theme-border);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--stamp-shadow);
 }
 
 .mat-mdc-snack-bar-container .mat-mdc-button {
@@ -77,4 +145,3 @@ app-root {
     transform: translateY(0);
   }
 }
-

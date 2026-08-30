@@ -1,28 +1,16 @@
-/* ─── Fonts ───────────────────────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap');
-
+/* ─── product.component.css — a tag propped on the ledger ─ */
 :host {
-  --paper: #f7f4ec;
-  --paper-raised: #ffffff;
-  --ink: #2a2420;
-  --ink-soft: #746a5e;
-  --forest: #2f4a3e;
-  --forest-dark: #1f3329;
-  --gold: #b98a2e;
-  --brick: #9c4a34;
-  --line: #ded6c4;
-
   display: block;
+  min-height: 100vh;
   background: var(--paper);
   color: var(--ink);
-  font-family: 'Inter', sans-serif;
-  min-height: 100vh;
+  font-family: var(--font-body);
 }
 
 .product-detail {
   max-width: 1120px;
   margin: 0 auto;
-  padding: 48px 24px 96px;
+  padding: 40px 24px 96px;
 }
 
 /* ─── Layout ──────────────────────────────────────────── */
@@ -36,14 +24,15 @@
 @media (max-width: 800px) {
   .detail-container {
     grid-template-columns: 1fr;
-    gap: 32px;
+    gap: 36px;
   }
 }
 
-/* ─── Gallery ─────────────────────────────────────────── */
+/* ─── Gallery — the tagged photograph ─────────────────── */
 .gallery {
   display: flex;
-  gap: 16px;
+  gap: 14px;
+  align-items: flex-start;
 }
 
 .main-image {
@@ -51,94 +40,198 @@
   aspect-ratio: 1 / 1;
   width: 100%;
   object-fit: cover;
-  background: var(--paper-raised);
+  background: var(--kraft-soft);
   border: 1px solid var(--line);
-  border-radius: 2px;
+  border-radius: 3px;
+  box-shadow: 8px 8px 0 rgba(32, 40, 58, 0.08);
 }
 
 .thumbnails {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  width: 64px;
+  width: 60px;
 }
 
 .thumb {
-  width: 64px;
-  height: 64px;
+  width: 60px;
+  height: 60px;
   object-fit: cover;
   border: 1px solid var(--line);
   border-radius: 2px;
   cursor: pointer;
-  opacity: 0.65;
-  transition: opacity 0.15s ease, border-color 0.15s ease;
+  opacity: 0.7;
+  transition:
+    opacity 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .thumb:hover {
   opacity: 1;
-  border-color: var(--gold);
+  border-color: var(--brass);
 }
 
-/* ─── Info column ─────────────────────────────────────── */
+/* ─── Info column — the ledger sheet the tag is propped on */
 .info {
   position: relative;
-  padding-top: 8px;
+  padding: 30px;
+  background-color: var(--kraft-soft);
+  background-image: repeating-linear-gradient(
+    to bottom,
+    var(--line) 0 1px,
+    transparent 1px 28px
+  );
+  border: 1px solid var(--line-strong);
+  border-radius: 3px;
+  box-shadow: 8px 8px 0 rgba(32, 40, 58, 0.08);
+}
+
+/* the ledger's red margin rule */
+.info::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 22px;
+  width: 1px;
+  background: var(--stamp);
+  opacity: 0.35;
+}
+
+/* ── punched tag-top ──────────────────────────────────── */
+.tag-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed var(--line-strong);
+}
+
+.hole {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--paper);
+  box-shadow:
+    inset 0 0 0 1.5px var(--line-strong),
+    0 0 0 1px var(--paper);
+  flex: none;
+}
+
+.serial {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--stamp);
+}
+
+.serial::before {
+  content: 'lot ';
+  color: var(--brass-deep);
+  letter-spacing: 0.18em;
+  margin-right: 4px;
+}
+
+.title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 16px;
 }
 
 .name {
-  font-family: 'Fraunces', serif;
+  font-family: var(--font-display);
   font-weight: 600;
-  font-size: 2.4rem;
-  line-height: 1.1;
+  font-size: 2.2rem;
+  line-height: 1.05;
   letter-spacing: -0.01em;
-  margin: 0 0 12px;
+  margin: 0;
 }
 
 .description {
   color: var(--ink-soft);
   font-size: 0.98rem;
   line-height: 1.6;
-  margin: 0 0 28px;
+  margin: 10px 0 26px;
   max-width: 46ch;
 }
 
-/* Price + stock styled like a hangtag ticket */
+.owner-actions {
+  display: flex;
+  gap: 8px;
+  flex: none;
+}
+
+.btn-delete,
+.btn-edit {
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+  border: 1px solid var(--line-strong);
+  background: var(--paper-raised);
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    color 0.15s ease,
+    background 0.15s ease;
+}
+
+.btn-edit:hover {
+  border-color: var(--till);
+  color: var(--till);
+}
+
+.btn-delete:hover {
+  border-color: var(--stamp);
+  color: var(--stamp);
+  background: var(--stamp-soft);
+}
+
+/* ── Price + stock — written-in like a stock entry ─────── */
 .price-row {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 16px 20px;
-  background: var(--paper-raised);
-  border: 1px dashed var(--line);
-  border-radius: 3px;
-  margin-bottom: 28px;
-  width: fit-content;
+  gap: 14px;
+  padding: 12px 0;
+  border-top: 1px dashed var(--line-strong);
+  border-bottom: 1px dashed var(--line-strong);
+  margin-bottom: 24px;
 }
 
 .price {
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: var(--font-mono);
   font-weight: 600;
-  font-size: 1.6rem;
-  color: var(--gold);
+  font-size: 1.5rem;
+  color: var(--stamp);
 }
 
 .stock {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.78rem;
-  letter-spacing: 0.03em;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--forest);
+  color: var(--till);
   padding: 4px 10px;
-  border: 1px solid var(--forest);
+  border: 1px solid var(--till);
   border-radius: 20px;
 }
 
 .stock.out {
-  color: var(--brick);
-  border-color: var(--brick);
+  color: var(--stamp);
+  border-color: var(--stamp);
 }
 
-/* ─── Actions ─────────────────────────────────────────── */
+/* ─── Actions — stamped pushes ─────────────────────────── */
 .actions {
   display: flex;
   gap: 12px;
@@ -148,29 +241,40 @@
 .btn-primary,
 .btn-secondary,
 .submit-btn {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-mono);
   font-weight: 600;
-  font-size: 0.92rem;
-  padding: 13px 28px;
+  font-size: 0.76rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 13px 26px;
   border-radius: 2px;
   border: 1px solid transparent;
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.1s ease,
+    box-shadow 0.1s ease;
 }
 
 .btn-primary {
-  background: var(--forest);
-  color: var(--paper);
+  background: var(--stamp);
+  color: var(--paper-raised);
+  box-shadow: var(--stamp-shadow);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: var(--forest-dark);
+  background: var(--stamp-dark);
+  transform: translate(1px, 1px);
+  box-shadow: 3px 3px 0 rgba(32, 40, 58, 0.22);
 }
 
 .btn-primary:disabled {
   background: var(--line);
   color: var(--ink-soft);
   cursor: not-allowed;
+  box-shadow: none;
 }
 
 .btn-secondary {
@@ -181,32 +285,15 @@
 
 .btn-secondary:hover {
   background: var(--ink);
-  color: var(--paper);
+  color: var(--paper-raised);
 }
 
-.btn-delete {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  border: 1px solid var(--line);
-  background: var(--paper-raised);
-  color: var(--ink-soft);
-  cursor: pointer;
-  margin-left: 8px;
-  margin-bottom: 12px;
-  transition: border-color 0.15s ease, color 0.15s ease;
-}
-
-.btn-delete:hover {
-  border-color: var(--brick);
-  color: var(--brick);
-}
-
-/* ─── Update card (modal) ─────────────────────────────── */
+/* ─── Update card — a fresh ledger page in the modal ────── */
 .update-card {
   position: fixed;
   inset: 0;
-  background: rgba(42, 36, 32, 0.45);
+  background: rgba(32, 40, 58, 0.55);
+  backdrop-filter: blur(2px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -215,40 +302,51 @@
 }
 
 .card-inner {
-  background: var(--paper-raised);
-  border: 1px dashed var(--line);
-  border-radius: 4px;
+  background-color: var(--kraft-soft);
+  background-image: repeating-linear-gradient(
+    to bottom,
+    var(--line) 0 1px,
+    transparent 1px 28px
+  );
+  border: 2px solid var(--ink);
+  border-radius: 3px;
   width: 100%;
   max-width: 460px;
-  padding: 32px;
-  box-shadow: 0 20px 60px rgba(42, 36, 32, 0.2);
+  padding: 28px 30px;
+  box-shadow: 10px 10px 0 rgba(20, 25, 38, 0.25);
 }
 
 .card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 24px;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed var(--line-strong);
 }
 
 .card-header h2 {
-  font-family: 'Fraunces', serif;
+  font-family: var(--font-display);
   font-weight: 600;
-  font-size: 1.4rem;
+  font-size: 1.35rem;
   margin: 0;
+  color: var(--ink);
 }
 
 .close-btn {
   background: none;
   border: none;
-  font-size: 1.4rem;
+  font-family: var(--font-mono);
+  font-size: 1.15rem;
   line-height: 1;
   color: var(--ink-soft);
   cursor: pointer;
+  padding: 4px 8px;
+  transition: color 0.15s ease;
 }
 
 .close-btn:hover {
-  color: var(--brick);
+  color: var(--stamp);
 }
 
 .field-wrapper {
@@ -258,7 +356,8 @@
   margin-bottom: 18px;
   flex: 1;
 }
-.field-wrapper1{
+
+.field-wrapper1 {
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -266,44 +365,57 @@
   flex: 1;
   width: 50%;
 }
+
 .field-label {
-  font-size: 0.78rem;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
   font-weight: 600;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--ink-soft);
+  color: var(--brass-deep);
 }
 
 .field-row {
   display: flex;
   gap: 16px;
-  
 }
 
 input,
 textarea {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-body);
   font-size: 0.95rem;
   padding: 11px 14px;
-  border: 1px solid var(--line);
+  border: 1.5px solid var(--line-strong);
   border-radius: 2px;
-  background: var(--paper);
+  background: var(--paper-raised);
   color: var(--ink);
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--line-strong);
 }
 
 input:focus,
 textarea:focus {
   outline: none;
-  border-color: var(--forest);
+  border-color: var(--ink);
+  box-shadow: 0 0 0 3px rgba(143, 122, 60, 0.18);
 }
 
 .submit-btn {
   width: 100%;
-  background: var(--forest);
-  color: var(--paper);
+  background: var(--stamp);
+  color: var(--paper-raised);
   margin-top: 8px;
+  box-shadow: var(--stamp-shadow);
 }
 
 .submit-btn:hover {
-  background: var(--forest-dark);
+  background: var(--stamp-dark);
+  transform: translate(1px, 1px);
+  box-shadow: 3px 3px 0 rgba(32, 40, 58, 0.22);
 }

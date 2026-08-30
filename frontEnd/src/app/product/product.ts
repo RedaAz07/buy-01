@@ -21,6 +21,14 @@ export class Product {
   id = signal<String | null>(null)
   show = false
   private userService = inject(Auth);
+  lotNo(id: String | string): string {
+    const clean = String(id).toLowerCase().replace(/[^0-9a-f]/g, '');
+    if (!clean) {
+      return '000';
+    }
+    const n = parseInt(clean.slice(-6), 16);
+    return String(isNaN(n) ? 1 : n % 1000).padStart(3, '0');
+  }
 
   user = toSignal(this.userService.currentUser$, {
     initialValue: null

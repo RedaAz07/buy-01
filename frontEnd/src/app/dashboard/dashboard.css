@@ -206,10 +206,75 @@ ul { list-style: none; margin: 0; padding: 0; }
 
 .avatar-actions { flex: 1; }
 .avatar-btn-row { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
-.avatar-hint { font-size: 12px; color: var(--ink-soft); margin: 0 0 14px; }
+.avatar-hint { font-size: 12px; color: var(--ink-soft); margin: 0; }
 
-.avatar-form-actions { display: flex; align-items: center; gap: 14px; }
+/* ---- Buttons ---- */
+.btn-primary-sm {
+  border: none; background: var(--emerald-800); color: #fff; font-size: 13.5px; font-weight: 600;
+  padding: 11px 18px; border-radius: var(--radius-md); transition: background .15s, transform .15s;
+  white-space: nowrap;
+}
+.btn-primary-sm:hover:not(:disabled) { background: var(--emerald-950); transform: translateY(-1px); }
+.btn-primary-sm:disabled { background: #d7d2c8; color: #a29b8e; cursor: not-allowed; transform: none; }
 
+.btn-secondary-sm {
+  border: 1.5px solid var(--emerald-700); background: none; color: var(--emerald-700);
+  font-size: 13.5px; font-weight: 600; padding: 10px 16px; border-radius: var(--radius-md);
+  transition: background .15s;
+}
+.btn-secondary-sm:hover { background: var(--sage-soft); }
+
+.btn-text {
+  border: none; background: none; color: var(--ink-soft); font-size: 13px; font-weight: 600;
+  padding: 6px 4px; text-decoration: underline;
+}
+.btn-text:hover { color: var(--error); }
+
+/* ---- Settings form ---- */
+.settings-form { display: flex; flex-direction: column; gap: 18px; }
+.form-row { display: flex; gap: 16px; }
+.form-field { flex: 1; display: flex; flex-direction: column; }
+.form-field label {
+  display: block; font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 7px;
+}
+
+/* shared by editable inputs AND the read-only role span */
+.inputs {
+  width: 100%; border: 1.5px solid var(--border); border-radius: var(--radius-md);
+  padding: 12px 14px; font-size: 14px; font-family: inherit; color: var(--ink);
+  background: var(--white); box-sizing: border-box;
+  transition: border-color .15s, box-shadow .15s;
+}
+input.inputs:focus {
+  outline: none; border-color: var(--emerald-700); box-shadow: 0 0 0 4px var(--sage-soft);
+}
+input.inputs.ng-invalid.ng-touched {
+  border-color: var(--error);
+}
+input.inputs.ng-invalid.ng-touched:focus {
+  box-shadow: 0 0 0 4px rgba(214, 69, 69, 0.12);
+}
+
+/* read-only role field */
+span.inputs.role {
+  display: inline-flex; align-items: center;
+  width: auto; min-width: 120px;
+  background: var(--sage-soft); border-color: var(--sage-soft);
+  color: var(--emerald-700); font-weight: 600; font-size: 13px;
+  text-transform: capitalize; cursor: default;
+}
+
+.error {
+  display: block; font-size: 12px; color: var(--error); margin-top: 6px; font-weight: 500;
+}
+
+.form-actions { display: flex; align-items: center; gap: 14px; margin-top: 4px; }
+.save-hint { font-size: 12.5px; color: var(--success); font-weight: 600; }
+
+@media (max-width: 760px) {
+  .avatar-editor { flex-direction: column; text-align: center; }
+  .form-row { flex-direction: column; gap: 18px; }
+}
 /* ---- Buttons (unchanged, kept for reference) ---- */
 .btn-primary-sm {
   border: none; background: var(--emerald-800); color: #fff; font-size: 13.5px; font-weight: 600;

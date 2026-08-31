@@ -2,6 +2,8 @@ package com.user_service.service;
 
 import com.user_service.mapper.UserMapper;
 
+import java.util.Objects;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -86,11 +88,14 @@ public class UserService {
         User user = userRepository
                 .findByName(username)
                 .orElseThrow(() -> ApiException.notFound("User not found"));
-        if (!user.getEmail().equals(request.email()) && userRepository.existsByName(request.name())) {
-            throw ApiException.badRequest("Name already exists");
-        }
-        if (!user.getName().equals(request.name()) &&   userRepository.existsByEmail(request.email())) {
+        if (!Objects.equals(user.getEmail(), request.email())
+                && userRepository.existsByEmail(request.email())) {
             throw ApiException.badRequest("Email already exists");
+        }
+
+        if (!Objects.equals(user.getName(), request.name())
+                && userRepository.existsByName(request.name())) {
+            throw ApiException.badRequest("Name already exists");
         }
         if (request.email() != null) {
             user.setEmail(request.email());

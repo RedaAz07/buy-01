@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class Media {
-  private apiUrl = 'http://localhost:8080/media/images';
+  private apiUrl = 'http://localhost:8080/api/media/images';
   private http = inject(HttpClient);
   private router = inject(Router);
   setAvatar(

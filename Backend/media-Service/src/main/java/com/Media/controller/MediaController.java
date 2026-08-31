@@ -31,6 +31,7 @@ public class MediaController {
             @RequestPart("media") List<MultipartFile> media,
             @RequestParam(required = false) String productId,
             @RequestParam UploadType type, Principal principal) {
+                System.err.println("-----------------------------------------");
         Map<String, String> response = mediaService.create(media, productId, type, principal.getName());
         return ResponseEntity.ok(response);
     }

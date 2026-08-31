@@ -1,19 +1,15 @@
 import { TitleCasePipe } from '@angular/common';
-import { Component, inject, Input, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UpdateRequest, UserProfileDTO } from '../core/models/user';
 import { Auth } from '../core/services/auth';
 import { Media } from '../core/services/media';
 import { User } from '../core/services/user';
+import { Productdto } from '../core/models/post';
+import { Product } from '../core/services/product';
+import { Boutton } from '../components/boutton/boutton';
 
-interface Product {
-  id: number;
-  name: string;
-  emoji: string;
-  price: number;
-  stock: number;
-  status: 'active' | 'low';
-}
+
 
 interface Order {
   id: string;
@@ -32,16 +28,18 @@ interface WeekSale {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [FormsModule, TitleCasePipe, ReactiveFormsModule],
+  imports: [FormsModule, TitleCasePipe, ReactiveFormsModule, Boutton],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
 export class Dashboard implements OnInit {
+  private product = inject(Product);
   private auth = inject(Auth);
   private userService = inject(User);
 
   private media = inject(Media)
 
+  sellerProducts = signal<Productdto[]>([]);
   user = signal<UserProfileDTO | null>(null);
   activeTab = signal<'overview' | 'products' | 'orders' | 'settings'>(
     'overview'
@@ -72,48 +70,6 @@ export class Dashboard implements OnInit {
   });
   // ===================== DATA =====================
 
-  sellerProducts: Product[] = [
-    {
-      id: 1,
-      name: 'Canvas Tote Bag',
-      emoji: '👜',
-      price: 38,
-      stock: 24,
-      status: 'active',
-    },
-    {
-      id: 2,
-      name: 'Ceramic Pour-Over Set',
-      emoji: '☕',
-      price: 54,
-      stock: 3,
-      status: 'low',
-    },
-    {
-      id: 3,
-      name: 'Woven Belt',
-      emoji: '🧵',
-      price: 22,
-      stock: 40,
-      status: 'active',
-    },
-    {
-      id: 4,
-      name: 'Linen Throw Pillow',
-      emoji: '🛋️',
-      price: 29,
-      stock: 0,
-      status: 'low',
-    },
-    {
-      id: 5,
-      name: 'Crossbody Bag',
-      emoji: '👝',
-      price: 64,
-      stock: 18,
-      status: 'active',
-    },
-  ];
 
   orders: Order[] = [
     {
@@ -205,6 +161,13 @@ export class Dashboard implements OnInit {
       }
 
     });
+    this.product.getMyproduct().subscribe({
+      next: Product => {
+        this.sellerProducts.set(Product);
+      }
+    })
+
+
   }
 
   saveSettings(): void {
@@ -276,6 +239,9 @@ export class Dashboard implements OnInit {
   switchTab(
     tab: 'overview' | 'products' | 'orders' | 'settings'
   ): void {
+    if (tab === "overview" || tab === "orders") {
+      this.showToast("This is currently static data. The service will be available soon.");
+    }
     this.activeTab.set(tab);
   }
 
@@ -285,16 +251,13 @@ export class Dashboard implements OnInit {
     this.switchTab('products');
   }
 
-  editProduct(product: Product): void {
+  editProduct(product: Productdto): void {
     this.showToast(`Editing "${product.name}"`);
   }
 
-  deleteProduct(product: Product): void {
-    this.sellerProducts = this.sellerProducts.filter(
-      (item) => item.id !== product.id
-    );
+  deleteProduct(product: Productdto): void {
 
-    this.showToast(`"${product.name}" removed from your shop`);
+
   }
 
   // ===================== AVATAR =====================
@@ -374,5 +337,15 @@ export class Dashboard implements OnInit {
     this.toastTimer = setTimeout(() => {
       this.showToastMessage.set(false);
     }, 2200);
+  }
+  lotNo(id: String | string): string {
+    const clean = String(id)
+      .toLowerCase()
+      .replace(/[^0-9a-f]/g, '');
+    if (!clean) {
+      return '000';
+    }
+    const n = parseInt(clean.slice(-6), 16);
+    return String(isNaN(n) ? 1 : n % 1000).padStart(3, '0');
   }
 }

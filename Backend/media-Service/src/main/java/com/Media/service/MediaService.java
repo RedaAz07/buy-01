@@ -14,9 +14,10 @@ import com.Media.model.Media;
 import com.Media.model.UploadType;
 import com.Media.repository.MediaRepository;
 import com.Media.service.MediaUploadService.UploadResult;
+import com.Media.service.events.MediaEventProducer;
 
-
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @Slf4j

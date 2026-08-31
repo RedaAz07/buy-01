@@ -76,4 +76,29 @@ public class MediaUploadService {
             }
         }
     }
+    public void deleteFile(String publicId) {
+    try {
+        cloudinary.uploader().destroy(
+                publicId,
+                ObjectUtils.emptyMap()
+        );
+
+        log.info(
+                "Deleted Cloudinary file with public ID: {}",
+                publicId
+        );
+
+    } catch (Exception e) {
+        log.error(
+                "Failed to delete Cloudinary file with public ID: {}",
+                publicId,
+                e
+        );
+
+        throw new RuntimeException(
+                "Failed to delete Cloudinary file",
+                e
+        );
+    }
+}
 }

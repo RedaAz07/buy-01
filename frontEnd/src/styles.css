@@ -4,6 +4,7 @@
    component styles only refer to these variables.
    ──────────────────────────────────────────────────────────── */
 :root {
+
   /* ── Palette ─────────────────────────────────────────── */
   --paper: #f4efe5;         /* stock-ticket paper — page & card bases */
   --paper-raised: #fbf8f1;  /* raised paper — tags, chips, field fills */
@@ -60,6 +61,22 @@
   --forest: var(--till);
   --forest-dark: var(--till-dark);
   --radius-md-legacy: 3px;
+
+
+      --emerald-950: #141110;
+  --emerald-800: #2a221e;
+  --emerald-700: #b87d4b;
+  --sage: #e0a96d;
+  --sage-soft: #f7ede2;
+  --gold: #c88242;
+  --cream: #f7f4ee;
+  --ink: #1c1816;
+  --ink-soft: #665b55;
+  --error: #d64545;
+  --success: #3f8a5c;
+  --radius-md: 12px;
+  --border: #e6ddd2;
+  --white: #ffffff;
 }
 
 * {
@@ -69,6 +86,10 @@
 html,
 body {
   min-height: 100%;
+   margin: 0;
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--cream);
+  color: var(--ink);
 }
 
 body {

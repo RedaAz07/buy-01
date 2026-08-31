@@ -19,10 +19,7 @@ export class Navbar {
   user = toSignal(this.userService.currentUser$, {
     initialValue: null
   });
-  ngOnInit(){
-    console.log("----------------------");
-
-  }
+ 
   logout(): void {
     this.userService.logout();
   }

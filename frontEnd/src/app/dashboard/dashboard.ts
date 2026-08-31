@@ -319,7 +319,7 @@ export class Dashboard implements OnInit {
     // Call media-service here
     this.media.setAvatar([file]).subscribe({
       next: avatarUrl => {
-        
+
 
         this.showToast('Profile photo updated');
       },
@@ -331,16 +331,31 @@ export class Dashboard implements OnInit {
 
     input.value = '';
   }
-
   removeAvatar(): void {
     const user = this.user();
-    if (user?.avatar) {
-      this.user.set({ ...user, avatar: null })
-      this.showToast('Profile photo removed');
-    }
-  }
 
-  // ===================== SETTINGS =====================
+    if (!user?.avatar) {
+      return;
+    }
+
+    this.media.deleteAvatar(user.avatar).subscribe({
+      next: () => {
+        this.user.set({
+          ...user,
+          avatar: null
+        });
+
+        this.showToast('Profile photo removed');
+      },
+
+      error: (err) => {
+        const errorMessage =
+          err?.error?.message || 'Failed to delete this image';
+
+        this.showToast(errorMessage);
+      }
+    });
+  }
 
 
 

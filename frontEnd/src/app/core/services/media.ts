@@ -28,4 +28,11 @@ export class Media {
       formData
     );
   }
+
+
+
+  deleteAvatar(id: string): Observable<any> {
+    return this.http.delete<any>(
+      `${this.apiUrl}/${id}`);
+  }
 }

@@ -12,12 +12,16 @@ public interface MediaRepository extends MongoRepository<Media, String> {
 
     void deleteByOwnerId(String id);
 
+    Long countByProductIdAndType( String productId,  UploadType type);
+
     void deleteByProductId(String id);
 
     Optional<Media> findByIdAndOwnerId(String id, String ownerId);
+    Optional<Media> findByImagePathAndOwnerId(String imagePath, String ownerId);
+
+
     Optional<Media> findByOwnerIdAndType(
-    String ownerId,
-    UploadType type
-);
+            String ownerId,
+            UploadType type);
 
 }

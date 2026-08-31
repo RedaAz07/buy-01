@@ -1,8 +1,10 @@
 import { TitleCasePipe } from '@angular/common';
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { UserProfileDTO } from '../core/models/user';
+import { Component, inject, Input, OnInit, signal } from '@angular/core';
+import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { UpdateRequest, UserProfileDTO } from '../core/models/user';
 import { Auth } from '../core/services/auth';
+import { Media } from '../core/services/media';
+import { User } from '../core/services/user';
 
 interface Product {
   id: number;
@@ -30,12 +32,15 @@ interface WeekSale {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [FormsModule, TitleCasePipe],
+  imports: [FormsModule, TitleCasePipe, ReactiveFormsModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
 export class Dashboard implements OnInit {
-  private userService = inject(Auth);
+  private auth = inject(Auth);
+  private userService = inject(User);
+
+  private media = inject(Media)
 
   user = signal<UserProfileDTO | null>(null);
   activeTab = signal<'overview' | 'products' | 'orders' | 'settings'>(
@@ -45,7 +50,26 @@ export class Dashboard implements OnInit {
   toastMessage = signal('');
   showToastMessage = signal(false);
   showSaveHint = signal(false);
+  private fb = inject(FormBuilder);
 
+  settingsForm = this.fb.group({
+    name: [
+      '',
+      [
+        Validators.required,
+        Validators.minLength(3),
+        Validators.maxLength(50),
+      ],
+    ],
+
+    email: [
+      '',
+      [
+        Validators.required,
+        Validators.email,
+      ],
+    ],
+  });
   // ===================== DATA =====================
 
   sellerProducts: Product[] = [
@@ -167,13 +191,70 @@ export class Dashboard implements OnInit {
 
   // ===================== GETTERS =====================
   ngOnInit(): void {
-    this.userService.currentUser$.subscribe(user => {
-      this.user.set(user);
-    });
+    this.auth.currentUser$.subscribe(user => {
 
+      this.user.set(user);
+
+      if (user) {
+        this.settingsForm.patchValue({
+          name: user.name,
+          email: user.email,
+        });
+
+        this.settingsForm.markAsPristine();
+      }
+
+    });
   }
 
+  saveSettings(): void {
 
+    if (this.settingsForm.invalid) {
+      this.settingsForm.markAllAsTouched();
+      return;
+    }
+
+    const { name, email } = this.settingsForm.getRawValue();
+    const data: UpdateRequest = { name, email };
+    this.userService.updateProfile(data).subscribe({
+      next: updatedUser => {
+
+        this.user.update(user => {
+          if (!user) {
+            return null;
+          }
+
+          return {
+            ...user,
+            name: updatedUser.name,
+            email: updatedUser.email
+          };
+        });
+
+        localStorage.removeItem("jwt_token")
+        localStorage.setItem("jwt_token", updatedUser.jwt);
+
+        this.settingsForm.patchValue({
+          name: updatedUser.name,
+          email: updatedUser.email,
+        });
+
+        this.settingsForm.markAsPristine();
+
+        this.showSaveHint.set(true);
+
+        setTimeout(() => {
+          this.showSaveHint.set(false);
+        }, 2200);
+
+        this.showToast('Profile updated successfully');
+      },
+
+      error: () => {
+        this.showToast('Failed to update profile');
+      }
+    });
+  }
   get currentTabTitle() {
     return this.tabTitles[this.activeTab()].title;
   }
@@ -221,7 +302,6 @@ export class Dashboard implements OnInit {
   openAvatarPicker(input: HTMLInputElement): void {
     input.click();
   }
-
   onAvatarSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
@@ -236,43 +316,33 @@ export class Dashboard implements OnInit {
       return;
     }
 
-    const reader = new FileReader();
+    // Call media-service here
+    this.media.setAvatar([file]).subscribe({
+      next: avatarUrl => {
+        
 
-    reader.onload = () => {
-      const avatar = reader.result as string;
+        this.showToast('Profile photo updated');
+      },
 
-      this.user.update(user => {
-        if (!user) {
-          return null;
-        }
-
-        return {
-          ...user,
-          avatar,
-        };
-      });
-
-      this.showToast('Profile photo updated');
-    };
-
-    reader.readAsDataURL(file);
+      error: () => {
+        this.showToast('Failed to update profile photo');
+      }
+    });
 
     input.value = '';
   }
 
   removeAvatar(): void {
-   const  user = this.user();
-    if(user?.avatar){
-      this.user.set({...user,avatar:null})
+    const user = this.user();
+    if (user?.avatar) {
+      this.user.set({ ...user, avatar: null })
       this.showToast('Profile photo removed');
     }
   }
 
   // ===================== SETTINGS =====================
 
-  saveAvatar(): void {
 
-  }
 
   // ===================== TOAST =====================
 

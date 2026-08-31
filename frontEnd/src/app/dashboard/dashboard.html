@@ -544,98 +544,203 @@
     <!-- ================================================== -->
     <!-- SETTINGS -->
     <!-- ================================================== -->
-
-
 @if (activeTab() === 'settings') {
 
-<section class="tab-panel active">
-  <div class="panel profile-panel">
+  <section class="tab-panel active">
 
-    <!-- Avatar (the only editable field) -->
-    <form class="avatar-editor" (ngSubmit)="saveAvatar()">
-      <div class="avatar-circle">
-        @if (user()?.avatar) {
-          <img [src]="user()?.avatar" alt="Seller avatar" />
-        } @else {
-          <span>{{ initials }}</span>
-        }
+    <div class="panel profile-panel">
 
-        <button
-          type="button"
-          class="avatar-edit-btn"
-          aria-label="Change avatar"
-          (click)="openAvatarPicker(avatarInput)"
-        >
-          &#128247;
-        </button>
-      </div>
+      <!-- Avatar -->
 
-      <div class="avatar-actions">
-        <div class="avatar-btn-row">
-          <button type="button" class="btn-secondary-sm" (click)="openAvatarPicker(avatarInput)">
-            Upload new photo
+      <div class="avatar-editor">
+
+        <div class="avatar-circle">
+
+          @if (user()?.avatar) {
+
+            <img [src]="user()?.avatar" alt="Seller avatar" />
+
+          } @else {
+
+            <span>
+              {{ initials }}
+            </span>
+
+          }
+
+          <button
+            type="button"
+            class="avatar-edit-btn"
+            aria-label="Change avatar"
+            (click)="openAvatarPicker(avatarInput)"
+          >
+            &#128247;
           </button>
-          <button type="button" class="btn-text" (click)="removeAvatar()">
-            Remove
-          </button>
+
         </div>
 
-        <p class="avatar-hint">
-          JPG or PNG, at least 200×200px. Square photos look best.
-        </p>
+        <div class="avatar-actions">
 
-        <div class="avatar-form-actions">
-          <button type="submit" class="btn-primary-sm">Save avatar</button>
+          <div class="avatar-btn-row">
+
+            <button
+              type="button"
+              class="btn-secondary-sm"
+              (click)="openAvatarPicker(avatarInput)"
+            >
+              Upload new photo
+            </button>
+
+            <button
+              type="button"
+              class="btn-text"
+              (click)="removeAvatar()"
+            >
+              Remove
+            </button>
+
+          </div>
+
+          <p class="avatar-hint">
+            JPG or PNG, at least 200×200px.
+            Square photos look best.
+          </p>
+
+        </div>
+
+      </div>
+
+      <!-- Hidden avatar input -->
+
+      <input
+        #avatarInput
+        type="file"
+        accept="image/png,image/jpeg"
+        hidden
+        (change)="onAvatarSelected($event)"
+      />
+
+      <!-- Settings form -->
+
+      <form
+        class="settings-form"
+        [formGroup]="settingsForm"
+        (ngSubmit)="saveSettings()"
+      >
+
+        <!-- Name -->
+
+        <div class="form-row">
+
+          <div class="form-field">
+
+            <label for="fullName">
+              Full name
+            </label>
+
+            <input
+              id="fullName"
+              type="text"
+              class="inputs"
+              formControlName="name"
+            />
+
+            @if (
+              settingsForm.controls.name.touched &&
+              settingsForm.controls.name.invalid
+            ) {
+
+              <small class="error">
+                Name is required and must be between 3 and 50 characters.
+              </small>
+
+            }
+
+          </div>
+
+        </div>
+
+
+        <!-- Email -->
+
+        <div class="form-row">
+
+          <div class="form-field">
+
+            <label for="email">
+              Email
+            </label>
+
+            <input
+              id="email"
+              type="email"
+              class="inputs"
+              formControlName="email"
+            />
+
+            @if (
+              settingsForm.controls.email.touched &&
+              settingsForm.controls.email.invalid
+            ) {
+
+              <small class="error">
+                Please enter a valid email.
+              </small>
+
+            }
+
+          </div>
+
+        </div>
+
+
+        <!-- Role - READ ONLY -->
+
+        <div class="form-field">
+
+          <label for="role">
+            Role
+          </label>
+
+          <span id="role" class="inputs role">
+            {{ user()?.role }}
+          </span>
+
+        </div>
+
+
+        <!-- Actions -->
+
+        <div class="form-actions">
+
+          <button
+            type="submit"
+            class="btn-primary-sm"
+            [disabled]="settingsForm.invalid || settingsForm.pristine"
+          >
+            Save changes
+          </button>
 
           @if (showSaveHint()) {
-            <span class="save-hint">Saved just now</span>
+
+            <span class="save-hint">
+              Saved just now
+            </span>
+
           }
-        </div>
-      </div>
-    </form>
 
-    <input
-      #avatarInput
-      type="file"
-      accept="image/*"
-      hidden
-      (change)="onAvatarSelected($event)"
-    />
-
-    <!-- General information (read-only) -->
-    <div class="info-section">
-      <h3 class="info-section-title">General information</h3>
-
-      <div class="info-list">
-        <div class="info-row">
-          <span class="info-label">Full name</span>
-          <span class="info-value">{{ user()?.name }}</span>
         </div>
 
-        <div class="info-row">
-          <span class="info-label">Email</span>
-          <span class="info-value">{{ user()?.email }}</span>
-        </div>
+      </form>
 
-        <div class="info-row">
-          <span class="info-label">Role</span>
-          <span class="info-value">
-            <span class="role-badge">SELLER</span>
-          </span>
-        </div>
-      </div>
     </div>
 
-  </div>
-</section>
+  </section>
 
 }
-</div>
-
-
+  </div>
 <!-- Hidden file input -->
 
-<input #avatarInput type="file" accept="image/*" hidden (change)="onAvatarSelected($event)" />
 
 
 <!-- Toast -->

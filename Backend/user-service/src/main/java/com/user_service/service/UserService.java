@@ -86,10 +86,10 @@ public class UserService {
         User user = userRepository
                 .findByName(username)
                 .orElseThrow(() -> ApiException.notFound("User not found"));
-        if (userRepository.existsByName(request.name())) {
+        if (!user.getEmail().equals(request.email()) && userRepository.existsByName(request.name())) {
             throw ApiException.badRequest("Name already exists");
         }
-        if (userRepository.existsByEmail(request.email())) {
+        if (!user.getName().equals(request.name()) &&   userRepository.existsByEmail(request.email())) {
             throw ApiException.badRequest("Email already exists");
         }
         if (request.email() != null) {
@@ -98,7 +98,10 @@ public class UserService {
         if (request.name() != null) {
             user.setName(request.name());
         }
-        userRepository.save(user);
-        return new UpdateResponseDTO(user.getName(), user.getEmail());
+        User nUser = userRepository.save(user);
+
+        final UserDetails userDetails = costumUserDetails.loadUserByUsername(nUser.getName());
+        final String jwt = jwtUtil.generateToken(userDetails, nUser.getId());
+        return new UpdateResponseDTO(user.getName(), user.getEmail(), jwt);
     }
 }

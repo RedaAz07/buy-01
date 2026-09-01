@@ -1,82 +1,58 @@
-/* ────────────────────────────────────────────────────────────
-   Buy-01 market-hall tokens — the single source of truth.
-   Everything below is global and inherited by every component;
-   component styles only refer to these variables.
-   ──────────────────────────────────────────────────────────── */
 :root {
+  /* 1. Core Palette (Vintage Ledger) - Single Source of Truth */
+  --paper: #f4efe5;
+  --paper-raised: #fbf8f1;
+  --paper-dark: #e7dcc6;
 
-  /* ── Palette ─────────────────────────────────────────── */
-  --paper: #f4efe5;         /* stock-ticket paper — page & card bases */
-  --paper-raised: #fbf8f1;  /* raised paper — tags, chips, field fills */
-  --paper-dark: #e7dcc6;    /* worn paper for recessed wells */
+  --ink: #20283a;
+  --ink-soft: #5b6275;
 
-  --ink: #20283a;           /* stamp-navy — text, structure */
-  --ink-soft: #5b6275;      /* secondary text */
-
-  --stamp: #b23a2e;         /* the loud one — prices, serials, primary */
+  --stamp: #b23a2e;
   --stamp-dark: #8e2b22;
-  --stamp-soft: #f3e0dc;    /* stamp wash for error/sold tints */
+  --stamp-soft: #f3e0dc;
 
-  --kraft: #a9805b;         /* tag strings, secondary surfaces */
-  --kraft-soft: #e9dfc9;    /* ledger sheet — form/detail backgrounds */
+  --kraft: #a9805b;
+  --kraft-soft: #e9dfc9;
 
-  --till: #3e5e4a;          /* till-green — stock, money, success */
+  --till: #3e5e4a;
   --till-dark: #2f4a3a;
   --till-soft: #dde6dc;
 
-  --brass: #8f7a3c;         /* metadata, ghost labels */
-  --brass-deep: #6e5c30;    /* brass dark enough to read on kraft */
+  --brass: #8f7a3c;
+  --brass-deep: #6e5c30;
   --brass-soft: #e6ddc3;
 
-  --line: #d9cfba;          /* hairlines */
-  --line-strong: #c2b493;   /* readable rules, perf edges */
-  --error: #a63a2e;
+  --line: #d9cfba;
+  --line-strong: #c2b493;
 
-  /* ── Type ────────────────────────────────────────────── */
-  --font-display: 'Fraunces', Georgia, serif;
-  --font-body: 'Archivo', 'Helvetica Neue', Helvetica, sans-serif;
-  --font-mono: 'IBM Plex Mono', Menlo, Consolas, monospace;
-
-  /* ── Shape / shadow ──────────────────────────────────── */
-  --radius-sm: 2px;
-  --radius-md: 3px;
-  --stamp-shadow: 4px 4px 0 rgba(32, 40, 58, 0.22);
-
-  /* ── Theme aliases used by shared overlays ───────────── */
+  /* 2. Global Shared Variables */
   --theme-bg: var(--paper);
   --theme-ink: var(--ink);
   --theme-card: var(--paper-raised);
   --theme-border: var(--line);
-  --theme-teal: var(--stamp);
+  --theme-teal: var(--till);
 
-  /* ── Legacy aliases (login / register pages) ─────────── */
-  --cream: var(--paper);
-  --sage: var(--brass);
-  --sage-soft: var(--paper-raised);
-  --emerald-700: var(--ink);
-  --emerald-800: var(--ink);
-  --emerald-950: #141926;
-  --gold: var(--brass);
-  --brick: var(--stamp);
-  --forest: var(--till);
-  --forest-dark: var(--till-dark);
+  /* 3. Dashboard Mappings bridged to the Core Palette */
+  --cream: var(--paper);               /* Main dashboard background */
+  --white: var(--paper-raised);        /* Card backgrounds */
+  --border: var(--line);               /* Table/Card borders */
+
+  --emerald-950: var(--ink);           /* Sidebar & Darkest elements */
+  --emerald-800: var(--till-dark);     /* Primary Buttons */
+  --emerald-700: var(--till);          /* Accents, secondary buttons */
+
+  --sage: var(--brass);                /* Active states, icons */
+  --sage-soft: var(--brass-soft);      /* Light icon backgrounds */
+
+  --gold: var(--kraft);                /* Warning/Pending states */
+  --error: var(--stamp);               /* Error text/badges */
+  --success: var(--till-dark);         /* Success text */
+
+  /* 4. Structural Variables */
+  --radius-sm: 2px;
   --radius-md-legacy: 3px;
-
-
-      --emerald-950: #141110;
-  --emerald-800: #2a221e;
-  --emerald-700: #b87d4b;
-  --sage: #e0a96d;
-  --sage-soft: #f7ede2;
-  --gold: #c88242;
-  --cream: #f7f4ee;
-  --ink: #1c1816;
-  --ink-soft: #665b55;
-  --error: #d64545;
-  --success: #3f8a5c;
   --radius-md: 12px;
-  --border: #e6ddd2;
-  --white: #ffffff;
+  --stamp-shadow: 4px 4px 0 rgba(32, 40, 58, 0.22);
 }
 
 * {
@@ -86,7 +62,7 @@
 html,
 body {
   min-height: 100%;
-   margin: 0;
+  margin: 0;
   font-family: 'Inter', -apple-system, sans-serif;
   background: var(--cream);
   color: var(--ink);
@@ -116,8 +92,6 @@ app-root {
   outline: 2px solid var(--stamp);
   outline-offset: 2px;
 }
-
-/* ── Shared Material overlays (menu, snackbar) ─────────── */
 .cdk-overlay-container .mat-mdc-menu-panel {
   background: var(--theme-card) !important;
   color: var(--theme-ink) !important;
@@ -136,12 +110,6 @@ app-root {
 .mat-mdc-snack-bar-container .mat-mdc-button {
   color: var(--theme-teal) !important;
 }
-
-/* Smooth transition between routed auth views (e.g. Login <-> Register).
-   Uses the View Transitions API activated via withViewTransitions() in
-   app.config.ts. Keeps the switch subtle: old view fades out, new view
-   fades in with a gentle upward slide so the height change feels
-   intentional rather than a jarring hard cut. */
 ::view-transition-old(root) {
   animation: auth-out 160ms ease forwards;
 }
@@ -161,6 +129,7 @@ app-root {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

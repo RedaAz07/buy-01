@@ -47,7 +47,7 @@ public class MediaController {
     @DeleteMapping
     public ResponseEntity<?> deleteMedia(
             @RequestParam("url") String url,
-            Principal principal) { 
+            Principal principal) {
 
         String decodedUrl = URLDecoder.decode(url, StandardCharsets.UTF_8);
 

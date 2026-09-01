@@ -36,18 +36,15 @@
       <div class="field-wrapper">
         <label class="field-label">Product Images</label>
 
-        <!-- Section 1: Existing Saved Images (UPDATED for array of strings) -->
-        @if (existingImages.length > 0) {
+        <!-- Section 1: Existing Saved Images (Tracked by URL value, not index) -->
+        @if (existingImages().length > 0) {
         <div class="media-preview-container">
-          <!-- Loop through strings (url) directly -->
-          @for (url of existingImages; track url; let i = $index) {
+          @for (url of existingImages(); track url; let i = $index) {
           <div class="media-preview">
-            <!-- Bind [src] directly to the URL string -->
             <img class="preview-img" [src]="url" [alt]="'Product image ' + (i + 1)" />
             <div class="preview-meta">
               <span class="preview-name">Saved Image</span>
-              <!-- Pass the URL to the remove function -->
-              <button type="button" class="preview-remove" (click)="removeExistingImage(url, i)" title="Delete image">
+              <button type="button" class="preview-remove" (click)="removeExistingImage(url.toString())" title="Delete image">
                 &times;
               </button>
             </div>
@@ -63,12 +60,12 @@
         </div>
 
         <!-- Section 3: Previews of Newly Selected Files -->
-        @if (selectedFiles.length > 0) {
+        @if (selectedFiles().length > 0) {
         <div class="media-preview-container">
-          @for (file of selectedFiles; track i; let i = $index) {
+          @for (file of selectedFiles(); track $index; let i = $index) {
           <div class="media-preview">
-            @if (previewUrls[i]) {
-            <img class="preview-img" [src]="previewUrls[i]" [alt]="file.name" />
+            @if (previewUrls()[i]) {
+            <img class="preview-img" [src]="previewUrls()[i]" [alt]="file.name" />
             }
             <div class="preview-meta">
               <span class="preview-name">{{ file.name }}</span>

@@ -412,13 +412,7 @@
 
                 <div class="row-actions">
 
-                  <button class="icon-action" aria-label="Edit" (click)="editProduct(product)">
-                    &#9998;
-                  </button>
-
-                  <button class="icon-action danger" aria-label="Delete" (click)="deleteProduct(product)">
-                    &#128465;
-                  </button>
+                  <app-owner-actions [product]="product" ></app-owner-actions>
 
                 </div>
 

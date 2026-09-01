@@ -8,6 +8,7 @@ import { User } from '../core/services/user';
 import { Productdto } from '../core/models/post';
 import { Product } from '../core/services/product';
 import { Boutton } from '../components/boutton/boutton';
+import { OwnerActions } from '../components/owner-actions/owner-actions';
 
 
 
@@ -28,7 +29,7 @@ interface WeekSale {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [FormsModule, TitleCasePipe, ReactiveFormsModule, Boutton],
+  imports: [FormsModule, TitleCasePipe, ReactiveFormsModule, Boutton,OwnerActions],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })

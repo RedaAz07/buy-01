@@ -348,4 +348,7 @@ export class Dashboard implements OnInit {
     const n = parseInt(clean.slice(-6), 16);
     return String(isNaN(n) ? 1 : n % 1000).padStart(3, '0');
   }
+  logout() {
+    this.auth.logout();
+  }
 }

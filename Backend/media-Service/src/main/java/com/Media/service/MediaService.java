@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.Media.dto.request.ProductDTO;
 import com.Media.exceptions.ApiException;
 import com.Media.model.Media;
 import com.Media.model.UploadType;
@@ -18,6 +17,7 @@ import com.Media.service.FeignClient.ProductClientInterface;
 import com.Media.service.MediaUploadService.UploadResult;
 import com.Media.service.events.MediaEventProducer;
 
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,11 +38,10 @@ public class MediaService {
                         List<MultipartFile> files,
                         String productId,
                         UploadType type,
-                        String username, String token) {
+                        String username,
+                        String token) {
 
-                // =========================
                 // Validation
-                // =========================
 
                 if (username == null || username.isBlank()) {
                         throw ApiException.notFound("User not found");
@@ -62,9 +61,7 @@ public class MediaService {
                         throw ApiException.badRequest("Invalid media type");
                 }
 
-                // =========================
                 // Avatar validation
-                // =========================
 
                 if (type == UploadType.AVATAR) {
 
@@ -79,9 +76,7 @@ public class MediaService {
                         }
                 }
 
-                // =========================
                 // Product image validation
-                // =========================
 
                 if (type == UploadType.PRODUCT_IMAGE) {
 
@@ -91,9 +86,11 @@ public class MediaService {
                         }
 
                         boolean bool = productClientInterface.GetUserProduct(productId, token);
+
                         if (!bool) {
                                 throw ApiException.badRequest("Product not found or you don't own it");
                         }
+
                         if (files.size() > MAX_PRODUCT_IMAGES) {
                                 throw ApiException.badRequest(
                                                 "Maximum 5 media files allowed");
@@ -116,39 +113,32 @@ public class MediaService {
                         }
                 }
 
-                // =========================
-                // Find old avatar
-                // =========================
+                // Find old avatar (do not delete yet)
 
                 Optional<Media> oldAvatar = Optional.empty();
 
                 if (type == UploadType.AVATAR) {
-
                         oldAvatar = mediaRepository.findByOwnerIdAndType(
                                         username,
                                         UploadType.AVATAR);
                 }
 
-                // =========================
-                // Upload
-                // =========================
+                // Upload Loop
 
                 List<String> uploadedPublicIds = new ArrayList<>();
+                List<Runnable> pendingEvents = new ArrayList<>();
 
                 try {
-
                         for (MultipartFile file : files) {
 
                                 validateFile(file);
 
                                 // Upload to Cloudinary
                                 UploadResult result = mediaUploadService.uploadFile(file);
-
                                 uploadedPublicIds.add(result.publicId());
 
                                 // Create Media entity
                                 Media media = new Media();
-
                                 media.setOwnerId(username);
                                 media.setType(type);
                                 media.setImagePath(result.url());
@@ -161,58 +151,35 @@ public class MediaService {
                                 // Save new media
                                 Media savedMedia = mediaRepository.save(media);
 
-                                // =========================
-                                // Avatar replacement
-                                // =========================
-
+                                // Queue up Kafka events safely for after the loop
                                 if (type == UploadType.AVATAR) {
-
-                                        if (oldAvatar.isPresent()) {
-
-                                                Media oldAvatarMedia = oldAvatar.get();
-
-                                                // Delete old Mongo record
-                                                mediaRepository.delete(
-                                                                oldAvatarMedia);
-
-                                                // Delete old Cloudinary file
-                                                deleteCloudinaryFileSafely(
-                                                                oldAvatarMedia);
-                                        }
-
-                                        // Send event
-                                        mediaEventProducer.sendAvatarUploadedEvent(
-                                                        savedMedia.getOwnerId(),
-                                                        savedMedia.getImagePath());
-                                }
-
-                                // =========================
-                                // Product image event
-                                // =========================
-
-                                else {
-
-                                        mediaEventProducer.sendMediaUploadedEvent(
-                                                        savedMedia.getProductId(),
-                                                        savedMedia.getImagePath());
+                                        pendingEvents.add(() -> mediaEventProducer.sendAvatarUploadedEvent(
+                                                        savedMedia.getOwnerId(), savedMedia.getImagePath()));
+                                } else {
+                                        pendingEvents.add(() -> mediaEventProducer.sendMediaUploadedEvent(
+                                                        savedMedia.getProductId(), savedMedia.getImagePath()));
                                 }
                         }
 
+                        // 1. Send all Kafka events now that everything succeeded
+                        pendingEvents.forEach(Runnable::run);
+
+                        // 2. Safely delete old avatar ONLY after the new upload is 100% successful
+                        if (type == UploadType.AVATAR && oldAvatar.isPresent()) {
+                                Media oldAvatarMedia = oldAvatar.get();
+                                mediaRepository.delete(oldAvatarMedia);
+                                deleteCloudinaryFileSafely(oldAvatarMedia);
+                        }
+
                 } catch (ApiException e) {
-
                         cleanupUploadedFiles(uploadedPublicIds);
-
                         throw e;
-
                 } catch (Exception e) {
-
                         log.error(
                                         "Media upload failed for user={}",
                                         username,
                                         e);
-
                         cleanupUploadedFiles(uploadedPublicIds);
-
                         throw ApiException.badRequest(
                                         "Media upload failed. Post creation cancelled.");
                 }
@@ -222,29 +189,20 @@ public class MediaService {
                                 "Media uploaded successfully");
         }
 
-        // =========================================================
         // Get image
-        // =========================================================
 
         public Map<String, String> getImage(String id) {
-
                 if (id == null || id.isBlank()) {
-                        throw ApiException.badRequest(
-                                        "Media ID is required");
+                        throw ApiException.badRequest("Media ID is required");
                 }
 
                 Media media = mediaRepository.findById(id)
-                                .orElseThrow(() -> ApiException.notFound(
-                                                "Media not found"));
+                                .orElseThrow(() -> ApiException.notFound("Media not found"));
 
-                return Map.of(
-                                "image",
-                                media.getImagePath());
+                return Map.of("image", media.getImagePath());
         }
 
-        // =========================================================
         // Delete image
-        // =========================================================
 
         @Transactional
         public Map<String, String> deleteImage(
@@ -252,19 +210,16 @@ public class MediaService {
                         String ownerId) {
 
                 if (id == null || id.isBlank()) {
-                        throw ApiException.badRequest(
-                                        "Media ID is required");
+                        throw ApiException.badRequest("Media ID is required");
                 }
 
                 if (ownerId == null || ownerId.isBlank()) {
-                        throw ApiException.notFound(
-                                        "User not found");
+                        throw ApiException.notFound("User not found");
                 }
 
                 Media media = mediaRepository
                                 .findByIdAndOwnerId(id, ownerId)
-                                .orElseThrow(() -> ApiException.notFound(
-                                                "Media not found"));
+                                .orElseThrow(() -> ApiException.notFound("Media not found"));
 
                 String imageUrl = media.getImagePath();
 
@@ -274,83 +229,46 @@ public class MediaService {
                 // Delete Cloudinary file
                 deleteCloudinaryFileSafely(media);
 
-                return Map.of(
-                                "image",
-                                imageUrl);
+                return Map.of("image", imageUrl);
         }
 
-        // =========================================================
         // File validation
-        // =========================================================
 
         private void validateFile(MultipartFile file) {
-
                 if (file == null || file.isEmpty()) {
-                        throw ApiException.badRequest(
-                                        "Uploaded file cannot be empty");
+                        throw ApiException.badRequest("Uploaded file cannot be empty");
                 }
         }
 
-        // =========================================================
         // Cloudinary cleanup
-        // =========================================================
 
         private void deleteCloudinaryFileSafely(Media media) {
-
-                if (media.getPublicId() == null
-                                || media.getPublicId().isBlank()) {
-
-                        log.warn(
-                                        "Cannot delete Cloudinary file because publicId "
-                                                        + "is missing. mediaId={}",
+                if (media.getPublicId() == null || media.getPublicId().isBlank()) {
+                        log.warn("Cannot delete Cloudinary file because publicId is missing. mediaId={}",
                                         media.getId());
-
                         return;
                 }
 
                 try {
-
-                        mediaUploadService.deleteFile(
-                                        media.getPublicId());
-
+                        mediaUploadService.deleteFile(media.getPublicId());
                 } catch (Exception e) {
-
-                        log.error(
-                                        "Failed to delete Cloudinary file. "
-                                                        + "publicId={}, mediaId={}",
-                                        media.getPublicId(),
-                                        media.getId(),
-                                        e);
+                        log.error("Failed to delete Cloudinary file. publicId={}, mediaId={}",
+                                        media.getPublicId(), media.getId(), e);
                 }
         }
 
-        // =========================================================
         // Cleanup newly uploaded files
-        // =========================================================
 
-        private void cleanupUploadedFiles(
-                        List<String> uploadedPublicIds) {
-
+        private void cleanupUploadedFiles(List<String> uploadedPublicIds) {
                 if (uploadedPublicIds.isEmpty()) {
                         return;
                 }
 
                 try {
-
-                        mediaUploadService.deleteOrphanedFiles(
-                                        uploadedPublicIds);
-
+                        mediaUploadService.deleteOrphanedFiles(uploadedPublicIds);
                 } catch (Exception e) {
-
-                        /*
-                         * Cleanup failure must not replace the
-                         * original upload exception.
-                         */
-                        log.error(
-                                        "Failed to cleanup orphaned Cloudinary files. "
-                                                        + "publicIds={}",
-                                        uploadedPublicIds,
-                                        e);
+                        log.error("Failed to cleanup orphaned Cloudinary files. publicIds={}",
+                                        uploadedPublicIds, e);
                 }
         }
 }

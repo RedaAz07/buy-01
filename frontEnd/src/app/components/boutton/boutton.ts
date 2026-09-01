@@ -74,7 +74,6 @@ export class Boutton {
           });
 
           formData.append('type', 'PRODUCT_IMAGE');
-          console.log(formData.get('media'), '---------------------------->');
 
           this.http
             .post(`http://localhost:8080/api/media/images?productId=${product.id}`, formData)

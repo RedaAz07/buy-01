@@ -1,4 +1,4 @@
-package com.Media.service;
+package com.Media.service.events;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

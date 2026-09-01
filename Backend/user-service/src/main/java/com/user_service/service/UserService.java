@@ -2,6 +2,8 @@ package com.user_service.service;
 
 import com.user_service.mapper.UserMapper;
 
+import java.util.Objects;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -86,11 +88,14 @@ public class UserService {
         User user = userRepository
                 .findByName(username)
                 .orElseThrow(() -> ApiException.notFound("User not found"));
-        if (userRepository.existsByName(request.name())) {
-            throw ApiException.badRequest("Name already exists");
-        }
-        if (userRepository.existsByEmail(request.email())) {
+        if (!Objects.equals(user.getEmail(), request.email())
+                && userRepository.existsByEmail(request.email())) {
             throw ApiException.badRequest("Email already exists");
+        }
+
+        if (!Objects.equals(user.getName(), request.name())
+                && userRepository.existsByName(request.name())) {
+            throw ApiException.badRequest("Name already exists");
         }
         if (request.email() != null) {
             user.setEmail(request.email());
@@ -98,7 +103,10 @@ public class UserService {
         if (request.name() != null) {
             user.setName(request.name());
         }
-        userRepository.save(user);
-        return new UpdateResponseDTO(user.getName(), user.getEmail());
+        User nUser = userRepository.save(user);
+
+        final UserDetails userDetails = costumUserDetails.loadUserByUsername(nUser.getName());
+        final String jwt = jwtUtil.generateToken(userDetails, nUser.getId());
+        return new UpdateResponseDTO(user.getName(), user.getEmail(), jwt);
     }
 }

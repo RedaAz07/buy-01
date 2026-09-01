@@ -63,7 +63,7 @@ public class productController {
     }
 
   @GetMapping("/owner/{id}")
-public FeingResponse getUserProduct(@PathVariable("id") String id, Principal principal) {
+public boolean getUserProduct(@PathVariable("id") String id, Principal principal) {
     return productService.getUserProduct(id, principal.getName());
 }
 }

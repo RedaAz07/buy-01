@@ -90,12 +90,10 @@ public class MediaService {
                                                 "Product ID is required for product images");
                         }
 
-                        try {
-                                ProductDTO product = productClientInterface.GetUserProduct(productId, token);
-                        } catch (feign.FeignException.NotFound e) {
+                        boolean bool = productClientInterface.GetUserProduct(productId, token);
+                        if (!bool) {
                                 throw ApiException.badRequest("Product not found or you don't own it");
                         }
-
                         if (files.size() > MAX_PRODUCT_IMAGES) {
                                 throw ApiException.badRequest(
                                                 "Maximum 5 media files allowed");
@@ -264,7 +262,7 @@ public class MediaService {
                 }
 
                 Media media = mediaRepository
-                                .findByImagePathAndOwnerId(id, ownerId)
+                                .findByIdAndOwnerId(id, ownerId)
                                 .orElseThrow(() -> ApiException.notFound(
                                                 "Media not found"));
 

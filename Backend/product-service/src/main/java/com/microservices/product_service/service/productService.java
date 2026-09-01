@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.microservices.product_service.dto.FeingResponse;
 import com.microservices.product_service.dto.productRequest;
 import com.microservices.product_service.dto.productRspons;
 import com.microservices.product_service.exception.ApiException;
@@ -58,7 +59,7 @@ public class productService {
     }
 
     private productRspons getProduct(Product p) {
-        productRspons product = productRspons.builder()
+        return productRspons.builder()
                 .id(p.getId())
                 .name(p.getName())
                 .description(p.getDescription())
@@ -67,7 +68,6 @@ public class productService {
                 .sellerId(p.getSellerId())
                 .imageUrls(copyImageUrls(p.getImageUrls()))
                 .build();
-        return product;
     }
 
     private List<String> copyImageUrls(List<String> imageUrls) {
@@ -98,4 +98,11 @@ public class productService {
         productRepository.delete(product);
         productEventProducer.sendProductDeletedEvent(id);
     }
+
+   public FeingResponse getUserProduct(String id, String sellerId) {
+    Product product = productRepository.findByIdAndSellerId(id, sellerId)
+        .orElseThrow(() -> ApiException.notFound("Product not found or you don't own it"));
+    
+    return new FeingResponse(product.getId(), product.getName());
+}
 }

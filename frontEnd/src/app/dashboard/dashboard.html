@@ -1,1 +1,714 @@
-<p>dashboard works!</p>
+<div class="dash-layout">
+
+  <!-- ===================== SIDEBAR ===================== -->
+
+  <aside class="sidebar">
+
+    <a class="brand" href="#">
+      &#9670; Market
+    </a>
+
+    <nav class="sidebar-nav">
+
+      <button class="side-link" [class.active]="activeTab() === 'overview'" (click)="switchTab('overview')">
+        <span class="side-icon">&#128202;</span>
+        Overview
+      </button>
+
+      <button class="side-link" [class.active]="activeTab() === 'products'" (click)="switchTab('products')">
+        <span class="side-icon">&#128230;</span>
+        My Products
+      </button>
+
+      <button class="side-link" [class.active]="activeTab() === 'orders'" (click)="switchTab('orders')">
+        <span class="side-icon">&#129534;</span>
+        Orders
+      </button>
+
+      <button class="side-link" [class.active]="activeTab() === 'settings'" (click)="switchTab('settings')">
+        <span class="side-icon">&#9881;</span>
+        Settings
+      </button>
+
+    </nav>
+
+    <!-- Sidebar profile -->
+
+    <div class="sidebar-footer">
+
+      <button class="sidebar-profile" (click)="switchTab('settings')">
+
+        <div class="mini-avatar">
+
+          @if (user()?.avatar) {
+          <img [src]="user()?.avatar" alt="Seller avatar" />
+          } @else {
+          <span>{{ initials }}</span>
+          }
+        </div>
+
+        <div class="mini-info">
+          <span class="mini-name">
+            {{ user()?.name }}
+          </span>
+
+          <span class="mini-role">
+            Seller
+          </span>
+        </div>
+
+      </button>
+
+      <button class="side-logout">
+        &#10132; Sign out
+      </button>
+
+    </div>
+
+  </aside>
+
+
+  <!-- ===================== MAIN ===================== -->
+
+  <div class="dash-main">
+
+    <!-- ===================== TOPBAR ===================== -->
+
+    <header class="dash-topbar">
+
+      <div>
+
+        <h1>
+          {{ currentTabTitle }}
+        </h1>
+
+        <p>
+          {{ currentTabSubtitle }}
+        </p>
+
+      </div>
+
+      <div class="topbar-actions">
+
+        <button class="icon-btn" aria-label="Notifications">
+          &#128276;
+          <span class="badge-count">3</span>
+        </button>
+
+        <app-boutton></app-boutton>
+
+      </div>
+
+    </header>
+
+
+    <!-- ================================================== -->
+    <!-- OVERVIEW -->
+    <!-- ================================================== -->
+
+    @if (activeTab() === 'overview') {
+
+    <section class="tab-panel active">
+
+      <!-- Stats -->
+
+      <div class="stats-grid">
+
+        <div class="stat-card">
+
+          <span class="stat-icon">
+            &#128176;
+          </span>
+
+          <div>
+            <span class="stat-label">
+              Revenue this month
+            </span>
+
+            <span class="stat-value">
+              $4,286
+            </span>
+
+            <span class="stat-delta up">
+              &#8599; 12.4%
+            </span>
+          </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+          <span class="stat-icon">
+            &#128230;
+          </span>
+
+          <div>
+
+            <span class="stat-label">
+              Active listings
+            </span>
+
+            <span class="stat-value">
+              18
+            </span>
+
+            <span class="stat-delta">
+              2 low on stock
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+          <span class="stat-icon">
+            &#129534;
+          </span>
+
+          <div>
+
+            <span class="stat-label">
+              Orders this month
+            </span>
+
+            <span class="stat-value">
+              67
+            </span>
+
+            <span class="stat-delta up">
+              &#8599; 8 new
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+          <span class="stat-icon">
+            &#11088;
+          </span>
+
+          <div>
+
+            <span class="stat-label">
+              Seller rating
+            </span>
+
+            <span class="stat-value">
+              4.8
+            </span>
+
+            <span class="stat-delta">
+              from 212 reviews
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- Overview grid -->
+
+      <div class="overview-grid">
+
+        <!-- Sales chart -->
+
+        <div class="panel">
+
+          <div class="panel-head">
+
+            <h3>
+              Sales this week
+            </h3>
+
+            <span class="panel-sub">
+              Mon – Sun
+            </span>
+
+          </div>
+
+
+          <div class="bar-chart">
+
+            @for (sale of weekSales; track sale.day) {
+
+            <div class="bar-col" [title]="sale.day + ': ' + sale.value + ' sales'">
+
+              <div class="bar" [style.height.%]="(sale.value / maxSales) * 100"></div>
+
+              <span class="bar-day">
+                {{ sale.day }}
+              </span>
+
+            </div>
+
+            }
+
+          </div>
+
+        </div>
+
+
+        <!-- Recent orders -->
+
+        <div class="panel">
+
+          <div class="panel-head">
+
+            <h3>
+              Recent orders
+            </h3>
+
+            <button class="panel-link" (click)="switchTab('orders')">
+              View all
+            </button>
+
+          </div>
+
+
+          <ul class="mini-orders">
+
+            @for (
+            order of orders.slice(0, 4);
+            track order.id
+            ) {
+
+            <li class="mini-order">
+
+              <span class="mini-order-icon">
+                📦
+              </span>
+
+              <div class="mini-order-info">
+
+                <span class="mini-order-name">
+                  {{ order.product }}
+                </span>
+
+                <span class="mini-order-buyer">
+                  {{ order.buyer }} · {{ order.date }}
+                </span>
+
+              </div>
+
+              <span class="mini-order-amount">
+                ${{ order.amount }}
+              </span>
+
+            </li>
+
+            }
+
+          </ul>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    }
+
+
+    <!-- ================================================== -->
+    <!-- PRODUCTS -->
+    <!-- ================================================== -->
+
+    @if (activeTab() === 'products') {
+
+    <section class="tab-panel active">
+
+      <div class="panel">
+
+        <div class="panel-head">
+
+          <h3>
+            My products
+          </h3>
+
+          <app-boutton></app-boutton>
+
+
+        </div>
+        <div class="product-table">
+
+          <!-- Header -->
+
+          <div class="table-row head">
+
+            <span>
+              Product
+            </span>
+
+            <span>
+              Price
+            </span>
+
+            <span>
+              Stock
+            </span>
+
+            <span>
+              Status
+            </span>
+
+            <span></span>
+
+          </div>
+
+
+          <!-- Products -->
+
+          @for (product of sellerProducts(); track product.id) {
+
+          <div class="table-row">
+
+            <div class="cell-product">
+              @if (product.imageUrls[0]) {
+              <span class="cell-thumb">
+                <img src="{{product.imageUrls[0]}}" alt="img" class="cell-thumb">
+              </span>
+              }@else{
+              <span class="cell-thumb">
+                <img src="/assets/noProducts.png
+                " alt="img" class="cell-thumb">
+              </span>
+              }
+
+
+              <span class="cell-name">
+
+                {{ product.name }}
+
+                <span class="cell-sub">
+                  ID {{ lotNo(product.id) }}
+                </span>
+
+              </span>
+
+            </div>
+
+
+            <span>
+              ${{ product.price }}
+            </span>
+
+
+            <span>
+              {{ product.quantity }} in stock
+            </span>
+
+
+            <span class="status-pill" [class.active]="product.quantity >= 5 " [class.low]="product.quantity<5">
+              @if (product.quantity<5) { Low stock } @else { Active } </span>
+
+
+                <div class="row-actions">
+
+                  <button class="icon-action" aria-label="Edit" (click)="editProduct(product)">
+                    &#9998;
+                  </button>
+
+                  <button class="icon-action danger" aria-label="Delete" (click)="deleteProduct(product)">
+                    &#128465;
+                  </button>
+
+                </div>
+
+          </div>
+
+          }
+
+        </div>
+
+      </div>
+
+    </section>
+
+    }
+
+
+    <!-- ================================================== -->
+    <!-- ORDERS -->
+    <!-- ================================================== -->
+
+    @if (activeTab() === 'orders') {
+
+    <section class="tab-panel active">
+
+      <div class="panel">
+
+        <div class="panel-head">
+
+          <h3>
+            Orders
+          </h3>
+
+          <span class="panel-sub">
+            Last 30 days
+          </span>
+
+        </div>
+
+
+        <div class="orders-table">
+
+          <!-- Header -->
+
+          <div class="table-row head">
+
+            <span>
+              Order
+            </span>
+
+            <span>
+              Item
+            </span>
+
+            <span>
+              Date
+            </span>
+
+            <span>
+              Amount
+            </span>
+
+            <span>
+              Status
+            </span>
+
+          </div>
+
+
+          <!-- Orders -->
+
+          @for (order of orders; track order.id) {
+
+          <div class="table-row">
+
+            <span class="cell-name">
+              {{ order.id }}
+            </span>
+
+
+            <span>
+
+              {{ order.product }}
+
+              <span class="cell-sub">
+                {{ order.buyer }}
+              </span>
+
+            </span>
+
+
+            <span>
+              {{ order.date }}
+            </span>
+
+
+            <span>
+              ${{ order.amount }}
+            </span>
+
+
+            <span class="status-pill" [class.delivered]="order.status === 'delivered'"
+              [class.shipped]="order.status === 'shipped'" [class.pending]="order.status === 'pending'">
+              {{ order.status | titlecase }}
+            </span>
+
+          </div>
+
+          }
+
+        </div>
+
+      </div>
+
+    </section>
+
+    }
+
+
+    <!-- ================================================== -->
+    <!-- SETTINGS -->
+    <!-- ================================================== -->
+    @if (activeTab() === 'settings') {
+
+    <section class="tab-panel active">
+
+      <div class="panel profile-panel">
+
+        <!-- Avatar -->
+
+        <div class="avatar-editor">
+
+          <div class="avatar-circle">
+
+            @if (user()?.avatar) {
+
+            <img [src]="user()?.avatar" alt="Seller avatar" />
+
+            } @else {
+
+            <span>
+              {{ initials }}
+            </span>
+
+            }
+
+            <button type="button" class="avatar-edit-btn" aria-label="Change avatar"
+              (click)="openAvatarPicker(avatarInput)">
+              &#128247;
+            </button>
+
+          </div>
+
+          <div class="avatar-actions">
+
+            <div class="avatar-btn-row">
+
+              <button type="button" class="btn-secondary-sm" (click)="openAvatarPicker(avatarInput)">
+                Upload new photo
+              </button>
+
+              <button type="button" class="btn-text" (click)="removeAvatar()">
+                Remove
+              </button>
+
+            </div>
+
+            <p class="avatar-hint">
+              JPG or PNG, at least 200×200px.
+              Square photos look best.
+            </p>
+
+          </div>
+
+        </div>
+
+        <!-- Hidden avatar input -->
+
+        <input #avatarInput type="file" accept="image/png,image/jpeg" hidden (change)="onAvatarSelected($event)" />
+
+        <!-- Settings form -->
+
+        <form class="settings-form" [formGroup]="settingsForm" (ngSubmit)="saveSettings()">
+
+          <!-- Name -->
+
+          <div class="form-row">
+
+            <div class="form-field">
+
+              <label for="fullName">
+                Full name
+              </label>
+
+              <input id="fullName" type="text" class="inputs" formControlName="name" />
+
+              @if (
+              settingsForm.controls.name.touched &&
+              settingsForm.controls.name.invalid
+              ) {
+
+              <small class="error">
+                Name is required and must be between 3 and 50 characters.
+              </small>
+
+              }
+
+            </div>
+
+          </div>
+
+
+          <!-- Email -->
+
+          <div class="form-row">
+
+            <div class="form-field">
+
+              <label for="email">
+                Email
+              </label>
+
+              <input id="email" type="email" class="inputs" formControlName="email" />
+
+              @if (
+              settingsForm.controls.email.touched &&
+              settingsForm.controls.email.invalid
+              ) {
+
+              <small class="error">
+                Please enter a valid email.
+              </small>
+
+              }
+
+            </div>
+
+          </div>
+
+
+          <!-- Role - READ ONLY -->
+
+          <div class="form-field">
+
+            <label for="role">
+              Role
+            </label>
+
+            <span id="role" class="inputs role">
+              {{"SELLER"}}
+            </span>
+
+          </div>
+
+
+          <!-- Actions -->
+
+          <div class="form-actions">
+
+            <button type="submit" class="btn-primary-sm" [disabled]="settingsForm.invalid || settingsForm.pristine">
+              Save changes
+            </button>
+
+            @if (showSaveHint()) {
+
+            <span class="save-hint">
+              Saved just now
+            </span>
+
+            }
+
+          </div>
+
+        </form>
+
+      </div>
+
+    </section>
+
+    }
+  </div>
+  <!-- Hidden file input -->
+
+
+
+  <!-- Toast -->
+
+  @if (showToastMessage()) {
+
+  <div class="toast show">
+    {{ toastMessage() }}
+  </div>
+
+  }

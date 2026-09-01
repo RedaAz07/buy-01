@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.microservices.product_service.dto.FeingResponse;
 import com.microservices.product_service.dto.productRequest;
 import com.microservices.product_service.dto.productRspons;
 import com.microservices.product_service.service.productService;
@@ -61,4 +62,8 @@ public class productController {
         productService.DeleteProduct(id, principal.getName());
     }
 
+  @GetMapping("/owner/{id}")
+public FeingResponse getUserProduct(@PathVariable("id") String id, Principal principal) {
+    return productService.getUserProduct(id, principal.getName());
+}
 }

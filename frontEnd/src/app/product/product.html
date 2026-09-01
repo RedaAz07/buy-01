@@ -1,106 +1,90 @@
 @if (products(); as product) {
-  <section class="product-detail">
-    @if (show) {
-      <div class="update-card">
-        <div class="card-inner">
-          <div class="card-header">
-            <h2>Update Product</h2>
-            <button class="close-btn" (click)="show = false">&times;</button>
-          </div>
-          <form [formGroup]="productForm" (ngSubmit)="updetProduct()">
-            <div class="field-wrapper">
-              <label class="field-label">Name</label>
-              <input
-                matInput
-                formControlName="name"
-                placeholder="Product name"
-                value="{{ product.name }}"
-              />
-            </div>
-            <div class="field-wrapper">
-              <label class="field-label">Description</label>
-              <textarea
-                matInput
-                formControlName="description"
-                placeholder="Product description"
-                rows="3"
-                value="{{ product.description }}"
-              ></textarea>
-            </div>
-            <div class="field-row">
-              <div class="field-wrapper1">
-                <label class="field-label">Price</label>
-                <input
-                  matInput
-                  type="number"
-                  formControlName="price"
-                  placeholder="0.00"
-                  value="{{ product.price }}"
-                />
-              </div>
-              <div class="field-wrapper1">
-                <label class="field-label">Quantity</label>
-                <input
-                  matInput
-                  type="number"
-                  formControlName="quantity"
-                  placeholder="0"
-                  value="{{ product.quantity }}"
-                />
-              </div>
-            </div>
-            <button class="submit-btn" type="submit">Update Product</button>
-          </form>
-        </div>
+<section class="product-detail">
+  @if (show) {
+  <div class="update-card">
+    <div class="card-inner">
+      <div class="card-header">
+        <h2>Update Product</h2>
+        <button class="close-btn" (click)="show = false">&times;</button>
       </div>
-    }
-    <div class="detail-container">
-      <div class="gallery">
-        <img
-          class="main-image"
-          [src]="product.imageUrls[0] || 'http://localhost:4200/assets/noProducts.png'"
-          [alt]="product.name"
-        />
-        @if (product.imageUrls.length > 1) {
-          <div class="thumbnails">
-            @for (img of product.imageUrls; track img) {
-              <img [src]="img" [alt]="product.name" class="thumb" />
-            }
+      <form [formGroup]="productForm" (ngSubmit)="updetProduct()">
+        <div class="field-wrapper">
+          <label class="field-label">Name</label>
+          <input matInput formControlName="name" placeholder="Product name" value="{{ product.name }}" />
+        </div>
+        <div class="field-wrapper">
+          <label class="field-label">Description</label>
+          <textarea matInput formControlName="description" placeholder="Product description" rows="3"
+            value="{{ product.description }}"></textarea>
+        </div>
+        <div class="field-row">
+          <div class="field-wrapper1">
+            <label class="field-label">Price</label>
+            <input matInput type="number" formControlName="price" placeholder="0.00" value="{{ product.price }}" />
           </div>
+          <div class="field-wrapper1">
+            <label class="field-label">Quantity</label>
+            <input matInput type="number" formControlName="quantity" placeholder="0" value="{{ product.quantity }}" />
+          </div>
+        </div>
+        <button class="submit-btn" type="submit">Update Product</button>
+      </form>
+    </div>
+  </div>
+  }
+  <div class="detail-container">
+    <div class="gallery">
+      <img class="main-image" [src]="product.imageUrls[i()] || 'http://localhost:4200/assets/noProducts.png'"
+        [alt]="product.name" />
+      @if (product.imageUrls.length > 1) {
+      <div class="thumbnails">
+        @for (img of product.imageUrls; track $index) {
+        <img [src]="img" [alt]="product.name" class="thumb" (click)="chnge($index)" />
         }
       </div>
-      <div class="info">
+      }
+    </div>
+    <div class="info">
+      <div class="tag-top">
         <div class="tag-top">
           <span class="hole"></span>
           <span class="serial">No. {{ lotNo(product.id) }}</span>
         </div>
-        <div class="title-row">
-          <h1 class="name">{{ product.name }}</h1>
-          @if (user(); as currentUser) {
-            @if (products()?.sellerId === currentUser.id) {
-              <div class="owner-actions">
-                <button class="btn-delete" (click)="deleteProduct()" title="Delete">✕</button>
-                <button class="btn-edit" (click)="show = !show" title="Edit">✎</button>
-              </div>
-            }
-          }
+        @if (user(); as currentUser) {
+        @if (products()?.sellerId === currentUser.id) {
+        <div class="owner-actions">
+          <button class="btn-delete" (click)="deleteProduct()" title="Delete">✕</button>
+          <button class="btn-edit" (click)="show = !show" title="Edit">✎</button>
         </div>
-        <p class="description">{{ product.description }}</p>
-        <div class="price-row">
-          <span class="price">${{ product.price }}</span>
-          <span class="stock" [class.out]="product.quantity === 0">
-            {{ product.quantity > 0 ? product.quantity + ' in stock' : 'Out of stock' }}
-          </span>
-        </div>
-        <div class="actions">
-          <button class="btn-primary" [disabled]="product.quantity === 0">Add to Cart</button>
-          @if (user(); as currentUser) {
-            @if (products()?.sellerId === currentUser.id) {
-              <button class="btn-secondary" (click)="updetProduct()">update product</button>
-            }
-          }
-        </div>
+        }
+        }
+      </div>
+      <div class="title-row">
+        <h1 class="name">{{ product.name }}</h1>
+      </div>
+      <p class="description">{{ product.description }}</p>
+      <div class="price-row">
+        <span class="price">${{ product.price }}</span>
+        <span class="stock" [class.out]="product.quantity === 0">
+          {{ product.quantity > 0 ? product.quantity + ' in stock' : 'Out of stock' }}
+        </span>
+      </div>
+      <div class="actions">
+        <button class="btn-primary" [disabled]="product.quantity === 0" (click)="Message=!Message">Add to Cart</button>
+        @if (Message) {
+        <p class="coming-soon-message">
+          🛒 Add to Cart feature is coming soon!
+        </p>
+        }
+
+
+        <!-- @if (user(); as currentUser) {
+        @if (products()?.sellerId === currentUser.id) {
+        <button class="btn-secondary" (click)="updetProduct()">update product</button>
+        }
+        } -->
       </div>
     </div>
-  </section>
+  </div>
+</section>
 }

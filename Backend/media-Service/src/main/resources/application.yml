@@ -1,6 +1,6 @@
 spring:
   kafka:
-    bootstrap-servers: localhost:9092  # Change to kafka:29092 if service is dockerized
+    bootstrap-servers: localhost:9092 # Change to kafka:29092 if service is dockerized
     consumer:
       group-id: ${spring.application.name}-group
       auto-offset-reset: earliest
@@ -8,9 +8,13 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: "*"
+        spring.json.use.type.headers: true
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        # Maps event tokens to full class paths in media-service
+        spring.json.type.mapping: mediaUploaded:com.Media.dto.event.MediaUploadedEvent,mediaDeleted:com.Media.dto.event.DeleteMediaEvent
   servlet:
     multipart:
       max-file-size: 2MB

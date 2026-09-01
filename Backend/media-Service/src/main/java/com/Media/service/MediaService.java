@@ -5,10 +5,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.Media.dto.event.DeleteMediaEvent;
 import com.Media.exceptions.ApiException;
 import com.Media.model.Media;
 import com.Media.model.UploadType;
@@ -203,31 +205,38 @@ public class MediaService {
         }
 
         // Delete image
+        private final KafkaTemplate<String, Object> kafkaTemplate;
 
         @Transactional
-        public Map<String, String> deleteImage(
-                        String id,
-                        String ownerId) {
+        public Map<String, String> deleteImageByUrl(String imageUrl, String ownerId) {
 
-                if (id == null || id.isBlank()) {
-                        throw ApiException.badRequest("Media ID is required");
+                if (imageUrl == null || imageUrl.isBlank()) {
+                        throw ApiException.badRequest("Image URL is required");
                 }
 
                 if (ownerId == null || ownerId.isBlank()) {
                         throw ApiException.notFound("User not found");
                 }
 
+                // 1. Find by URL instead of ID
                 Media media = mediaRepository
-                                .findByIdAndOwnerId(id, ownerId)
+                                .findByImagePathAndOwnerId(imageUrl, ownerId)
                                 .orElseThrow(() -> ApiException.notFound("Media not found"));
 
-                String imageUrl = media.getImagePath();
+                String productId = media.getProductId(); // Assuming your Media entity stores this
 
-                // Delete Mongo record
+                // 2. Delete Mongo record
                 mediaRepository.delete(media);
 
-                // Delete Cloudinary file
+                // 3. Delete Cloudinary file
                 deleteCloudinaryFileSafely(media);
+
+                // 4. Send event to Product Service via Kafka
+                if (productId != null) {
+                        DeleteMediaEvent event = new DeleteMediaEvent(media.getOwnerId(), productId, imageUrl,
+                                        UploadType.PRODUCT_IMAGE);
+                        kafkaTemplate.send("media-deleted-topic", event);
+                }
 
                 return Map.of("image", imageUrl);
         }

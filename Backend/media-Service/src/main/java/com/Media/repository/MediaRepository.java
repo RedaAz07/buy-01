@@ -17,7 +17,7 @@ public interface MediaRepository extends MongoRepository<Media, String> {
     void deleteByProductId(String id);
 
     Optional<Media> findByIdAndOwnerId(String id, String ownerId);
-   // Optional<Media> findByImagePathAndOwnerId(String imagePath, String ownerId);
+  Optional<Media> findByImagePathAndOwnerId(String imagePath, String ownerId);
 
 
     Optional<Media> findByOwnerIdAndType(

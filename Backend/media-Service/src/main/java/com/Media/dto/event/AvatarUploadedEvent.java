@@ -1,4 +1,4 @@
-package com.Media.dto.response;
+package com.Media.dto.event;
 
 public record AvatarUploadedEvent(
     String userId,

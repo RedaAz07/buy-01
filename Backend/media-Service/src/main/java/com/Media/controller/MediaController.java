@@ -1,5 +1,7 @@
 package com.Media.controller;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +33,7 @@ public class MediaController {
     public ResponseEntity<Map<String, String>> create(
             @RequestPart("media") List<MultipartFile> media,
             @RequestParam(required = false) String productId,
-            @RequestParam UploadType type, @RequestHeader("Authorization") String token,Principal principal) {
+            @RequestParam UploadType type, @RequestHeader("Authorization") String token, Principal principal) {
         Map<String, String> response = mediaService.create(media, productId, type, principal.getName(), token);
         return ResponseEntity.ok(response);
     }
@@ -42,10 +44,14 @@ public class MediaController {
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Map<String, String>> deleteImage(@PathVariable String id, Principal principal) {
-        Map<String, String> response = mediaService.deleteImage(id, principal.getName());
-        return ResponseEntity.ok(response);
+    @DeleteMapping
+    public ResponseEntity<?> deleteMedia(
+            @RequestParam("url") String url,
+            Principal principal) { 
+
+        String decodedUrl = URLDecoder.decode(url, StandardCharsets.UTF_8);
+
+        return ResponseEntity.ok(mediaService.deleteImageByUrl(decodedUrl, principal.getName()));
     }
 
 }

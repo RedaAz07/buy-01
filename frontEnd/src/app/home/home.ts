@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Productdto } from '../core/models/post';
 import { Post } from '../components/post/post';
 import { Product } from '../core/services/product';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-home',
@@ -27,7 +28,7 @@ export class Home {
 
   private loadProducts(): void {
     this.http
-      .get<Productdto[]>("http://localhost:8080/api/products")
+      .get<Productdto[]>(`${environment.apiUrl}/api/products`)
       .subscribe(products => {
         this.products.set(products);
         console.log(products);

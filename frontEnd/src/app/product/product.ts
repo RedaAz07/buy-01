@@ -6,6 +6,7 @@ import { Auth } from '../core/services/auth';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { OwnerActions } from '../components/owner-actions/owner-actions';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-product',
@@ -53,7 +54,7 @@ export class Product {
   });
   ngOnInit() {
     this.id.set(this.route.snapshot.paramMap.get('id'));
-    this.http.get<Productdto>(`http://localhost:8080/api/products/${this.id()}`).subscribe({
+    this.http.get<Productdto>(`${environment.apiUrl}/api/products/${this.id()}`).subscribe({
       next: (p) => {
         this.products.set(p);
         console.log(p);

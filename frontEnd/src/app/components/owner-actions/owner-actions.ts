@@ -6,6 +6,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatIcon } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-owner-actions',
@@ -84,7 +85,7 @@ export class OwnerActions {
       quantity: value.quantity,
     };
 
-    this.http.put<Productdto>(`http://localhost:8080/api/products/${this.product().id}`, payload).subscribe({
+    this.http.put<Productdto>(`${environment.apiUrl}/api/products/${this.product().id}`, payload).subscribe({
       next: (p: Productdto) => {
 
         if (this.selectedFiles().length > 0) {
@@ -116,7 +117,7 @@ export class OwnerActions {
     formData.append('type', 'PRODUCT_IMAGE');
 
     this.http
-      .post<string[]>(`http://localhost:8080/api/media/images?productId=${productId}`, formData)
+      .post<string[]>(`${environment.apiUrl}/api/media/images?productId=${productId}`, formData)
       .subscribe({
         next: (urls: string[]) => {
 
@@ -148,7 +149,7 @@ export class OwnerActions {
     }
     this.deleted = true;
     this.imageDeleteLoading.set(true);
-    this.http.delete<{ "image": string }>(`http://localhost:8080/api/media/images?url=${encodeURIComponent(imageUrl)}`).subscribe({
+    this.http.delete<{ "image": string }>(`${environment.apiUrl}/api/media/images?url=${encodeURIComponent(imageUrl)}`).subscribe({
       next: (v: { "image": string }) => {
         console.log(v);
 
@@ -181,7 +182,7 @@ export class OwnerActions {
       return;
     }
     this.deleteLoading.set(true);
-    this.http.delete(`http://localhost:8080/api/products/${this.product().id}`).subscribe({
+    this.http.delete(`${environment.apiUrl}/api/products/${this.product().id}`).subscribe({
       next: () => {
         this.deleteLoading.set(false);
         this.router.navigate(['/home']);

@@ -3,13 +3,14 @@ import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { UserProfileDTO } from '../models/user';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 import { AuthResponseDTO, LoginRequestDTO, RegisterRequestDTO } from '../models/auth';
 
 @Injectable({
   providedIn: 'root',
 })
 export class Auth {
-  private apiUrl = 'http://localhost:8080/api/auth';
+  private apiUrl = `${environment.apiUrl}/api/auth`;
   private loggedInSubject = new BehaviorSubject<boolean>(false);
   public isLoggedIn$ = this.loggedInSubject.asObservable();
   private currentUserSubject = new BehaviorSubject<UserProfileDTO | null>(null);
@@ -59,7 +60,7 @@ export class Auth {
   }
 
   loadCurrentUser(): Observable<UserProfileDTO> {
-    return this.http.get<UserProfileDTO>(`http://localhost:8080/api/users/me`).pipe(
+    return this.http.get<UserProfileDTO>(`${environment.apiUrl}/api/users/me`).pipe(
       tap((user) => {
         
         this.currentUserSubject.next(user);

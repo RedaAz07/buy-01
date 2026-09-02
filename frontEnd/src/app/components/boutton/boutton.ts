@@ -8,6 +8,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Productdto } from '../../core/models/post';
 import { Router } from '@angular/router';
 import { Product } from '../../core/services/product';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-boutton',
@@ -79,7 +80,7 @@ export class Boutton {
           formData.append('type', 'PRODUCT_IMAGE');
 
           this.http
-            .post(`http://localhost:8080/api/media/images?productId=${product.id}`, formData)
+            .post(`${environment.apiUrl}/api/media/images?productId=${product.id}`, formData)
             .subscribe({
               next: () => {
                 this.snackbar.open('Product created successfully!', 'Close', { duration: 3000 });

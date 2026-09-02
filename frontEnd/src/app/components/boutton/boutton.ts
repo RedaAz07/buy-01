@@ -72,6 +72,7 @@ export class Boutton {
 
           // Append ALL files using the same key
           this.selectedFiles.forEach((file) => {
+
             formData.append('media', file, file.name);
           });
 
@@ -128,7 +129,16 @@ export class Boutton {
   }
 
   onFilesSelected(event: Event) {
+
     const input = event.target as HTMLInputElement;
+    if (input.files) {
+      for (const file of input.files) {
+        if (file.size > 2 * 1048 * 1048) {
+          this.snackbar.open('Image size cannot be bigger than 2MB', 'Close', { duration: 3000 });
+          return;
+        }
+      }
+    }
 
     if (!input.files || input.files.length === 0) {
       this.selectedFiles = [];

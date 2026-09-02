@@ -256,10 +256,7 @@ export class Dashboard implements OnInit {
     this.showToast(`Editing "${product.name}"`);
   }
 
-  deleteProduct(product: Productdto): void {
 
-
-  }
 
   // ===================== AVATAR =====================
 
@@ -279,10 +276,26 @@ export class Dashboard implements OnInit {
       input.value = '';
       return;
     }
+    if (file.size > 2 * 1024 * 1024) {
+      this.showToast('Image size cannot be bigger than 2MB');
+      input.value = '';
+      return;
+    }
 
     // Call media-service here
     this.media.setAvatar([file]).subscribe({
       next: avatarUrl => {
+
+        this.user.update(user => {
+          if (!user) {
+            return null;
+          }
+
+          return {
+            ...user,
+            avatar: avatarUrl[0],
+          };
+        });
 
 
         this.showToast('Profile photo updated');

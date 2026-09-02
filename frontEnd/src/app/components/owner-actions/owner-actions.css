@@ -24,6 +24,24 @@
         background 0.15s ease;
 }
 
+.btn-delete:disabled,
+.btn-edit:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.btn-delete:disabled:hover {
+    border-color: var(--line-strong);
+    color: var(--ink-soft);
+    background: var(--paper-raised);
+}
+
+.btn-edit:disabled:hover {
+    border-color: var(--line-strong);
+    color: var(--ink-soft);
+    background: var(--paper-raised);
+}
+
 .btn-edit:hover {
     border-color: var(--till);
     color: var(--till);
@@ -155,16 +173,53 @@ textarea:focus {
 
 .submit-btn {
     width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 14px;
     background: var(--stamp);
     color: var(--paper-raised);
     margin-top: 8px;
     box-shadow: var(--stamp-shadow);
 }
 
-.submit-btn:hover {
+.submit-btn:hover:not(:disabled) {
     background: var(--stamp-dark);
     transform: translate(1px, 1px);
     box-shadow: 3px 3px 0 rgba(32, 40, 58, 0.22);
+}
+
+.submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: var(--stamp-shadow);
+}
+
+/* ─── Spinner ────── */
+.spinner {
+    display: inline-block;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    animation: spin 0.6s linear infinite;
+}
+
+.btn-spinner {
+    width: 14px;
+    height: 14px;
+    border-width: 1.5px;
+}
+
+.inline-spinner {
+    width: 12px;
+    height: 12px;
+    border-width: 1.5px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
 }
 
 
@@ -294,6 +349,15 @@ textarea:focus {
   transition: color 0.15s ease;
 }
 
-.preview-remove:hover {
+.preview-remove:hover:not(:disabled) {
   color: var(--error);
+}
+
+.preview-remove:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.preview-remove:disabled:hover {
+  color: var(--ink-soft);
 }

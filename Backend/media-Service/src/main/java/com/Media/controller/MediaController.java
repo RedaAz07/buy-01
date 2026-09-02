@@ -30,11 +30,11 @@ public class MediaController {
     private final MediaService mediaService;
 
     @PostMapping()
-    public ResponseEntity<Map<String, String>> create(
+    public ResponseEntity<List<String>> create(
             @RequestPart("media") List<MultipartFile> media,
             @RequestParam(required = false) String productId,
             @RequestParam UploadType type, @RequestHeader("Authorization") String token, Principal principal) {
-        Map<String, String> response = mediaService.create(media, productId, type, principal.getName(), token);
+        List<String> response = mediaService.create(media, productId, type, principal.getName(), token);
         return ResponseEntity.ok(response);
     }
 

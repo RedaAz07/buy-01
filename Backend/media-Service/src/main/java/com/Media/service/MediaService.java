@@ -1,15 +1,5 @@
 package com.Media.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.Media.dto.event.DeleteMediaEvent;
 import com.Media.exceptions.ApiException;
 import com.Media.model.Media;
@@ -18,10 +8,17 @@ import com.Media.repository.MediaRepository;
 import com.Media.service.FeignClient.ProductClientInterface;
 import com.Media.service.MediaUploadService.UploadResult;
 import com.Media.service.events.MediaEventProducer;
-
 import feign.FeignException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -36,13 +33,12 @@ public class MediaService {
         private final ProductClientInterface productClientInterface;
 
         @Transactional
-        public Map<String, String> create(
+        public List<String> create(
                         List<MultipartFile> files,
                         String productId,
                         UploadType type,
                         String username,
                         String token) {
-
                 // Validation
 
                 if (username == null || username.isBlank()) {
@@ -57,19 +53,15 @@ public class MediaService {
                         throw ApiException.badRequest("Media type is required");
                 }
 
-                if (type != UploadType.AVATAR
-                                && type != UploadType.PRODUCT_IMAGE) {
-
+                if (type != UploadType.AVATAR && type != UploadType.PRODUCT_IMAGE) {
                         throw ApiException.badRequest("Invalid media type");
                 }
 
                 // Avatar validation
 
                 if (type == UploadType.AVATAR) {
-
                         if (files.size() > 1) {
-                                throw ApiException.badRequest(
-                                                "Avatar can only include one file");
+                                throw ApiException.badRequest("Avatar can only include one file");
                         }
 
                         if (productId != null && !productId.isBlank()) {
@@ -81,7 +73,6 @@ public class MediaService {
                 // Product image validation
 
                 if (type == UploadType.PRODUCT_IMAGE) {
-
                         if (productId == null || productId.isBlank()) {
                                 throw ApiException.badRequest(
                                                 "Product ID is required for product images");
@@ -94,8 +85,7 @@ public class MediaService {
                         }
 
                         if (files.size() > MAX_PRODUCT_IMAGES) {
-                                throw ApiException.badRequest(
-                                                "Maximum 5 media files allowed");
+                                throw ApiException.badRequest("Maximum 5 media files allowed");
                         }
 
                         // Check existing product images
@@ -104,14 +94,13 @@ public class MediaService {
                                         UploadType.PRODUCT_IMAGE);
 
                         if (existingImages + files.size() > MAX_PRODUCT_IMAGES) {
-
                                 long remaining = MAX_PRODUCT_IMAGES - existingImages;
 
                                 throw ApiException.badRequest(
-                                                "Maximum 5 media files allowed. "
-                                                                + "You can upload only "
-                                                                + Math.max(remaining, 0)
-                                                                + " more image(s)");
+                                                "Maximum 5 media files allowed. " +
+                                                                "You can upload only " +
+                                                                Math.max(remaining, 0) +
+                                                                " more image(s)");
                         }
                 }
 
@@ -129,16 +118,17 @@ public class MediaService {
 
                 List<String> uploadedPublicIds = new ArrayList<>();
                 List<Runnable> pendingEvents = new ArrayList<>();
+                List<String> uploadedUrls = new ArrayList<>();
 
                 try {
                         for (MultipartFile file : files) {
-
                                 validateFile(file);
 
                                 // Upload to Cloudinary
                                 UploadResult result = mediaUploadService.uploadFile(file);
                                 uploadedPublicIds.add(result.publicId());
 
+                                uploadedUrls.add(result.url());
                                 // Create Media entity
                                 Media media = new Media();
                                 media.setOwnerId(username);
@@ -156,13 +146,14 @@ public class MediaService {
                                 // Queue up Kafka events safely for after the loop
                                 if (type == UploadType.AVATAR) {
                                         pendingEvents.add(() -> mediaEventProducer.sendAvatarUploadedEvent(
-                                                        savedMedia.getOwnerId(), savedMedia.getImagePath()));
+                                                        savedMedia.getOwnerId(),
+                                                        savedMedia.getImagePath()));
                                 } else {
                                         pendingEvents.add(() -> mediaEventProducer.sendMediaUploadedEvent(
-                                                        savedMedia.getProductId(), savedMedia.getImagePath()));
+                                                        savedMedia.getProductId(),
+                                                        savedMedia.getImagePath()));
                                 }
                         }
-
                         // 1. Send all Kafka events now that everything succeeded
                         pendingEvents.forEach(Runnable::run);
 
@@ -172,23 +163,16 @@ public class MediaService {
                                 mediaRepository.delete(oldAvatarMedia);
                                 deleteCloudinaryFileSafely(oldAvatarMedia);
                         }
-
                 } catch (ApiException e) {
                         cleanupUploadedFiles(uploadedPublicIds);
                         throw e;
                 } catch (Exception e) {
-                        log.error(
-                                        "Media upload failed for user={}",
-                                        username,
-                                        e);
+                        log.error("Media upload failed for user={}", username, e);
                         cleanupUploadedFiles(uploadedPublicIds);
                         throw ApiException.badRequest(
                                         "Media upload failed. Post creation cancelled.");
                 }
-
-                return Map.of(
-                                "message",
-                                "Media uploaded successfully");
+                return uploadedUrls;
         }
 
         // Get image
@@ -198,7 +182,8 @@ public class MediaService {
                         throw ApiException.badRequest("Media ID is required");
                 }
 
-                Media media = mediaRepository.findById(id)
+                Media media = mediaRepository
+                                .findById(id)
                                 .orElseThrow(() -> ApiException.notFound("Media not found"));
 
                 return Map.of("image", media.getImagePath());
@@ -209,7 +194,6 @@ public class MediaService {
 
         @Transactional
         public Map<String, String> deleteImageByUrl(String imageUrl, String ownerId) {
-
                 if (imageUrl == null || imageUrl.isBlank()) {
                         throw ApiException.badRequest("Image URL is required");
                 }
@@ -233,7 +217,10 @@ public class MediaService {
 
                 // 4. Send event to Product Service via Kafka
                 if (productId != null) {
-                        DeleteMediaEvent event = new DeleteMediaEvent(media.getOwnerId(), productId, imageUrl,
+                        DeleteMediaEvent event = new DeleteMediaEvent(
+                                        media.getOwnerId(),
+                                        productId,
+                                        imageUrl,
                                         UploadType.PRODUCT_IMAGE);
                         kafkaTemplate.send("media-deleted-topic", event);
                 }
@@ -253,7 +240,8 @@ public class MediaService {
 
         private void deleteCloudinaryFileSafely(Media media) {
                 if (media.getPublicId() == null || media.getPublicId().isBlank()) {
-                        log.warn("Cannot delete Cloudinary file because publicId is missing. mediaId={}",
+                        log.warn(
+                                        "Cannot delete Cloudinary file because publicId is missing. mediaId={}",
                                         media.getId());
                         return;
                 }
@@ -261,8 +249,11 @@ public class MediaService {
                 try {
                         mediaUploadService.deleteFile(media.getPublicId());
                 } catch (Exception e) {
-                        log.error("Failed to delete Cloudinary file. publicId={}, mediaId={}",
-                                        media.getPublicId(), media.getId(), e);
+                        log.error(
+                                        "Failed to delete Cloudinary file. publicId={}, mediaId={}",
+                                        media.getPublicId(),
+                                        media.getId(),
+                                        e);
                 }
         }
 
@@ -276,8 +267,10 @@ public class MediaService {
                 try {
                         mediaUploadService.deleteOrphanedFiles(uploadedPublicIds);
                 } catch (Exception e) {
-                        log.error("Failed to cleanup orphaned Cloudinary files. publicIds={}",
-                                        uploadedPublicIds, e);
+                        log.error(
+                                        "Failed to cleanup orphaned Cloudinary files. publicIds={}",
+                                        uploadedPublicIds,
+                                        e);
                 }
         }
 }

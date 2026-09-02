@@ -1,14 +1,14 @@
 <div class="owner-actions">
   <button class="btn-delete" (click)="deleteProduct()" title="Delete">✕</button>
-  <button class="btn-edit" (click)="show=!show" title="Edit">✎</button>
+  <button class="btn-edit" (click)="show.set(!show())" title="Edit">✎</button>
 </div>
 
-@if (show) {
+@if (show()) {
 <div class="update-card">
   <div class="card-inner">
     <div class="card-header">
       <h2>Update Product</h2>
-      <button class="close-btn" (click)="show = false">&times;</button>
+      <button class="close-btn" (click)="show.set(false)">&times;</button>
     </div>
 
     <form [formGroup]="productForm" (ngSubmit)="updetProduct()">

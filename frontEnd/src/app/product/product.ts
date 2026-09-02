@@ -1,5 +1,5 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, output, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Productdto } from '../core/models/post';
 import { Auth } from '../core/services/auth';
@@ -15,6 +15,7 @@ import { OwnerActions } from '../components/owner-actions/owner-actions';
 })
 export class Product {
   products = signal<Productdto | null>(null);
+
   http = inject(HttpClient);
   route = inject(ActivatedRoute);
   router = inject(Router);
@@ -70,5 +71,7 @@ export class Product {
       },
     });
   }
-
+  onProductUpdated(updatedProduct: Productdto) {
+    this.products.set(updatedProduct);
+  }
 }

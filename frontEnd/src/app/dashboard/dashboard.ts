@@ -29,7 +29,7 @@ interface WeekSale {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [FormsModule, TitleCasePipe, ReactiveFormsModule, Boutton,OwnerActions],
+  imports: [FormsModule, TitleCasePipe, ReactiveFormsModule, Boutton, OwnerActions],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
@@ -351,5 +351,10 @@ export class Dashboard implements OnInit {
   }
   logout() {
     this.auth.logout();
+  }
+  onProductUpdated(updatedProduct: Productdto) {
+    this.sellerProducts.update((products) =>
+      products.map((product) => product.id === updatedProduct.id ? updatedProduct : product)
+    );
   }
 }

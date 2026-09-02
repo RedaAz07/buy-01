@@ -7,6 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Productdto } from '../../core/models/post';
 import { Router } from '@angular/router';
+import { Product } from '../../core/services/product';
 
 @Component({
   selector: 'app-boutton',
@@ -29,6 +30,7 @@ export class Boutton {
   http = inject(HttpClient);
   snackbar = inject(MatSnackBar);
   router = inject(Router);
+  productService = inject(Product);
 
   constructor() {
     this.productForm = this.fb.group({
@@ -62,7 +64,7 @@ export class Boutton {
     };
 
     // Create product first
-    this.http.post<Productdto>('http://localhost:8080/api/products', payload).subscribe({
+    this.productService.createProduct(payload).subscribe({
       next: (product) => {
         // Upload images if selected
         if (this.selectedFiles.length > 0) {
@@ -80,16 +82,22 @@ export class Boutton {
             .subscribe({
               next: () => {
                 this.snackbar.open('Product created successfully!', 'Close', { duration: 3000 });
+                // Notify that product was created
+                this.productService.notifyProductCreated(product);
               },
 
               error: () => {
                 this.snackbar.open('Product created, but image upload failed.', 'Close', {
                   duration: 3000,
                 });
+                // Still notify in case images failed but product was created
+                this.productService.notifyProductCreated(product);
               },
             });
         } else {
           this.snackbar.open('Product created successfully!', 'Close', { duration: 3000 });
+          // Notify that product was created
+          this.productService.notifyProductCreated(product);
         }
 
         // Reset form

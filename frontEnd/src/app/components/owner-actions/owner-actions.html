@@ -1,38 +1,86 @@
 <div class="owner-actions">
-    <button class="btn-delete" (click)="deleteProduct()" title="Delete">✕</button>
-    <button class="btn-edit" (click)="show=!show" title="Edit">✎</button>
+  <button class="btn-delete" (click)="deleteProduct()" title="Delete">✕</button>
+  <button class="btn-edit" (click)="show=!show" title="Edit">✎</button>
 </div>
+
 @if (show) {
 <div class="update-card">
-    <div class="card-inner">
-        <div class="card-header">
-            <h2>Update Product</h2>
-            <button class="close-btn" (click)="show = false">&times;</button>
-        </div>
-        <form [formGroup]="productForm" (ngSubmit)="updetProduct()">
-            <div class="field-wrapper">
-                <label class="field-label">Name</label>
-                <input matInput formControlName="name" placeholder="Product name" value="{{ product.name }}" />
-            </div>
-            <div class="field-wrapper">
-                <label class="field-label">Description</label>
-                <textarea matInput formControlName="description" placeholder="Product description" rows="3"
-                    value="{{ product.description }}"></textarea>
-            </div>
-            <div class="field-row">
-                <div class="field-wrapper1">
-                    <label class="field-label">Price</label>
-                    <input matInput type="number" formControlName="price" placeholder="0.00"
-                        value="{{ product.price }}" />
-                </div>
-                <div class="field-wrapper1">
-                    <label class="field-label">Quantity</label>
-                    <input matInput type="number" formControlName="quantity" placeholder="0"
-                        value="{{ product.quantity }}" />
-                </div>
-            </div>
-            <button class="submit-btn" type="submit">Update Product</button>
-        </form>
+  <div class="card-inner">
+    <div class="card-header">
+      <h2>Update Product</h2>
+      <button class="close-btn" (click)="show = false">&times;</button>
     </div>
+
+    <form [formGroup]="productForm" (ngSubmit)="updetProduct()">
+      <div class="field-wrapper">
+        <label class="field-label">Name</label>
+        <input matInput formControlName="name" placeholder="Product name" />
+      </div>
+
+      <div class="field-wrapper">
+        <label class="field-label">Description</label>
+        <textarea matInput formControlName="description" placeholder="Product description" rows="3"></textarea>
+      </div>
+
+      <div class="field-row">
+        <div class="field-wrapper1">
+          <label class="field-label">Price</label>
+          <input matInput type="number" formControlName="price" placeholder="0.00" />
+        </div>
+        <div class="field-wrapper1">
+          <label class="field-label">Quantity</label>
+          <input matInput type="number" formControlName="quantity" placeholder="0" />
+        </div>
+      </div>
+
+      <div class="field-wrapper">
+        <label class="field-label">Product Images</label>
+
+        <!-- Section 1: Existing Saved Images (Tracked by URL value, not index) -->
+        @if (existingImages().length > 0) {
+        <div class="media-preview-container">
+          @for (url of existingImages(); track url; let i = $index) {
+          <div class="media-preview">
+            <img class="preview-img" [src]="url" [alt]="'Product image ' + (i + 1)" />
+            <div class="preview-meta">
+              <span class="preview-name">Saved Image</span>
+              <button type="button" class="preview-remove" (click)="removeExistingImage(url.toString())" title="Delete image">
+                &times;
+              </button>
+            </div>
+          </div>
+          }
+        </div>
+        }
+
+        <!-- Section 2: Input for New Files -->
+        <div class="file-input">
+          <mat-icon>image</mat-icon>
+          <input type="file" id="imageInput" accept="image/*" multiple (change)="onFilesSelected($event)" />
+        </div>
+
+        <!-- Section 3: Previews of Newly Selected Files -->
+        @if (selectedFiles().length > 0) {
+        <div class="media-preview-container">
+          @for (file of selectedFiles(); track $index; let i = $index) {
+          <div class="media-preview">
+            @if (previewUrls()[i]) {
+            <img class="preview-img" [src]="previewUrls()[i]" [alt]="file.name" />
+            }
+            <div class="preview-meta">
+              <span class="preview-name">{{ file.name }}</span>
+              <button type="button" class="preview-remove" (click)="removeNewFile(i)" title="Remove new selection">
+                &times;
+              </button>
+            </div>
+          </div>
+          }
+        </div>
+        }
+      </div>
+
+      <button class="submit-btn" type="submit">Update Product</button>
+    </form>
+  </div>
 </div>
 }

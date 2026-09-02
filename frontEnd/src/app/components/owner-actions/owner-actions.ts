@@ -16,8 +16,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class OwnerActions {
   product = input.required<Productdto>();
-  @Output() productUpdated = new EventEmitter<void>();
-
+  @Output() productUpdated = new EventEmitter<Productdto>();
   // State managed via Signals
   existingImages = signal<String[]>([]);
   selectedFiles = signal<File[]>([]);
@@ -31,7 +30,14 @@ export class OwnerActions {
   router = inject(Router);
 
   @Input() id!: String;
-  show = false;
+  show = signal<boolean>(false);
+  updated = false;
+  deleted = false;
+
+  // Per-action loading states
+  updateLoading = signal<boolean>(false);
+  deleteLoading = signal<boolean>(false);
+  imageDeleteLoading = signal<boolean>(false);
 
   constructor() {
     this.productForm = this.fb.group({
@@ -58,8 +64,15 @@ export class OwnerActions {
   }
 
   updetProduct() {
+    if (this.updated) {
+      return
+    }
+    this.updated = true;
+    this.updateLoading.set(true);
     if (this.productForm.invalid) {
       this.productForm.markAllAsTouched();
+      this.updateLoading.set(false);
+      this.updated = false;
       return;
     }
 
@@ -71,19 +84,24 @@ export class OwnerActions {
       quantity: value.quantity,
     };
 
-    this.http.put(`http://localhost:8080/api/products/${this.product().id}`, payload).subscribe({
-      next: () => {
+    this.http.put<Productdto>(`http://localhost:8080/api/products/${this.product().id}`, payload).subscribe({
+      next: (p: Productdto) => {
+
         if (this.selectedFiles().length > 0) {
           this.uploadNewImages(this.product().id);
         } else {
           this.snackbar.open('Product updated successfully!', 'Close', { duration: 3000 });
-          this.show = false; // Close popup
-          this.productUpdated.emit();
+          this.show.set(false)
+          this.productUpdated.emit(p);
+          this.updateLoading.set(false);
         }
+        this.updated = false
       },
       error: (err) => {
         console.error(err);
         this.snackbar.open('Failed to update product details.', 'Close', { duration: 3000 });
+        this.updated = false;
+        this.updateLoading.set(false);
       },
     });
   }
@@ -98,43 +116,78 @@ export class OwnerActions {
     formData.append('type', 'PRODUCT_IMAGE');
 
     this.http
-      .post(`http://localhost:8080/api/media/images?productId=${productId}`, formData)
+      .post<string[]>(`http://localhost:8080/api/media/images?productId=${productId}`, formData)
       .subscribe({
-        next: () => {
+        next: (urls: string[]) => {
+
           this.snackbar.open('Product and new images updated successfully!', 'Close', { duration: 3000 });
           this.selectedFiles.set([]);
           this.previewUrls.set([]);
-          this.show = false; // Close popup
-          this.productUpdated.emit();
+          this.show.set(false) // Close popup
+          const updatedProduct: Productdto = {
+            ...this.product(),
+            imageUrls: [
+              ...(this.product().imageUrls ?? []),
+              ...urls
+            ]
+          };
+          this.productUpdated.emit(updatedProduct);
+          this.updateLoading.set(false);
         },
         error: (err) => {
           console.error(err);
           this.snackbar.open('Product updated, but image upload failed.', 'Close', { duration: 3000 });
+          this.updateLoading.set(false);
         },
       });
   }
 
   removeExistingImage(imageUrl: string) {
-    this.http.delete(`http://localhost:8080/api/media/images?url=${encodeURIComponent(imageUrl)}`).subscribe({
-      next: () => {
+    if (this.deleted) {
+      return
+    }
+    this.deleted = true;
+    this.imageDeleteLoading.set(true);
+    this.http.delete<{ "image": string }>(`http://localhost:8080/api/media/images?url=${encodeURIComponent(imageUrl)}`).subscribe({
+      next: (v: { "image": string }) => {
+        console.log(v);
+
         // Update signal immutably using .update()
         this.existingImages.update(images => images.filter(url => url !== imageUrl));
         this.snackbar.open('Image deleted successfully', 'Close', { duration: 2000 });
-        this.productUpdated.emit();
+        const updatedProduct: Productdto = {
+          ...this.product(),
+          imageUrls: [
+            ...(this.product().imageUrls.filter(u => u != v.image) ?? []),
+
+          ]
+        };
+        this.productUpdated.emit(updatedProduct);
+        this.deleted = false;
+        this.imageDeleteLoading.set(false);
+        this.show.set(false)
       },
       error: (err) => {
         console.error(err);
         this.snackbar.open('Failed to delete image', 'Close', { duration: 3000 });
+        this.deleted = false;
+        this.imageDeleteLoading.set(false);
       },
     });
   }
 
   deleteProduct() {
+    if (this.deleteLoading()) {
+      return;
+    }
+    this.deleteLoading.set(true);
     this.http.delete(`http://localhost:8080/api/products/${this.product().id}`).subscribe({
       next: () => {
+        this.deleteLoading.set(false);
         this.router.navigate(['/home']);
       },
       error: (e: HttpErrorResponse) => {
+        this.deleteLoading.set(false);
         if (e.status == 404) {
           this.router.navigate(['/home']);
         }

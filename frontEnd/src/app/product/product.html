@@ -21,7 +21,7 @@
         </div>
         @if (user(); as currentUser) {
         @if (products()?.sellerId === currentUser.id) {
-        <app-owner-actions [product]="product" [id]="product.id"></app-owner-actions>
+        <app-owner-actions [product]="product" [id]="product.id"  (productUpdated)="onProductUpdated($event)"></app-owner-actions>
         }
         }
       </div>

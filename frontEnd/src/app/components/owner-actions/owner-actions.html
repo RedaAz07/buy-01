@@ -1,14 +1,20 @@
 <div class="owner-actions">
-  <button class="btn-delete" (click)="deleteProduct()" title="Delete">✕</button>
-  <button class="btn-edit" (click)="show=!show" title="Edit">✎</button>
+  <button class="btn-delete" (click)="deleteProduct()" title="Delete" [disabled]="deleteLoading()">
+    @if (deleteLoading()) {
+      <span class="spinner btn-spinner"></span>
+    } @else {
+      ✕
+    }
+  </button>
+  <button class="btn-edit" (click)="show.set(!show())" title="Edit" [disabled]="updateLoading()">✎</button>
 </div>
 
-@if (show) {
+@if (show()) {
 <div class="update-card">
   <div class="card-inner">
     <div class="card-header">
       <h2>Update Product</h2>
-      <button class="close-btn" (click)="show = false">&times;</button>
+      <button class="close-btn" (click)="show.set(false)">&times;</button>
     </div>
 
     <form [formGroup]="productForm" (ngSubmit)="updetProduct()">
@@ -44,8 +50,13 @@
             <img class="preview-img" [src]="url" [alt]="'Product image ' + (i + 1)" />
             <div class="preview-meta">
               <span class="preview-name">Saved Image</span>
-              <button type="button" class="preview-remove" (click)="removeExistingImage(url.toString())" title="Delete image">
-                &times;
+              <button type="button" class="preview-remove" (click)="removeExistingImage(url.toString())" title="Delete image"
+                [disabled]="imageDeleteLoading()">
+                @if (imageDeleteLoading()) {
+                  <span class="spinner inline-spinner"></span>
+                } @else {
+                  &times;
+                }
               </button>
             </div>
           </div>
@@ -79,7 +90,14 @@
         }
       </div>
 
-      <button class="submit-btn" type="submit">Update Product</button>
+      <button class="submit-btn" type="submit" [disabled]="updateLoading()">
+        @if (updateLoading()) {
+          <span class="spinner btn-spinner"></span>
+          Updating…
+        } @else {
+          Update Product
+        }
+      </button>
     </form>
   </div>
 </div>

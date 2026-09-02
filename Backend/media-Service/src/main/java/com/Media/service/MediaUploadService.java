@@ -27,42 +27,33 @@ public class MediaUploadService {
     private static final List<String> ALLOWED_MIME_TYPES = List.of(
             "image/jpeg",
             "image/png",
-            "image/webp"
-    );
+            "image/webp");
 
-    public record UploadResult(String url, String publicId) {}
+    public record UploadResult(String url, String publicId) {
+    }
 
     public UploadResult uploadFile(MultipartFile file) throws IOException {
 
-        String realMimeType = tika.detect(
-                file.getInputStream(),
-                file.getOriginalFilename()
-        );
+       String realMimeType = tika.detect(file.getBytes(), file.getOriginalFilename());
 
         // Check mime type
         if (!ALLOWED_MIME_TYPES.contains(realMimeType)) {
             throw ApiException.badRequest("Invalid media uploaded: " + realMimeType);
         }
 
-        File tempFile = File.createTempFile("upload-", file.getOriginalFilename());
-        file.transferTo(tempFile);
-
         try {
             @SuppressWarnings("unchecked")
             Map<String, Object> uploadResult = cloudinary.uploader().upload(
-                    tempFile,
-                    ObjectUtils.asMap("resource_type", "auto")
-            );
+                    file.getBytes(), // Upload directly from bytes in memory
+                    ObjectUtils.asMap("resource_type", "auto"));
 
             return new UploadResult(
                     uploadResult.get("secure_url").toString(),
-                    uploadResult.get("public_id").toString()
-            );
+                    uploadResult.get("public_id").toString());
 
-        } finally {
-            if (!tempFile.delete()) {
-                log.warn("Failed to delete temporary file: {}", tempFile.getAbsolutePath());
-            }
+        } catch (Exception e) {
+            log.error("Cloudinary upload failed", e);
+            throw ApiException.badRequest("Failed to upload file to cloud storage");
         }
     }
 
@@ -76,29 +67,26 @@ public class MediaUploadService {
             }
         }
     }
+
     public void deleteFile(String publicId) {
-    try {
-        cloudinary.uploader().destroy(
-                publicId,
-                ObjectUtils.emptyMap()
-        );
+        try {
+            cloudinary.uploader().destroy(
+                    publicId,
+                    ObjectUtils.emptyMap());
 
-        log.info(
-                "Deleted Cloudinary file with public ID: {}",
-                publicId
-        );
+            log.info(
+                    "Deleted Cloudinary file with public ID: {}",
+                    publicId);
 
-    } catch (Exception e) {
-        log.error(
-                "Failed to delete Cloudinary file with public ID: {}",
-                publicId,
-                e
-        );
+        } catch (Exception e) {
+            log.error(
+                    "Failed to delete Cloudinary file with public ID: {}",
+                    publicId,
+                    e);
 
-        throw new RuntimeException(
-                "Failed to delete Cloudinary file",
-                e
-        );
+            throw new RuntimeException(
+                    "Failed to delete Cloudinary file",
+                    e);
+        }
     }
-}
 }

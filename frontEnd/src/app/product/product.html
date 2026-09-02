@@ -1,37 +1,6 @@
 @if (products(); as product) {
 <section class="product-detail">
-  @if (show) {
-  <div class="update-card">
-    <div class="card-inner">
-      <div class="card-header">
-        <h2>Update Product</h2>
-        <button class="close-btn" (click)="show = false">&times;</button>
-      </div>
-      <form [formGroup]="productForm" (ngSubmit)="updetProduct()">
-        <div class="field-wrapper">
-          <label class="field-label">Name</label>
-          <input matInput formControlName="name" placeholder="Product name" value="{{ product.name }}" />
-        </div>
-        <div class="field-wrapper">
-          <label class="field-label">Description</label>
-          <textarea matInput formControlName="description" placeholder="Product description" rows="3"
-            value="{{ product.description }}"></textarea>
-        </div>
-        <div class="field-row">
-          <div class="field-wrapper1">
-            <label class="field-label">Price</label>
-            <input matInput type="number" formControlName="price" placeholder="0.00" value="{{ product.price }}" />
-          </div>
-          <div class="field-wrapper1">
-            <label class="field-label">Quantity</label>
-            <input matInput type="number" formControlName="quantity" placeholder="0" value="{{ product.quantity }}" />
-          </div>
-        </div>
-        <button class="submit-btn" type="submit">Update Product</button>
-      </form>
-    </div>
-  </div>
-  }
+
   <div class="detail-container">
     <div class="gallery">
       <img class="main-image" [src]="product.imageUrls[i()] || 'http://localhost:4200/assets/noProducts.png'"
@@ -52,10 +21,7 @@
         </div>
         @if (user(); as currentUser) {
         @if (products()?.sellerId === currentUser.id) {
-        <div class="owner-actions">
-          <button class="btn-delete" (click)="deleteProduct()" title="Delete">✕</button>
-          <button class="btn-edit" (click)="show = !show" title="Edit">✎</button>
-        </div>
+        <app-owner-actions [product]="product" [id]="product.id"></app-owner-actions>
         }
         }
       </div>

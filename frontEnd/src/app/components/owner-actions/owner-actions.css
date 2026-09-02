@@ -1,0 +1,206 @@
+.owner-actions {
+    display: flex;
+    gap: 8px;
+    flex: none;
+}
+
+.btn-delete,
+.btn-edit {
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 2px;
+    border: 1px solid var(--line-strong);
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition:
+        border-color 0.15s ease,
+        color 0.15s ease,
+        background 0.15s ease;
+}
+
+.btn-edit:hover {
+    border-color: var(--till);
+    color: var(--till);
+}
+
+.btn-delete:hover {
+    border-color: var(--stamp);
+    color: var(--stamp);
+    background: var(--stamp-soft);
+}
+
+
+
+/* ─── Update card — a fresh ledger page in the modal ────── */
+.update-card {
+    position: fixed;
+    inset: 0;
+    background: rgba(32, 40, 58, 0.55);
+    backdrop-filter: blur(2px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    padding: 24px;
+}
+
+.card-inner {
+    background-color: var(--kraft-soft);
+    background-image: repeating-linear-gradient(to bottom,
+            var(--line) 0 1px,
+            transparent 1px 28px);
+    border: 2px solid var(--ink);
+    border-radius: 3px;
+    width: 100%;
+    max-width: 460px;
+    padding: 28px 30px;
+    box-shadow: 10px 10px 0 rgba(20, 25, 38, 0.25);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed var(--line-strong);
+}
+
+.card-header h2 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.35rem;
+    margin: 0;
+    color: var(--ink);
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-family: var(--font-mono);
+    font-size: 1.15rem;
+    line-height: 1;
+    color: var(--ink-soft);
+    cursor: pointer;
+    padding: 4px 8px;
+    transition: color 0.15s ease;
+}
+
+.close-btn:hover {
+    color: var(--stamp);
+}
+
+.field-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 18px;
+    flex: 1;
+}
+
+.field-wrapper1 {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 18px;
+    flex: 1;
+    width: 50%;
+}
+
+.field-label {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--brass-deep);
+}
+
+.field-row {
+    display: flex;
+    gap: 16px;
+}
+
+input,
+textarea {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    padding: 11px 14px;
+    border: 1.5px solid var(--line-strong);
+    border-radius: 2px;
+    background: var(--paper-raised);
+    color: var(--ink);
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--line-strong);
+}
+
+input:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--ink);
+    box-shadow: 0 0 0 3px rgba(143, 122, 60, 0.18);
+}
+
+.submit-btn {
+    width: 100%;
+    background: var(--stamp);
+    color: var(--paper-raised);
+    margin-top: 8px;
+    box-shadow: var(--stamp-shadow);
+}
+
+.submit-btn:hover {
+    background: var(--stamp-dark);
+    transform: translate(1px, 1px);
+    box-shadow: 3px 3px 0 rgba(32, 40, 58, 0.22);
+}
+
+
+.actions {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.coming-soon-message {
+    margin: 0;
+    padding: 10px 16px;
+    border-radius: 8px;
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffe69c;
+    font-size: 14px;
+    font-weight: 500;
+    animation: fadeIn 0.25s ease-in-out;
+}
+
+.btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

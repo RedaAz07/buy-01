@@ -99,10 +99,8 @@ public class productService {
         productEventProducer.sendProductDeletedEvent(id);
     }
 
-   public FeingResponse getUserProduct(String id, String sellerId) {
-    Product product = productRepository.findByIdAndSellerId(id, sellerId)
-        .orElseThrow(() -> ApiException.notFound("Product not found or you don't own it"));
-    
-    return new FeingResponse(product.getId(), product.getName());
-}
+    public boolean getUserProduct(String id, String sellerId) {
+        return productRepository.existsByIdAndSellerId(id, sellerId);
+
+    }
 }

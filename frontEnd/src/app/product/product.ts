@@ -5,10 +5,11 @@ import { Productdto } from '../core/models/post';
 import { Auth } from '../core/services/auth';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { OwnerActions } from '../components/owner-actions/owner-actions';
 
 @Component({
   selector: 'app-product',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, OwnerActions],
   templateUrl: './product.html',
   styleUrl: './product.css',
 })
@@ -18,7 +19,6 @@ export class Product {
   route = inject(ActivatedRoute);
   router = inject(Router);
   id = signal<String | null>(null);
-  show = false;
   i = signal(0);
   private userService = inject(Auth);
   fb = inject(FormBuilder);
@@ -70,41 +70,5 @@ export class Product {
       },
     });
   }
-  updetProduct() {
-    if (this.productForm.invalid) {
-      this.productForm.markAllAsTouched();
-      return;
-    }
 
-    const value = this.productForm.value;
-    console.log(value);
-    const payload = {
-      name: value.name,
-      description: value.description,
-      price: value.price,
-      quantity: value.quantity,
-    };
-    this.http.put(`http://localhost:8080/api/products/${this.id()}`, payload).subscribe({
-      next: (value) => {
-        console.log(value);
-        this.show = false
-      },
-      error(err) {
-        console.log(err);
-      },
-    });
-  }
-  deleteProduct() {
-    this.http.delete(`http://localhost:8080/api/products/${this.id()}`).subscribe({
-      next: (p) => {
-        console.log(p);
-        this.router.navigate(['/home']);
-      },
-      error: (e: HttpErrorResponse) => {
-        if (e.status == 404) {
-          this.router.navigate(['/home']);
-        }
-      },
-    });
-  }
 }

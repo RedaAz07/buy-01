@@ -8,6 +8,7 @@ import { User } from '../core/services/user';
 import { Productdto } from '../core/models/post';
 import { Product } from '../core/services/product';
 import { Boutton } from '../components/boutton/boutton';
+import { OwnerActions } from '../components/owner-actions/owner-actions';
 
 
 
@@ -28,7 +29,7 @@ interface WeekSale {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [FormsModule, TitleCasePipe, ReactiveFormsModule, Boutton],
+  imports: [FormsModule, TitleCasePipe, ReactiveFormsModule, Boutton,OwnerActions],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
@@ -347,5 +348,8 @@ export class Dashboard implements OnInit {
     }
     const n = parseInt(clean.slice(-6), 16);
     return String(isNaN(n) ? 1 : n % 1000).padStart(3, '0');
+  }
+  logout() {
+    this.auth.logout();
   }
 }

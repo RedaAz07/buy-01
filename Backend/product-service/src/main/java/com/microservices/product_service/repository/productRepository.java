@@ -20,5 +20,5 @@ count();
 public interface productRepository extends MongoRepository<Product, String> {
       List<Product> findBySellerId(String sellerId);
 
-      Optional<Product> findByIdAndSellerId(String id, String sellerId);
+      boolean existsByIdAndSellerId(String id, String sellerId);
 }

@@ -6,7 +6,7 @@
   - [x] Create a Media Service for image upload/download and validation, including a 2 MB limit.
   - [x] Configure Kafka for `avatar-uploaded-topic` and `user-deleted-topic` events.
   - [x] Configure Kafka for `product-deleted-topic` and `media-uploaded-topic` events (Product ↔ Media).
-  - [ ] Dockerize all Java services with Dockerfiles and a unified docker-compose. (No Dockerfiles exist; root `docker-compose.yml` only runs infra — DBs, Kafka, Kafka UI.)
+  - [x] Dockerize all Java services with Dockerfiles and a unified docker-compose.
   - [ ] Fix `UserEventProducer.sendUserDeletedEvent()` — currently defined but never invoked.
 
 - [ ] 2. Enhanced Database Design
@@ -71,7 +71,7 @@
   - [ ] Add gateway rate limiting for authentication and media endpoints.
 
 - [ ] 8. Code Quality & Housekeeping
-  - [ ] Add Dockerfiles for user-service, product-service, and media-service.
-  - [ ] Create a unified docker-compose that starts all services and infrastructure together.
+  - [x] Add Dockerfiles for user-service, product-service, and media-service.
+  - [x] Create a unified docker-compose that starts all services and infrastructure together.
   - [ ] Fix naming inconsistencies (`` → `ProductController`, `productRspons` → `ProductResponse`, `media-Service` → `media-service`). (Still `productController` / `productRspons` in `product-service`.)
   - [ ] Add API tests for all services. (Only trivial context-load tests in user-service, api-gateway, registry.)

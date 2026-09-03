@@ -55,13 +55,24 @@ export class Auth {
   }
 
   register(userData: RegisterRequestDTO): Observable<AuthResponseDTO> {
-    return this.http.post<AuthResponseDTO>(`${this.apiUrl}/register`, userData);
+    return this.http.post<AuthResponseDTO>(`${this.apiUrl}/register`, userData).pipe(
+      tap((response : AuthResponseDTO ) => {
+        localStorage.setItem('jwt_token', response.jwt);
+        this.loggedInSubject.next(true);
+        this.loadCurrentUser().subscribe({
+          error: () => {
+            localStorage.removeItem('jwt_token');
+            this.loggedInSubject.next(false);
+          },
+        });
+      }),
+    );
   }
 
   loadCurrentUser(): Observable<UserProfileDTO> {
     return this.http.get<UserProfileDTO>(`${environment.apiUrl}/api/users/me`).pipe(
       tap((user) => {
-        
+
         this.currentUserSubject.next(user);
       }),
     );

@@ -1,23 +1,25 @@
 <nav class="navbar">
-    <div class="navbar-brand">
-        <a routerLink="/"><span class="brand-dot"></span>buy<span class="brand-accent">01</span></a>
-    </div>
+  <div class="navbar-brand">
+    <a routerLink="/"><span class="brand-dot"></span>buy<span class="brand-accent">01</span></a>
+  </div>
 
-    <div class="navbar-actions">
-        @if (user(); as currentUser) {
-        <span class="user-chip" id="click" (click)="route()" >
-            @if (currentUser.avatar) {
-            <img class="avatar-img" [src]="currentUser.avatar" alt="Avatar" />
-            } @else {
-            <span class="avatar">{{ currentUser.name.charAt(0).toUpperCase() }}</span>
-            }
-            <span class="username">{{ currentUser.name }}</span>
-        </span>
-        <app-boutton></app-boutton>
-        <button class="navbar-logout" (click)="logout()">Logout</button>
-        } @else {
-        <a class="btn btn-ghost" routerLink="/login">Login</a>
-        <a class="btn btn-primary" routerLink="/register">Register</a>
-        }
-    </div>
+  <div class="navbar-actions">
+    @if (user(); as currentUser) {
+    <span class="user-chip" id="click" (click)="route()">
+      @if (currentUser.avatar) {
+      <img class="avatar-img" [src]="currentUser.avatar" alt="Avatar" />
+      } @else {
+      <span class="avatar">{{ currentUser.name.charAt(0).toUpperCase() }}</span>
+      }
+      <span class="username">{{ currentUser.name }}</span>
+    </span>
+    @if (currentUser.role==="ROLE_SELLER") {
+    <app-boutton></app-boutton>
+    }
+    <button class="navbar-logout" (click)="logout()">Logout</button>
+    } @else {
+    <a class="btn btn-ghost" routerLink="/login">Login</a>
+    <a class="btn btn-primary" routerLink="/register">Register</a>
+    }
+  </div>
 </nav>

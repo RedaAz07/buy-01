@@ -3,6 +3,7 @@ package com.microservices.product_service.controller;
 import java.util.List;
 import java.security.Principal;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,10 +12,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.microservices.product_service.dto.FeingResponse;
 import com.microservices.product_service.dto.productRequest;
 import com.microservices.product_service.dto.productRspons;
 import com.microservices.product_service.service.productService;
@@ -46,8 +47,9 @@ public class productController {
     }
 
     @GetMapping("/my")
-    public List<productRspons> GetMyProducts(Principal principal) {
-        return productService.getMyProducts(principal.getName());
+    public Page<productRspons> GetMyProducts(@RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size, Principal principal) {
+        return productService.getMyProducts(principal.getName(), size, page);
     }
 
     @PutMapping("/{id}")
@@ -62,8 +64,8 @@ public class productController {
         productService.DeleteProduct(id, principal.getName());
     }
 
-  @GetMapping("/owner/{id}")
-public boolean getUserProduct(@PathVariable("id") String id, Principal principal) {
-    return productService.getUserProduct(id, principal.getName());
-}
+    @GetMapping("/owner/{id}")
+    public boolean getUserProduct(@PathVariable("id") String id, Principal principal) {
+        return productService.getUserProduct(id, principal.getName());
+    }
 }

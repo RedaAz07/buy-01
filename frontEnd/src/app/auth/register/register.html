@@ -2,129 +2,206 @@
   <aside class="register-visual" aria-hidden="true">
     <div class="visual-glow visual-glow--one"></div>
     <div class="visual-glow visual-glow--two"></div>
+
+
     <div class="visual-content">
       <span class="brand-mark">◆ Market</span>
-      <h1 class="visual-heading">Start your<br />shelf.</h1>
-      <p class="visual-copy">Create an account to buy or sell — set up in under a minute.</p>
+
+      <h1 class="visual-heading">
+        Start your<br />shelf.
+      </h1>
+
+      <p class="visual-copy">
+        Create an account to buy or sell — set up in under a minute.
+      </p>
+
       <ul class="visual-list">
         <li><span class="dot"></span> Track every order in one place</li>
         <li><span class="dot"></span> Save items and checkout faster</li>
         <li><span class="dot"></span> Switch to selling anytime</li>
       </ul>
     </div>
+
+
   </aside>
 
   <div class="register-panel">
     <div class="perforation" aria-hidden="true"></div>
 
+    
     <div class="register-card">
+
       <div class="register-header">
         <div class="register-avatar">
           <mat-icon>person_add</mat-icon>
         </div>
+
         <h2>Create account</h2>
         <p>Fill in the details to register</p>
       </div>
 
       <div class="register-body">
         <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+
+          <!-- NAME -->
           <div class="field-wrapper">
-            <label class="field-label">
+            <label class="field-label" for="name">
               <mat-icon class="label-icon">person_outline</mat-icon>
               Name
             </label>
-            <mat-form-field appearance="outline" class="register-field">
-              <mat-icon matPrefix>person_outline</mat-icon>
-              <input matInput type="text" formControlName="name" placeholder="Enter name" />
-              @if (hasError('name', 'required')) {
-              <mat-error>Name is required.</mat-error>
-              }
-              @if (hasError('name', 'minlength') || hasError('name', 'maxlength')) {
-              <mat-error>Name must be between 3 and 15 characters.</mat-error>
-              }
-              @if (hasError('name', 'pattern')) {
-              <mat-error>Name can only contain letters.</mat-error>
-              }
-            </mat-form-field>
+
+            <div class="input-wrap">
+              <span class="input-icon">
+                <mat-icon>person_outline</mat-icon>
+              </span>
+
+              <input id="name" class="register-input" type="text" formControlName="name" placeholder="Enter name" />
+            </div>
+
+            @if (hasError('name', 'required')) {
+            <span class="field-error">
+              <mat-icon class="error-icon">error_outline</mat-icon>
+              Name is required.
+            </span>
+            }
+
+            @if (hasError('name', 'minlength') || hasError('name', 'maxlength')) {
+            <span class="field-error">
+              <mat-icon class="error-icon">error_outline</mat-icon>
+              Name must be between 3 and 15 characters.
+            </span>
+            }
+
+            @if (hasError('name', 'pattern')) {
+            <span class="field-error">
+              <mat-icon class="error-icon">error_outline</mat-icon>
+              Name can only contain letters.
+            </span>
+            }
           </div>
 
+
+          <!-- EMAIL -->
           <div class="field-wrapper">
-            <label class="field-label">
+            <label class="field-label" for="email">
               <mat-icon class="label-icon">email</mat-icon>
               Email
             </label>
-            <mat-form-field appearance="outline" class="register-field">
-              <mat-icon matPrefix>email</mat-icon>
-              <input matInput type="email" formControlName="email" placeholder="Enter email" />
-              @if (hasError('email', 'required')) {
-              <mat-error>Email is required.</mat-error>
-              }
-              @if (hasError('email', 'email')) {
-              <mat-error>Invalid email address.</mat-error>
-              }
-            </mat-form-field>
+
+            <div class="input-wrap">
+              <span class="input-icon">
+                <mat-icon>email</mat-icon>
+              </span>
+
+              <input id="email" class="register-input" type="email" formControlName="email" placeholder="Enter email" />
+            </div>
+
+            @if (hasError('email', 'required')) {
+            <span class="field-error">
+              <mat-icon class="error-icon">error_outline</mat-icon>
+              Email is required.
+            </span>
+            }
+
+            @if (hasError('email', 'email')) {
+            <span class="field-error">
+              <mat-icon class="error-icon">error_outline</mat-icon>
+              Invalid email address.
+            </span>
+            }
           </div>
 
+
+          <!-- ROLE -->
           <div class="field-wrapper">
-            <label class="field-label">
+            <label class="field-label" for="role">
               <mat-icon class="label-icon">badge</mat-icon>
               Role
             </label>
-            <mat-form-field appearance="outline" class="register-field">
-              <mat-icon matPrefix>badge</mat-icon>
-              <mat-select formControlName="role" placeholder="Select your role">
-                <mat-option value="ROLE_CLIENT">Client</mat-option>
-                <mat-option value="ROLE_SELLER">Seller</mat-option>
-              </mat-select>
-              @if (hasError('role', 'required')) {
-              <mat-error>Role is required.</mat-error>
-              }
-              @if (hasError('role', 'pattern')) {
-              <mat-error>Please select a valid role.</mat-error>
-              }
-            </mat-form-field>
+
+            <div class="input-wrap">
+              <span class="input-icon">
+                <mat-icon>badge</mat-icon>
+              </span>
+
+              <select id="role" class="register-input role-select" formControlName="role">
+                <option value="" disabled>Select your role</option>
+                <option value="ROLE_CLIENT">Client</option>
+                <option value="ROLE_SELLER">Seller</option>
+              </select>
+
+              <span class="select-arrow">
+                <mat-icon>expand_more</mat-icon>
+              </span>
+            </div>
+
+            @if (hasError('role', 'required')) {
+            <span class="field-error">
+              <mat-icon class="error-icon">error_outline</mat-icon>
+              Role is required.
+            </span>
+            }
+
+            @if (hasError('role', 'pattern')) {
+            <span class="field-error">
+              <mat-icon class="error-icon">error_outline</mat-icon>
+              Please select a valid role.
+            </span>
+            }
           </div>
 
+
+          <!-- PASSWORD -->
           <div class="field-wrapper">
-            <label class="field-label">
+            <label class="field-label" for="password">
               <mat-icon class="label-icon">lock_outline</mat-icon>
               Password
             </label>
-            <mat-form-field appearance="outline" class="register-field">
-              <mat-icon matPrefix>lock_outline</mat-icon>
-              <input
-                matInput
-                [type]="showPassword ? 'text' : 'password'"
-                formControlName="password"
-                placeholder="Enter password"
-              />
-              <button
-                matSuffix
-                class="pwd-toggle"
-                type="button"
-                (click)="showPassword = !showPassword"
-                [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
-              >
-                <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+
+            <div class="input-wrap">
+              <span class="input-icon">
+                <mat-icon>lock_outline</mat-icon>
+              </span>
+
+              <input id="password" class="register-input" [type]="showPassword ? 'text' : 'password'"
+                formControlName="password" placeholder="Enter password" />
+
+              <button class="pwd-toggle" type="button" (click)="showPassword = !showPassword"
+                [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'">
+                <mat-icon>
+                  {{ showPassword ? 'visibility_off' : 'visibility' }}
+                </mat-icon>
               </button>
-              @if (hasError('password', 'required')) {
-              <mat-error>Password is required.</mat-error>
-              }
-              @if (hasError('password', 'minlength') || hasError('password', 'maxlength')) {
-              <mat-error>Password must be between 8 and 20 characters.</mat-error>
-              }
-            </mat-form-field>
+            </div>
+
+            @if (hasError('password', 'required')) {
+            <span class="field-error">
+              <mat-icon class="error-icon">error_outline</mat-icon>
+              Password is required.
+            </span>
+            }
+
+            @if (hasError('password', 'minlength') || hasError('password', 'maxlength')) {
+            <span class="field-error">
+              <mat-icon class="error-icon">error_outline</mat-icon>
+              Password must be between 8 and 20 characters.
+            </span>
+            }
           </div>
+
 
           <button class="submit-btn" type="submit" [disabled]="registerForm.invalid">
             Register
           </button>
 
           <div class="register-redirect">
-            Already have an account? <a routerLink="/login">Sign in</a>
+            Already have an account?
+            <a routerLink="/login">Sign in</a>
           </div>
+
         </form>
       </div>
     </div>
+
   </div>
 </div>

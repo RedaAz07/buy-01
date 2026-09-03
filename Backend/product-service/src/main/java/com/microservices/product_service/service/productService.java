@@ -3,6 +3,10 @@ package com.microservices.product_service.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.microservices.product_service.dto.FeingResponse;
@@ -41,10 +45,24 @@ public class productService {
         return getProduct(product);
     }
 
-    public List<productRspons> getMyProducts(String sellerId) {
-        List<Product> products = productRepository.findBySellerId(sellerId);
-        return products.stream().map(p -> getProduct(p)).toList();
+    public Page<productRspons> getMyProducts(String sellerId, int size, int page) {
 
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by("id").descending());
+
+        Page<Product> products = productRepository.findBySellerId(sellerId, pageable);
+
+        return products.map(p -> productRspons.builder()
+                .id(p.getId())
+                .name(p.getName())
+                .description(p.getDescription())
+                .price(p.getPrice())
+                .quantity(p.getQuantity())
+                .sellerId(p.getSellerId())
+                .imageUrls(copyImageUrls(p.getImageUrls()))
+                .build());
     }
 
     public List<productRspons> getall() {

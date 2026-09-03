@@ -21,7 +21,8 @@
         </div>
         @if (user(); as currentUser) {
         @if (products()?.sellerId === currentUser.id) {
-        <app-owner-actions [product]="product" [id]="product.id"  (productUpdated)="onProductUpdated($event)"></app-owner-actions>
+        <app-owner-actions [product]="product" [id]="product.id"
+          (productUpdated)="onProductUpdated($event)"></app-owner-actions>
         }
         }
       </div>
@@ -35,6 +36,10 @@
           {{ product.quantity > 0 ? product.quantity + ' in stock' : 'Out of stock' }}
         </span>
       </div>
+      @if (user(); as currentUser) {
+      @if (products()?.sellerId !== currentUser.id) {
+
+
       <div class="actions">
         <button class="btn-primary" [disabled]="product.quantity === 0" (click)="Message=!Message">Add to Cart</button>
         @if (Message) {
@@ -42,14 +47,9 @@
           🛒 Add to Cart feature is coming soon!
         </p>
         }
-
-
-        <!-- @if (user(); as currentUser) {
-        @if (products()?.sellerId === currentUser.id) {
-        <button class="btn-secondary" (click)="updetProduct()">update product</button>
-        }
-        } -->
       </div>
+      }
+      }
     </div>
   </div>
 </section>

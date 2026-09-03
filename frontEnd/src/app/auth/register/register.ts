@@ -43,7 +43,7 @@ export class Register {
 
       email: ['', [Validators.required, Validators.email]],
 
-      password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(20)]],
+      password: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(20)]],
 
       role: ['', [Validators.required, Validators.pattern('ROLE_CLIENT|ROLE_SELLER')]],
     });

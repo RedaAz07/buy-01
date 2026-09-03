@@ -2,6 +2,9 @@ package com.api.api_gateway;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.cloud.gateway.filter.ratelimit.KeyResolver;
+import reactor.core.publisher.Mono;
 
 @SpringBootApplication
 public class ApiGatewayApplication {
@@ -10,4 +13,12 @@ public class ApiGatewayApplication {
 		SpringApplication.run(ApiGatewayApplication.class, args);
 	}
 
+	@Bean
+	public KeyResolver keyResolver() {
+		return exchange -> Mono.just(exchange
+				.getRequest()
+				.getRemoteAddress()
+				.getAddress()
+				.getHostAddress());
+	}
 }

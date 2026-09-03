@@ -141,6 +141,18 @@ services:
     # ports:
     #   - "8083:8083"
 
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - redis-network
+      - default
+
   api-gateway:
     build:
       context: ./Backend/api-gateway
@@ -155,6 +167,7 @@ services:
       - user-service
       - product-service
       - media-service
+      - redis
     ports:
       - "8443:8443"
 
@@ -163,7 +176,11 @@ volumes:
   media_mongodb_data:
   product_mongodb_data:
   kafka_data:
+  redis_data:
 
 networks:
   default:
     name: buy-network
+
+  redis-network:
+    external: false

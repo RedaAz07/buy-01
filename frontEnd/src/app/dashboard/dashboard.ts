@@ -370,4 +370,14 @@ export class Dashboard implements OnInit {
       products.map((product) => product.id === updatedProduct.id ? updatedProduct : product)
     );
   }
+
+  onProductDeleted(id: String) {
+    this.sellerProducts.update((products) =>
+      products.filter((product) => product.id !== id)
+    );
+  }
+  onProductCreated(product: Productdto) {
+
+    this.sellerProducts.set([...this.sellerProducts(), product]);
+  }
 }

@@ -57,7 +57,6 @@ export class Product {
     this.http.get<Productdto>(`${environment.apiUrl}/api/products/${this.id()}`).subscribe({
       next: (p) => {
         this.products.set(p);
-        console.log(p);
         this.productForm.patchValue({
           name: p.name,
           description: p.description,

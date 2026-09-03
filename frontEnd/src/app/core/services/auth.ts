@@ -24,7 +24,6 @@ export class Auth {
       this.loggedInSubject.next(true);
       this.loadCurrentUser().subscribe({
         error: (e) => {
-          console.log(e);
 
          // localStorage.removeItem('jwt_token');
           this.loggedInSubject.next(false);

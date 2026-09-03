@@ -36,7 +36,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       const backendMessage =
         errorMessages.getHttpErrorMessage(error);
 
-      console.log(error);
 
       // Token expired / invalid
       if (error.status === 401 && token) {

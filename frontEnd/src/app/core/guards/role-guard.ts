@@ -21,7 +21,6 @@ export const roleGuard: CanActivateFn = (route, state) => {
   try {
     const decodedToken = jwtDecode<JwtPayload>(token);
 
-    console.log('Role:', decodedToken.role);
 
     if (decodedToken.role === 'ROLE_SELLER') {
       return true;

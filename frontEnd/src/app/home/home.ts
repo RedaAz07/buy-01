@@ -31,7 +31,6 @@ export class Home {
       .get<Productdto[]>(`${environment.apiUrl}/api/products`)
       .subscribe(products => {
         this.products.set(products);
-        console.log(products);
       });
   }
 }

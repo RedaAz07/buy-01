@@ -332,7 +332,7 @@
             My products
           </h3>
 
-          <app-boutton></app-boutton>
+          <app-boutton   (productCreated)="onProductCreated($event )" ></app-boutton>
 
 
         </div>
@@ -411,7 +411,8 @@
 
                 <div class="row-actions">
 
-                  <app-owner-actions [product]="product"   [id]="product.id"  (productUpdated)="onProductUpdated($event)"></app-owner-actions>
+                  <app-owner-actions [product]="product" [id]="product.id" (productUpdated)="onProductUpdated($event)"
+                    (productDelete)="onProductDeleted($event )"></app-owner-actions>
 
                 </div>
 

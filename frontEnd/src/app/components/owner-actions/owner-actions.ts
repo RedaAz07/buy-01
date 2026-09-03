@@ -18,6 +18,8 @@ import { environment } from '../../../environments/environment';
 export class OwnerActions {
   product = input.required<Productdto>();
   @Output() productUpdated = new EventEmitter<Productdto>();
+  @Output() productDelete = new EventEmitter<String>();
+
   // State managed via Signals
   existingImages = signal<String[]>([]);
   selectedFiles = signal<File[]>([]);
@@ -103,6 +105,9 @@ export class OwnerActions {
         this.snackbar.open('Failed to update product details.', 'Close', { duration: 3000 });
         this.updated = false;
         this.updateLoading.set(false);
+        if (err.state = 404) {
+          this.router.navigate(['/home']);
+        }
       },
     });
   }
@@ -151,7 +156,6 @@ export class OwnerActions {
     this.imageDeleteLoading.set(true);
     this.http.delete<{ "image": string }>(`${environment.apiUrl}/api/media/images?url=${encodeURIComponent(imageUrl)}`).subscribe({
       next: (v: { "image": string }) => {
-        console.log(v);
 
         // Update signal immutably using .update()
         this.existingImages.update(images => images.filter(url => url !== imageUrl));
@@ -185,7 +189,16 @@ export class OwnerActions {
     this.http.delete(`${environment.apiUrl}/api/products/${this.product().id}`).subscribe({
       next: () => {
         this.deleteLoading.set(false);
-        this.router.navigate(['/home']);
+        if (window.location.href == `http://localhost:4200/product/${this.product().id}`) {
+          this.router.navigate(['/home']);
+
+        }
+
+        const id = this.product().id;
+        this.productDelete.emit(id);
+
+
+
       },
       error: (e: HttpErrorResponse) => {
         this.deleteLoading.set(false);

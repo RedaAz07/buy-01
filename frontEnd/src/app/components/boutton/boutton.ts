@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, inject } from '@angular/core';
+import { Component, EventEmitter, inject, Output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -32,6 +32,7 @@ export class Boutton {
   snackbar = inject(MatSnackBar);
   router = inject(Router);
   productService = inject(Product);
+  @Output() productCreated = new EventEmitter<Productdto>();
 
   constructor() {
     this.productForm = this.fb.group({
@@ -80,12 +81,15 @@ export class Boutton {
           formData.append('type', 'PRODUCT_IMAGE');
 
           this.http
-            .post(`${environment.apiUrl}/api/media/images?productId=${product.id}`, formData)
+            .post<string[]>(`${environment.apiUrl}/api/media/images?productId=${product.id}`, formData)
             .subscribe({
-              next: () => {
+              next: (files: string[]) => {
                 this.snackbar.open('Product created successfully!', 'Close', { duration: 3000 });
                 // Notify that product was created
                 this.productService.notifyProductCreated(product);
+                product.imageUrls = files
+                this.productCreated.emit(product);
+
               },
 
               error: () => {
@@ -94,10 +98,14 @@ export class Boutton {
                 });
                 // Still notify in case images failed but product was created
                 this.productService.notifyProductCreated(product);
+                this.productCreated.emit(product);
+
+
               },
             });
         } else {
           this.snackbar.open('Product created successfully!', 'Close', { duration: 3000 });
+          this.productCreated.emit(product);
           // Notify that product was created
           this.productService.notifyProductCreated(product);
         }
@@ -117,6 +125,8 @@ export class Boutton {
         });
         this.selectedFiles = [];
         this.previewUrls = [];
+
+
       },
 
       error: (err) => {

@@ -1,11 +1,11 @@
 import { TitleCasePipe } from '@angular/common';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UpdateRequest, UserProfileDTO } from '../core/models/user';
 import { Auth } from '../core/services/auth';
 import { Media } from '../core/services/media';
 import { User } from '../core/services/user';
-import { Productdto } from '../core/models/post';
+import { PageProductDTO, Productdto } from '../core/models/post';
 import { Product } from '../core/services/product';
 import { Boutton } from '../components/boutton/boutton';
 import { OwnerActions } from '../components/owner-actions/owner-actions';
@@ -34,6 +34,24 @@ interface WeekSale {
   styleUrl: './dashboard.css',
 })
 export class Dashboard implements OnInit {
+  private observer!: IntersectionObserver;
+  currentPage = 0;
+  isLoading = false;
+
+  @ViewChild('scrollAnchor') set setupScrollAnchor(element: ElementRef) {
+    if (element) {
+      if (this.observer) {
+        this.observer.disconnect();
+      }
+      this.observer = new IntersectionObserver(([entry]) => {
+        if (entry.isIntersecting && !this.isLoading) {
+          this.loadMoreProducts();
+        }
+      }, { root: null, rootMargin: '0px', threshold: 0.1 });
+      this.observer.observe(element.nativeElement);
+    }
+  }
+
   private product = inject(Product);
   private auth = inject(Auth);
   private userService = inject(User);
@@ -147,6 +165,27 @@ export class Dashboard implements OnInit {
   };
 
   // ===================== GETTERS =====================
+
+  loadMoreProducts(): void {
+    if (this.isLoading) {
+      return
+    }
+    this.isLoading = true;
+    this.product.getMyproduct(this.currentPage, 10).subscribe({
+      next: (newProducts: PageProductDTO) => {
+        this.sellerProducts.update((curr) => [...curr, ...newProducts.content])
+        this.currentPage++;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        this.isLoading = false;
+      }
+
+    })
+  }
+
+
+
   ngOnInit(): void {
     this.auth.currentUser$.subscribe(user => {
 
@@ -162,11 +201,7 @@ export class Dashboard implements OnInit {
       }
 
     });
-    this.product.getMyproduct().subscribe({
-      next: Product => {
-        this.sellerProducts.set(Product);
-      }
-    })
+    this.loadMoreProducts();
 
 
   }

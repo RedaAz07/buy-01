@@ -411,7 +411,8 @@
 
                 <div class="row-actions">
 
-                  <app-owner-actions [product]="product"   [id]="product.id"  (productUpdated)="onProductUpdated($event)"></app-owner-actions>
+                  <app-owner-actions [product]="product" [id]="product.id"
+                    (productUpdated)="onProductUpdated($event)"></app-owner-actions>
 
                 </div>
 
@@ -419,8 +420,13 @@
 
           }
 
-        </div>
+          <div #scrollAnchor class="scroll-anchor">
+            @if (isLoading) {
+            <span>Loading more posts...</span>
+            }
 
+          </div>
+        </div>
       </div>
 
     </section>

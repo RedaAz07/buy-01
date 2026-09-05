@@ -81,7 +81,8 @@ public class UserService {
                 user.getId(),
                 user.getName(),
                 user.getEmail(),
-                user.getAvatar());
+                user.getAvatar(),
+                user.getRole());
     }
 
     public UpdateResponseDTO updateUser(UpdateRequestDTO request, String username) {

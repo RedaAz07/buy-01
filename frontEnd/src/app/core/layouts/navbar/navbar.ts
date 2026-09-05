@@ -26,6 +26,8 @@ export class Navbar implements OnInit {
     this.userService.currentUser$
       .pipe()
       .subscribe((user) => {
+        console.log(user);
+        
         this.user.set(user);
       });
   }

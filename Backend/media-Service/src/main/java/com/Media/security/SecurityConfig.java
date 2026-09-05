@@ -31,7 +31,7 @@ public class SecurityConfig {
 
                 auth.requestMatchers("/error").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/media/images").hasRole("SELLER")
-                        .requestMatchers(HttpMethod.DELETE, "/api/media/images/{id}").hasRole("SELLER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/media/images").hasRole("SELLER")
                         .anyRequest().authenticated())
          .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

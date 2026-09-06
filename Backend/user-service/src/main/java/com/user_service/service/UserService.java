@@ -73,9 +73,9 @@ public class UserService {
         return userMapper.toDto(jwt);
     }
 
-    public UserResponseDTO getMe(String username) {
+    public UserResponseDTO getMe(String id) {
         User user = userRepository
-                .findByName(username)
+                .findById(id)
                 .orElseThrow(() -> ApiException.notFound("User not found"));
         return new UserResponseDTO(
                 user.getId(),
@@ -85,9 +85,9 @@ public class UserService {
                 user.getRole());
     }
 
-    public UpdateResponseDTO updateUser(UpdateRequestDTO request, String username) {
+    public UpdateResponseDTO updateUser(UpdateRequestDTO request, String id) {
         User user = userRepository
-                .findByName(username)
+                .findById(id)
                 .orElseThrow(() -> ApiException.notFound("User not found"));
         if (!Objects.equals(user.getEmail(), request.email())
                 && userRepository.existsByEmail(request.email())) {

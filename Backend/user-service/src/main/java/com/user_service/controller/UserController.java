@@ -11,6 +11,8 @@ import com.user_service.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
+import java.security.Principal;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,15 +27,15 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/me")
-    public ResponseEntity<UserResponseDTO> getMethodName(@AuthenticationPrincipal UserDetails userDetails) {
-        UserResponseDTO user = userService.getMe(userDetails.getUsername());
+    public ResponseEntity<UserResponseDTO> getMethodName(Principal principal) {
+        UserResponseDTO user = userService.getMe(principal.getName());
         return ResponseEntity.ok(user);
     }
 
     @PutMapping("/me")
     public ResponseEntity<UpdateResponseDTO> updateUser(@RequestBody @Valid UpdateRequestDTO request,
-            @AuthenticationPrincipal UserDetails userDetails) {
-        UpdateResponseDTO response = userService.updateUser(request, userDetails.getUsername());
+           Principal principal) {
+        UpdateResponseDTO response = userService.updateUser(request, principal.getName());
         return ResponseEntity.ok(response);
     }
 

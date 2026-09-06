@@ -45,9 +45,7 @@ public class GlobalExceptionHandler {
                 "Invalid multipart request. Please provide a valid file.");
     }
 
-    // ────────────────────────────────────────────────────────
-    // 2. 404 NOT FOUND (When a DB search comes up empty)
-    // ────────────────────────────────────────────────────────
+
     // @ExceptionHandler(EntityNotFoundException.class)
     // public ResponseEntity<Object> handleNotFound(EntityNotFoundException ex) {
     // return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());

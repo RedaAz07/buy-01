@@ -23,7 +23,8 @@ public class SecurityConfig {
         return http.csrf(csrf -> csrf.disable())
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.GET, "/api/products", "/api/products/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/products").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/products/**").hasRole("SELLER")
                         .requestMatchers(HttpMethod.POST, "/api/products", "/api/products/**").hasRole("SELLER")
                         .requestMatchers(HttpMethod.PUT, "/api/products", "/api/products/**").hasRole("SELLER")
                         .requestMatchers(HttpMethod.DELETE, "/api/products", "/api/products/**").hasRole("SELLER")

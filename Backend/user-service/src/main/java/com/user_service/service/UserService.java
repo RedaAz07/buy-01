@@ -76,7 +76,7 @@ public class UserService {
     public UserResponseDTO getMe(String id) {
         User user = userRepository
                 .findById(id)
-                .orElseThrow(() -> ApiException.notFound("User not found"));
+                .orElseThrow(() -> ApiException.unauthorized("User not found"));
         return new UserResponseDTO(
                 user.getId(),
                 user.getName(),

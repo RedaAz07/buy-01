@@ -39,7 +39,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
       // Token expired / invalid
       if (error.status === 401 && token) {
-
         localStorage.removeItem('jwt_token');
 
         router.navigate(['/login']);

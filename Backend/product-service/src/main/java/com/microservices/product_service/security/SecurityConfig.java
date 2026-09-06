@@ -24,7 +24,9 @@ public class SecurityConfig {
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, "/api/products").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/products/**").hasRole("SELLER")
+                        .requestMatchers(HttpMethod.GET, "/api/products/my").hasRole("SELLER")
+                        .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+
                         .requestMatchers(HttpMethod.POST, "/api/products", "/api/products/**").hasRole("SELLER")
                         .requestMatchers(HttpMethod.PUT, "/api/products", "/api/products/**").hasRole("SELLER")
                         .requestMatchers(HttpMethod.DELETE, "/api/products", "/api/products/**").hasRole("SELLER")

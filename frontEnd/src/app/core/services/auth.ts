@@ -72,8 +72,8 @@ export class Auth {
   loadCurrentUser(): Observable<UserProfileDTO> {
     return this.http.get<UserProfileDTO>(`${environment.apiUrl}/api/users/me`).pipe(
       tap((user) => {
-
         this.currentUserSubject.next(user);
+
       }),
     );
   }

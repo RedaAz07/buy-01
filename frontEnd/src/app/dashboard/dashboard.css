@@ -378,7 +378,8 @@ ul {
   border: 1px solid var(--border);
   border-radius: 16px;
   padding: 22px;
-  max-width: 600px;
+
+
 }
 
 .panel-head {
@@ -510,6 +511,7 @@ ul {
   grid-template-columns: 2.2fr 1fr 1fr 1fr auto;
   gap: 12px;
   align-items: center;
+  text-align: left;
   padding: 14px 4px;
   border-bottom: 1px solid var(--border);
   font-size: 13.5px;
@@ -535,6 +537,7 @@ ul {
 .cell-product {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 12px;
 }
 
@@ -568,6 +571,8 @@ ul {
   padding: 4px 10px;
   border-radius: 999px;
   display: inline-block;
+  width: 80px;
+  justify-self: start;
 }
 
 .status-pill.active,
@@ -594,7 +599,7 @@ ul {
 .row-actions {
   display: flex;
   gap: 6px;
-  justify-content: flex-end;
+  justify-content: flex-start;
 }
 
 .icon-action {

@@ -20,7 +20,7 @@ export const routes: Routes = [
       { path: 'product/:id', component: Product, canActivate: [authGuard] },
     ]
   },
-  { path: 'dashboard', component: Dashboard, canActivate: [roleGuard] },
+  { path: 'dashboard', component: Dashboard ,canActivate:[authGuard]},
 
   { path: '**', redirectTo: 'home' },
 ];

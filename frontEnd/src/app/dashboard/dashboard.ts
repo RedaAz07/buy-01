@@ -1,4 +1,3 @@
-import { TitleCasePipe } from '@angular/common';
 import { Component, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UpdateRequest, UserProfileDTO } from '../core/models/user';
@@ -29,7 +28,7 @@ interface WeekSale {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [FormsModule, TitleCasePipe, ReactiveFormsModule, Boutton, OwnerActions],
+  imports: [FormsModule, ReactiveFormsModule, Boutton, OwnerActions],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
@@ -60,8 +59,8 @@ export class Dashboard implements OnInit {
 
   sellerProducts = signal<Productdto[]>([]);
   user = signal<UserProfileDTO | null>(null);
-  activeTab = signal<'overview' | 'products' | 'orders' | 'settings'>(
-    'overview'
+  activeTab = signal<'products' | 'settings'>(
+    'settings'
   );
 
   toastMessage = signal('');
@@ -90,73 +89,14 @@ export class Dashboard implements OnInit {
   // ===================== DATA =====================
 
 
-  orders: Order[] = [
-    {
-      id: '#3491',
-      product: 'Canvas Tote Bag',
-      buyer: 'Nora K.',
-      date: 'Aug 26',
-      amount: 38,
-      status: 'delivered',
-    },
-    {
-      id: '#3490',
-      product: 'Ceramic Pour-Over Set',
-      buyer: 'Liam P.',
-      date: 'Aug 25',
-      amount: 54,
-      status: 'shipped',
-    },
-    {
-      id: '#3488',
-      product: 'Crossbody Bag',
-      buyer: 'Sofia M.',
-      date: 'Aug 24',
-      amount: 64,
-      status: 'pending',
-    },
-    {
-      id: '#3485',
-      product: 'Woven Belt',
-      buyer: 'Yusuf A.',
-      date: 'Aug 22',
-      amount: 22,
-      status: 'delivered',
-    },
-    {
-      id: '#3481',
-      product: 'Canvas Tote Bag',
-      buyer: 'Elena V.',
-      date: 'Aug 21',
-      amount: 38,
-      status: 'delivered',
-    },
-  ];
-
-  weekSales: WeekSale[] = [
-    { day: 'Mon', value: 40 },
-    { day: 'Tue', value: 65 },
-    { day: 'Wed', value: 50 },
-    { day: 'Thu', value: 80 },
-    { day: 'Fri', value: 95 },
-    { day: 'Sat', value: 70 },
-    { day: 'Sun', value: 55 },
-  ];
 
   // ===================== TAB TITLES =====================
 
   tabTitles = {
-    overview: {
-      title: 'Overview',
-      subtitle: "Welcome back — here's how your shop is doing.",
-    },
+
     products: {
       title: 'My Products',
       subtitle: 'Manage your listings, stock, and pricing.',
-    },
-    orders: {
-      title: 'Orders',
-      subtitle: 'Track and fulfill orders from your buyers.',
     },
     settings: {
       title: 'Settings',
@@ -201,6 +141,7 @@ export class Dashboard implements OnInit {
       }
 
     });
+
     this.loadMoreProducts();
 
 
@@ -266,18 +207,18 @@ export class Dashboard implements OnInit {
     return this.user()?.name || "USER"
   }
 
-  get maxSales(): number {
-    return Math.max(...this.weekSales.map((sale) => sale.value));
-  }
+
 
   // ===================== TAB SWITCHING =====================
 
   switchTab(
-    tab: 'overview' | 'products' | 'orders' | 'settings'
+    tab: 'settings' | 'products'
   ): void {
-    if (tab === "overview" || tab === "orders") {
-      this.showToast("This is currently static data. The service will be available soon.");
+    if (this.user()?.role === "ROLE_CIENT" && tab === "products") {
+      this.activeTab.set("settings");
+      return
     }
+
     this.activeTab.set(tab);
   }
 
@@ -343,31 +284,7 @@ export class Dashboard implements OnInit {
 
     input.value = '';
   }
-  removeAvatar(): void {
-    const user = this.user();
-
-    if (!user?.avatar) {
-      return;
-    }
-
-    this.media.deleteAvatar(user.avatar).subscribe({
-      next: () => {
-        this.user.set({
-          ...user,
-          avatar: null
-        });
-
-        this.showToast('Profile photo removed');
-      },
-
-      error: (err) => {
-        const errorMessage =
-          err?.error?.message || 'Failed to delete this image';
-
-        this.showToast(errorMessage);
-      }
-    });
-  }
+ 
 
 
 

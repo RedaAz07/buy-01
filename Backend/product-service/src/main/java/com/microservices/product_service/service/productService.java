@@ -114,7 +114,7 @@ public class productService {
             throw ApiException.forbidden("You are not allowed to delete this product");
         }
         productRepository.delete(product);
-        productEventProducer.sendProductDeletedEvent(id);
+        productEventProducer.sendProductDeletedEvent(id, "Product Deleted");
     }
 
     public boolean getUserProduct(String id, String sellerId) {

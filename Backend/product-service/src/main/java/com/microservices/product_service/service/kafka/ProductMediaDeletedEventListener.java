@@ -12,11 +12,10 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 
 @Service
-public class ProductMediaEventListener {
-
+public class ProductMediaDeletedEventListener {
     private final MongoTemplate mongoTemplate;
 
-    public ProductMediaEventListener(MongoTemplate mongoTemplate) {
+    public ProductMediaDeletedEventListener(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }
 

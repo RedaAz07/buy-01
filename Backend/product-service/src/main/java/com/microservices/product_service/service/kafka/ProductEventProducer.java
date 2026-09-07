@@ -15,8 +15,8 @@ public class ProductEventProducer {
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
-    public void sendProductDeletedEvent(String productId) {
-        ProductDeletedEvent event = new ProductDeletedEvent(productId);
+    public void sendProductDeletedEvent(String productId, String message) {
+        ProductDeletedEvent event = new ProductDeletedEvent(productId, message);
         log.info("Publishing ProductDeletedEvent for productId: {}", productId);
         kafkaTemplate.send("product-deleted-topic", productId, event);
     }

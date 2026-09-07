@@ -238,7 +238,7 @@ public class MediaService {
 
         // Cloudinary cleanup
 
-        private void deleteCloudinaryFileSafely(Media media) {
+        public void deleteCloudinaryFileSafely(Media media) {
                 if (media.getPublicId() == null || media.getPublicId().isBlank()) {
                         log.warn(
                                         "Cannot delete Cloudinary file because publicId is missing. mediaId={}",

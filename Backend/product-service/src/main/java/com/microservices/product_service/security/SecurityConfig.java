@@ -12,10 +12,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    private final jwtAuthFilter jwtAuthFilter;
+    private final GatewayHeaderAuthFilter gatewayHeaderAuthFilter;
 
-    public SecurityConfig(jwtAuthFilter jwtAuthFilter) {
-        this.jwtAuthFilter = jwtAuthFilter;
+    public SecurityConfig(GatewayHeaderAuthFilter gatewayHeaderAuthFilter) {
+        this.gatewayHeaderAuthFilter = gatewayHeaderAuthFilter;
     }
 
     @Bean
@@ -31,7 +31,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/products", "/api/products/**").hasRole("SELLER")
                         .requestMatchers(HttpMethod.DELETE, "/api/products", "/api/products/**").hasRole("SELLER")
                         .anyRequest().authenticated())
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(gatewayHeaderAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 

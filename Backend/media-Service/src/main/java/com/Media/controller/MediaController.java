@@ -33,8 +33,10 @@ public class MediaController {
     public ResponseEntity<List<String>> create(
             @RequestPart("media") List<MultipartFile> media,
             @RequestParam(required = false) String productId,
-            @RequestParam UploadType type, @RequestHeader("Authorization") String token, Principal principal) {
-        List<String> response = mediaService.create(media, productId, type, principal.getName(), token);
+            @RequestParam UploadType type, @RequestHeader("Authorization") String token, Principal principal,
+            @RequestHeader("X-Authenticated-UserID") String userId,
+            @RequestHeader("X-Authenticated-Roles") String role) {
+        List<String> response = mediaService.create(media, productId, type, principal.getName(), userId, role);
         return ResponseEntity.ok(response);
     }
 

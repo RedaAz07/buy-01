@@ -26,7 +26,7 @@ services:
 
   product-db:
     image: mongo:7.0
-    container_name: mongodb_product  # Fixed name conflict
+    container_name: mongodb_product # Fixed name conflict
     restart: always
     env_file:
       - ./Backend/product-service/.env
@@ -77,69 +77,69 @@ services:
   # -------------------------------------------------------------
   # JAVA SERVICES
   # -------------------------------------------------------------
-  registry:
-    build:
-      context: ./Backend/registry
-    container_name: service-registry
-    restart: unless-stopped
-    ports:
-      - "8761:8761"
+  # registry:
+  #   build:
+  #     context: ./Backend/registry
+  #   container_name: service-registry
+  #   restart: unless-stopped
+  #   ports:
+  #     - "8761:8761"
 
-  user-service:
-    build:
-      context: ./Backend/user-service
-    container_name: user-service
-    restart: unless-stopped
-    env_file:
-      - ./Backend/user-service/.env
-    environment:
-      SPRING_MONGODB_HOST: user-db
-      SPRING_MONGODB_PORT: 27017
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://registry:8761/eureka/
-    depends_on:
-      - user-db
-      - kafka
-      - registry
-    # ports:
-    #   - "8081:8081"
+  # user-service:
+  #   build:
+  #     context: ./Backend/user-service
+  #   container_name: user-service
+  #   restart: unless-stopped
+  #   env_file:
+  #     - ./Backend/user-service/.env
+  #   environment:
+  #     SPRING_MONGODB_HOST: user-db
+  #     SPRING_MONGODB_PORT: 27017
+  #     SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+  #     EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://registry:8761/eureka/
+  #   depends_on:
+  #     - user-db
+  #     - kafka
+  #     - registry
+  #   # ports:
+  #   #   - "8081:8081"
 
-  product-service:
-    build:
-      context: ./Backend/product-service
-    container_name: product-service
-    restart: unless-stopped
-    env_file:
-      - ./Backend/product-service/.env
-    environment:
-      MONGODB_URI: mongodb://admin:password@product-db:27017/product-service?authSource=admin
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://registry:8761/eureka/
-    depends_on:
-      - product-db
-      - kafka
-      - registry
-    # ports:
-    #   - "8082:8082"
+  # product-service:
+  #   build:
+  #     context: ./Backend/product-service
+  #   container_name: product-service
+  #   restart: unless-stopped
+  #   env_file:
+  #     - ./Backend/product-service/.env
+  #   environment:
+  #     MONGODB_URI: mongodb://admin:password@product-db:27017/product-service?authSource=admin
+  #     SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+  #     EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://registry:8761/eureka/
+  #   depends_on:
+  #     - product-db
+  #     - kafka
+  #     - registry
+  #   # ports:
+  #   #   - "8082:8082"
 
-  media-service:
-    build:
-      context: ./Backend/media-Service
-    container_name: media-service
-    restart: unless-stopped
-    env_file:
-      - ./Backend/media-Service/.env
-    environment:
-      SPRING_DATA_MONGODB_HOST: media-db
-      SPRING_DATA_MONGODB_PORT: 27017
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://registry:8761/eureka/
-    depends_on:
-      - media-db
-      - kafka
-      - registry
-    # ports:
-    #   - "8083:8083"
+  # media-service:
+  #   build:
+  #     context: ./Backend/media-Service
+  #   container_name: media-service
+  #   restart: unless-stopped
+  #   env_file:
+  #     - ./Backend/media-Service/.env
+  #   environment:
+  #     SPRING_DATA_MONGODB_HOST: media-db
+  #     SPRING_DATA_MONGODB_PORT: 27017
+  #     SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+  #     EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://registry:8761/eureka/
+  #   depends_on:
+  #     - media-db
+  #     - kafka
+  #     - registry
+  #   # ports:
+  #   #   - "8083:8083"
 
   redis:
     image: redis:7-alpine
@@ -153,23 +153,23 @@ services:
       - redis-network
       - default
 
-  api-gateway:
-    build:
-      context: ./Backend/api-gateway
-    container_name: api-gateway
-    restart: unless-stopped
-    env_file:
-      - ./Backend/api-gateway/.env
-    environment:
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://registry:8761/eureka/
-    depends_on:
-      - registry
-      - user-service
-      - product-service
-      - media-service
-      - redis
-    ports:
-      - "8443:8443"
+  # api-gateway:
+  #   build:
+  #     context: ./Backend/api-gateway
+  #   container_name: api-gateway
+  #   restart: unless-stopped
+  #   env_file:
+  #     - ./Backend/api-gateway/.env
+  #   environment:
+  #     EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://registry:8761/eureka/
+  #   depends_on:
+  #     - registry
+  #     - user-service
+  #     - product-service
+  #     - media-service
+  #     - redis
+  #   ports:
+  #     - "8443:8443"
 
 volumes:
   user_mongodb_data:

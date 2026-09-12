@@ -17,12 +17,10 @@ import jakarta.servlet.http.HttpServletResponse;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    private final JwtAuthFilter jwtAuthFilter;
-    private final JwtAuthFilter jwtFilter;
+    private final GatewayHeaderAuthFilter gatewayHeaderAuthFilter;
 
-    public SecurityConfig(JwtAuthFilter JwtFilter, JwtAuthFilter jwtAuthFilter) {
-        this.jwtFilter = JwtFilter;
-        this.jwtAuthFilter = jwtAuthFilter;
+    public SecurityConfig(GatewayHeaderAuthFilter gatewayHeaderAuthFilter) {
+        this.gatewayHeaderAuthFilter = gatewayHeaderAuthFilter;
     }
 
     @Bean
@@ -36,7 +34,7 @@ public class SecurityConfig {
 
                 auth.requestMatchers("/api/auth/**", "/error").permitAll()
                         .anyRequest().authenticated())
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(gatewayHeaderAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 

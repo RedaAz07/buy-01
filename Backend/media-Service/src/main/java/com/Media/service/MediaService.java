@@ -38,7 +38,7 @@ public class MediaService {
                         String productId,
                         UploadType type,
                         String username,
-                        String token) {
+                        String userid , String role) {
                 // Validation
 
                 if (username == null || username.isBlank()) {
@@ -78,7 +78,7 @@ public class MediaService {
                                                 "Product ID is required for product images");
                         }
 
-                        boolean bool = productClientInterface.GetUserProduct(productId, token);
+                        boolean bool = productClientInterface.GetUserProduct(productId, userid , role);
 
                         if (!bool) {
                                 throw ApiException.badRequest("Product not found or you don't own it");

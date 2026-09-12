@@ -9,7 +9,7 @@ mkdir -p "$RUN_DIR" "$LOG_DIR"
 NAMES=(registry api-gateway product-service user-service media-service)
 declare -A PORT=(
   [registry]=8761
-  [api-gateway]=8080
+  [api-gateway]=8443
   [product-service]=8082
   [user-service]=8081
   [media-service]=8083

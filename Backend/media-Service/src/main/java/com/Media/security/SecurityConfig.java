@@ -14,10 +14,10 @@ import jakarta.servlet.http.HttpServletResponse;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    private final JwtAuthFilter jwtFilter;
+    private final GatewayHeaderAuthFilter gatewayHeaderAuthFilter;
 
-    public SecurityConfig(JwtAuthFilter JwtFilter) {
-    this.jwtFilter = JwtFilter;
+    public SecurityConfig(GatewayHeaderAuthFilter gatewayHeaderAuthFilter) {
+    this.gatewayHeaderAuthFilter = gatewayHeaderAuthFilter;
     }
 
     @Bean
@@ -33,7 +33,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/media/images").hasRole("SELLER")
                         .requestMatchers(HttpMethod.DELETE, "/api/media/images").hasRole("SELLER")
                         .anyRequest().authenticated())
-         .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+         .addFilterBefore(gatewayHeaderAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 

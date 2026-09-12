@@ -10,6 +10,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 public interface ProductClientInterface {
 
     @GetMapping("api/products/owner/{id}")
-    public boolean GetUserProduct(@PathVariable String id, @RequestHeader("Authorization") String token);
+    public boolean GetUserProduct(@PathVariable String id, @RequestHeader("X-Authenticated-UserID") String userID , @RequestHeader("X-Authenticated-Roles") String role );
 
 }

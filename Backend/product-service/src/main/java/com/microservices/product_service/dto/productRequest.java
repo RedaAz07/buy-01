@@ -21,7 +21,7 @@ public class productRequest {
     @Size(max = 20, message = "Name must not exceed 20 characters")
     private String name;
 
-    @Size(max = 5000, message = "Description must not exceed 5000 characters")
+    @Size(max = 1000, message = "Description must not exceed 1000 characters")
     private String description;
 
     @Positive(message = "Price must be greater than zero")

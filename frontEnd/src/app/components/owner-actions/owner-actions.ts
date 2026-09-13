@@ -5,13 +5,15 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatIcon } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-owner-actions',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatIcon],
+  imports: [CommonModule, ReactiveFormsModule, MatIcon, MatFormFieldModule, MatInputModule],
   templateUrl: './owner-actions.html',
   styleUrl: './owner-actions.css',
 })
@@ -45,7 +47,7 @@ export class OwnerActions {
   constructor() {
     this.productForm = this.fb.group({
       name: ['', [Validators.maxLength(20)]],
-      description: ['', [Validators.maxLength(5000)]],
+      description: ['', [Validators.maxLength(1000)]],
       price: [0, [Validators.min(0.01)]],
       quantity: [0, [Validators.min(0)]],
     });
@@ -65,7 +67,11 @@ export class OwnerActions {
       }
     });
   }
+  hasError(controlName: string, errorName: string): boolean {
+    const control = this.productForm.get(controlName);
 
+    return !!control && control.hasError(errorName) && (control.touched || control.dirty);
+  }
   updetProduct() {
     if (this.updated) {
       return

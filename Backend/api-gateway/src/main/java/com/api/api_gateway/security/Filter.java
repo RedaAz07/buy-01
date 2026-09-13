@@ -79,11 +79,11 @@ public class Filter implements GlobalFilter, Ordered {
             return true;
         }
 
-        if (path.startsWith("/api/auth/") || path.startsWith("/actuator/")) {
+        if (path.startsWith("/api/auth/")) {
             return true;
         }
 
-        if (method == HttpMethod.GET && (path.startsWith("/products") || path.startsWith("/api/products"))) {
+        if (method == HttpMethod.GET && (path.startsWith("/products") || path.startsWith("/api/products")) && !path.startsWith("/api/products/my") ) {
             return true;
         }
 

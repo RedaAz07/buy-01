@@ -44,7 +44,7 @@ export class OwnerActions {
 
   constructor() {
     this.productForm = this.fb.group({
-      name: ['', [Validators.maxLength(120)]],
+      name: ['', [Validators.maxLength(20)]],
       description: ['', [Validators.maxLength(5000)]],
       price: [0, [Validators.min(0.01)]],
       quantity: [0, [Validators.min(0)]],
@@ -76,6 +76,7 @@ export class OwnerActions {
       this.productForm.markAllAsTouched();
       this.updateLoading.set(false);
       this.updated = false;
+
       return;
     }
 
@@ -99,10 +100,11 @@ export class OwnerActions {
           this.updateLoading.set(false);
         }
         this.updated = false
+
       },
       error: (err) => {
-        console.error(err);
-        this.snackbar.open('Failed to update product details.', 'Close', { duration: 3000 });
+
+        this.snackbar.open('Faile:' + err, 'Close', { duration: 3000 });
         this.updated = false;
         this.updateLoading.set(false);
         if (err.state = 404) {
@@ -216,11 +218,9 @@ export class OwnerActions {
     const newFiles = Array.from(input.files);
     const newUrls = newFiles.map((file) => URL.createObjectURL(file));
 
-    // Append cleanly to signal state
     this.selectedFiles.update(files => [...files, ...newFiles]);
     this.previewUrls.update(urls => [...urls, ...newUrls]);
 
-    // Reset native input value so selecting the same file triggers change again if needed
     input.value = '';
   }
 

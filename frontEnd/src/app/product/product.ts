@@ -29,7 +29,7 @@ export class Product {
 
   constructor() {
     this.productForm = this.fb.group({
-      name: ['', [Validators.required, Validators.maxLength(120)]],
+      name: ['', [Validators.required, Validators.maxLength(20)]],
       description: ['', [Validators.required, Validators.maxLength(5000)]],
       price: [0, [Validators.required, Validators.min(0.01)]],
       quantity: [0, [Validators.required, Validators.min(0)]],

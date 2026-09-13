@@ -46,7 +46,7 @@ public class productService {
     }
 
     public Page<productRspons> getMyProducts(String sellerId, int size, int page) {
-
+System.err.println("111111110-----------------------");
         Pageable pageable = PageRequest.of(
                 page,
                 size,

@@ -6,7 +6,6 @@ import java.util.Objects;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,6 @@ import com.user_service.exceptions.ApiException;
 import com.user_service.model.Roles;
 import com.user_service.model.User;
 import com.user_service.repository.UserRepository;
-import com.user_service.security.CostumUserDetails;
 import com.user_service.security.JwtUtil;
 
 @Service
@@ -29,15 +27,13 @@ public class UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
-    private final CostumUserDetails costumUserDetails;
     private final JwtUtil jwtUtil;
     private final AuthenticationManager auth;
 
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder,
-            CostumUserDetails costumUserDetails, JwtUtil jwtUtil, UserMapper userMapper, AuthenticationManager auth) {
+            JwtUtil jwtUtil, UserMapper userMapper, AuthenticationManager auth) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.costumUserDetails = costumUserDetails;
         this.jwtUtil = jwtUtil;
         this.userMapper = userMapper;
         this.auth = auth;
@@ -50,14 +46,13 @@ public class UserService {
         if (userRepository.existsByEmail(request.email())) {
             throw ApiException.badRequest("Email already exists");
         }
-        User nUser = new User();
-        nUser.setName(request.name());
-        nUser.setEmail(request.email());
-        nUser.setRole(Roles.valueOf(request.role()));
-        nUser.setPassword(passwordEncoder.encode(request.password()));
-        userRepository.save(nUser);
-        final UserDetails userDetails = costumUserDetails.loadUserByUsername(request.name());
-        final String jwt = jwtUtil.generateToken(userDetails, nUser.getId());
+        User user = new User();
+        user.setName(request.name());
+        user.setEmail(request.email());
+        user.setRole(Roles.valueOf(request.role()));
+        user.setPassword(passwordEncoder.encode(request.password()));
+        userRepository.save(user);
+        final String jwt = jwtUtil.generateToken(user.getName(), user.getRole().name(), user.getId());
         return userMapper.toDto(jwt);
 
     }
@@ -65,11 +60,10 @@ public class UserService {
     public AuthResponseDTO login(LoginRequestDTO request) {
         auth.authenticate(
                 new UsernamePasswordAuthenticationToken(request.name(), request.password()));
-        final UserDetails userDetails = costumUserDetails.loadUserByUsername(request.name());
         User user = userRepository.findByName(request.name())
-                .orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
+                .orElseThrow(()->  ApiException.unauthorized("bad credentials"));
 
-        final String jwt = jwtUtil.generateToken(userDetails, user.getId());
+        final String jwt = jwtUtil.generateToken(user.getName(), user.getRole().name(), user.getId());
         return userMapper.toDto(jwt);
     }
 
@@ -106,8 +100,7 @@ public class UserService {
         }
         User nUser = userRepository.save(user);
 
-        final UserDetails userDetails = costumUserDetails.loadUserByUsername(nUser.getName());
-        final String jwt = jwtUtil.generateToken(userDetails, nUser.getId());
+        final String jwt = jwtUtil.generateToken(nUser.getName(), nUser.getRole().name(), nUser.getId());
         return new UpdateResponseDTO(user.getName(), user.getEmail(), jwt);
     }
 }

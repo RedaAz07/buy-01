@@ -30,23 +30,31 @@ public class JwtUtil {
   
   
 
-    public String generateToken(UserDetails userDetails, String id) {
+    // public String generateToken(UserDetails userDetails, String id) {
 
-        Map<String, Object> claims = new HashMap<>();
+    //     Map<String, Object> claims = new HashMap<>();
 
-        claims.put(
-                "userId",
-                id);
-        claims.put(
-                "role",
-                userDetails.getAuthorities()
-                        .iterator()
-                        .next()
-                        .getAuthority());
+    //     claims.put(
+    //             "userId",
+    //             id);
+    //     claims.put(
+    //             "role",
+    //             userDetails.getAuthorities()
+    //                     .iterator()
+    //                     .next()
+    //                     .getAuthority());
 
-        return createToken(claims, userDetails.getUsername());
-    }
+    //     return createToken(claims, userDetails.getUsername());
+    // }
+   public String generateToken(String username, String role, String id) {
 
+    Map<String, Object> claims = new HashMap<>();
+
+    claims.put("userId", id);
+    claims.put("role", role);
+
+    return createToken(claims, username);
+}
    
 
     public String createToken(Map<String, Object> extractClaims, String username) {

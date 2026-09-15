@@ -8,7 +8,6 @@ import com.Media.repository.MediaRepository;
 import com.Media.service.FeignClient.ProductClientInterface;
 import com.Media.service.MediaUploadService.UploadResult;
 import com.Media.service.events.MediaEventProducer;
-import feign.FeignException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +25,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class MediaService {
 
         private static final int MAX_PRODUCT_IMAGES = 5;
-
         private final MediaEventProducer mediaEventProducer;
         private final MediaUploadService mediaUploadService;
         private final MediaRepository mediaRepository;

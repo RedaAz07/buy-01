@@ -1,1 +1,0 @@
-when i turn off the db and try to request my server i got a timeout error*

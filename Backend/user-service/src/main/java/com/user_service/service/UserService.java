@@ -6,7 +6,6 @@ import java.util.Objects;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +21,9 @@ import com.user_service.model.User;
 import com.user_service.repository.UserRepository;
 import com.user_service.security.JwtUtil;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 @Service
 public class UserService {
     private final UserMapper userMapper;
@@ -29,15 +31,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
     private final AuthenticationManager auth;
-
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder,
-            JwtUtil jwtUtil, UserMapper userMapper, AuthenticationManager auth) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtUtil = jwtUtil;
-        this.userMapper = userMapper;
-        this.auth = auth;
-    }
 
     public AuthResponseDTO register(RegisterRequestDTO request) {
         if (userRepository.existsByName(request.name())) {
@@ -61,7 +54,7 @@ public class UserService {
         auth.authenticate(
                 new UsernamePasswordAuthenticationToken(request.name(), request.password()));
         User user = userRepository.findByName(request.name())
-                .orElseThrow(()->  ApiException.unauthorized("bad credentials"));
+                .orElseThrow(() -> ApiException.unauthorized("bad credentials"));
 
         final String jwt = jwtUtil.generateToken(user.getName(), user.getRole().name(), user.getId());
         return userMapper.toDto(jwt);

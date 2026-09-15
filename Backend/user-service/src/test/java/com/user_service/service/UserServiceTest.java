@@ -12,12 +12,12 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.mongodb.internal.bulk.UpdateRequest;
 import com.user_service.dto.request.LoginRequestDTO;
 import com.user_service.dto.request.RegisterRequestDTO;
 import com.user_service.dto.request.UpdateRequestDTO;
 import com.user_service.dto.response.AuthResponseDTO;
 import com.user_service.dto.response.UpdateResponseDTO;
+import com.user_service.dto.response.UserResponseDTO;
 import com.user_service.exceptions.ApiException;
 import com.user_service.mapper.UserMapper;
 import com.user_service.model.Roles;
@@ -30,8 +30,6 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Optional;
-
-import javax.annotation.meta.When;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("User service test")
@@ -52,9 +50,7 @@ public class UserServiceTest {
     private UserService userService;
 
     private User mockClientUser;
-    private RegisterRequestDTO registerReqTest;
     private AuthResponseDTO authResponseTest;
-    private LoginRequestDTO loginReqTest;
 
     @BeforeEach
     void setUp() {
@@ -66,14 +62,15 @@ public class UserServiceTest {
         mockClientUser.setPassword("hashed_password");
         mockClientUser.setRole(Roles.ROLE_CLIENT);
 
-        registerReqTest = new RegisterRequestDTO("user", "user@gmail.com", "user123", Roles.ROLE_CLIENT.name());
         authResponseTest = new AuthResponseDTO("jwt");
-        loginReqTest = new LoginRequestDTO("user", "user123");
+
     }
 
     @Nested
     @DisplayName("Register User Tests")
     class RegisterUserTests {
+        RegisterRequestDTO registerReqTest = new RegisterRequestDTO("user", "user@gmail.com", "user123",
+                Roles.ROLE_CLIENT.name());
 
         @Test
         @DisplayName("Should register client user successfully")
@@ -158,7 +155,9 @@ public class UserServiceTest {
 
     @Nested
     @DisplayName("Login tests")
-    class InnerUserServiceTest {
+    class InnerLoginUserServiceTest {
+        LoginRequestDTO loginReqTest = new LoginRequestDTO("user", "user123");
+
         @Test
         @DisplayName("Test login successfully")
         void shouldLoginSeccessfully() {
@@ -197,7 +196,6 @@ public class UserServiceTest {
         @Test
         @DisplayName("Should throw exception when password is invalid")
         void shouldThrowExceptionWhenPasswordIsInvalid() {
-            // GIVEN - Simulate AuthenticationManager throwing BadCredentialsException
             when(auth.authenticate(any()))
                     .thenThrow(
                             new org.springframework.security.authentication.BadCredentialsException("bad credentials"));
@@ -211,7 +209,7 @@ public class UserServiceTest {
         }
     }
 
-   @Nested
+    @Nested
     @DisplayName("Update user tests")
     class UpdateUserTests {
 
@@ -249,7 +247,6 @@ public class UserServiceTest {
         void shouldUpdateSuccessfullyWhenFieldsUnchanged() {
             // GIVEN
             String userId = "123";
-            // mockClientUser in setUp() already has email "user@gmail.com" and name "user"
             UpdateRequestDTO request = new UpdateRequestDTO("user@gmail.com", "user");
 
             when(userRepository.findById(userId)).thenReturn(Optional.of(mockClientUser));
@@ -261,7 +258,6 @@ public class UserServiceTest {
 
             // THEN
             assertNotNull(response);
-            // Because email and name match existing user, DB checks are skipped!
             verify(userRepository, never()).existsByEmail(anyString());
             verify(userRepository, never()).existsByName(anyString());
             verify(userRepository, times(1)).save(mockClientUser);
@@ -320,6 +316,42 @@ public class UserServiceTest {
 
             verify(userRepository, never()).save(any(User.class));
             verifyNoInteractions(jwtUtil);
+        }
+    }
+
+    @Nested
+    @DisplayName("Get user by ID tests")
+    class GetMeTests {
+
+        @Test 
+        @DisplayName("Should return the user successfully when found")
+        void shouldReturnUserSuccessfully() { 
+            // GIVEN
+            String userId = "123";
+            UserResponseDTO expectedUser = new UserResponseDTO("123", "user", "user@gmail.com", "", Roles.ROLE_CLIENT);
+
+            when(userRepository.findById(userId)).thenReturn(Optional.of(mockClientUser));
+
+            // WHEN
+            UserResponseDTO response = userService.getMe(userId);
+
+            // THEN
+            assertNotNull(response);
+            assertEquals(expectedUser, response);
+            verify(userRepository, times(1)).findById(userId);
+        }
+
+        @Test
+        @DisplayName("Should throw unauthorized ApiException when user is not found")
+        void shouldThrowExceptionWhenUserNotFound() {
+            // GIVEN
+            String userId = "999";
+            when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+            // WHEN & THEN
+            ApiException exception = assertThrows(ApiException.class, () -> userService.getMe(userId));
+            assertEquals("User not found", exception.getMessage());
+            verify(userRepository, times(1)).findById(userId);
         }
     }
 }

@@ -17,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,6 +42,9 @@ class MediaServiceTest {
     private MediaRepository mediaRepository;
     @Mock
     private ProductClientInterface productClientInterface;
+
+        @Mock
+        private KafkaTemplate<String, Object> kafkaTemplate;
 
     @InjectMocks
     private MediaService mediaService;
@@ -283,55 +287,197 @@ class MediaServiceTest {
     }
 
     @Nested
-    @DisplayName("Get image Testing ")
-
-    public class GetMediaServiceTests {
+    @DisplayName("Get Image Testing")
+    class GetMediaServiceTests {
 
         @Test
-        @DisplayName("Should return Media succefully")
-        void ShouldGetMediaSuccefully() {
-            // given
+        @DisplayName("Should return Media successfully")
+        void shouldGetMediaSuccessfully() {
+            // Given
             String id = "123";
-            Map<String, String> res = Map.of("image", AvatarTest.getImagePath());
-            // then
-            when(mediaRepository.findById(id)).thenReturn(Optional.of(AvatarTest));
+            Media media = new Media();
+            media.setId(id);
+            media.setImagePath("http://cloudinary.com/test-image.jpg");
+
+            when(mediaRepository.findById(id)).thenReturn(Optional.of(media));
+
+            // When
             Map<String, String> response = mediaService.getImage(id);
+
+            // Then
             assertNotNull(response);
-            assertEquals(res, response);
-            verify(mediaRepository, times(1)).findById(anyString());
+            assertEquals("http://cloudinary.com/test-image.jpg", response.get("image"));
+            verify(mediaRepository, times(1)).findById(id);
         }
 
         @Test
-        @DisplayName("Should Return Bad Request When Id Is Null")
+        @DisplayName("Should return Bad Request when Id is null or blank")
         void shouldReturnBadRequestWhenIdIsNull() {
-
-            // Given
-            String id = null;
-
-            // When + Then
-            ApiException exception = assertThrows(
+            // When & Then
+            ApiException exceptionNull = assertThrows(
                     ApiException.class,
-                    () -> mediaService.getImage(id));
+                    () -> mediaService.getImage(null));
+            assertEquals("Media ID is required", exceptionNull.getMessage());
 
-            assertEquals("Media ID is required", exception.getMessage());
+            ApiException exceptionBlank = assertThrows(
+                    ApiException.class,
+                    () -> mediaService.getImage("   "));
+            assertEquals("Media ID is required", exceptionBlank.getMessage());
 
             verifyNoInteractions(mediaRepository);
         }
 
         @Test
-        @DisplayName("Should Return not found ")
+        @DisplayName("Should return Not Found when media does not exist")
         void shouldReturnNotFound() {
-
             // Given
-            String id = "---";
+            String id = "badId";
+            when(mediaRepository.findById(id)).thenReturn(Optional.empty());
 
-            // When + Then
+            // When & Then
             ApiException exception = assertThrows(
                     ApiException.class,
                     () -> mediaService.getImage(id));
 
             assertEquals("Media not found", exception.getMessage());
+            verify(mediaRepository, times(1)).findById(id);
+        }
+    }
 
+    @Nested
+    @DisplayName("Delete Image Testing")
+    class DeleteMediaServiceTests {
+
+        @Test
+        @DisplayName("Should delete Product Image successfully and publish Kafka event")
+        void shouldDeleteProductMediaSuccessfully() throws Exception {
+            // Given
+            String ownerId = "user123";
+            String imageUrl = "http://cloudinary.com/prod1.jpg";
+            String publicId = "pub_prod1";
+            String productId = "prod_999";
+
+            Media productMedia = new Media();
+            productMedia.setId("media_1");
+            productMedia.setOwnerId(ownerId);
+            productMedia.setImagePath(imageUrl);
+            productMedia.setPublicId(publicId);
+            productMedia.setProductId(productId);
+            productMedia.setType(UploadType.PRODUCT_IMAGE);
+
+            when(mediaRepository.findByImagePathAndOwnerId(imageUrl, ownerId))
+                    .thenReturn(Optional.of(productMedia));
+
+            // When
+            Map<String, String> response = mediaService.deleteImageByUrl(imageUrl, ownerId);
+
+            // Then
+            assertNotNull(response);
+            assertEquals(imageUrl, response.get("image"));
+
+            // Verify Mongo Deletion
+            verify(mediaRepository, times(1)).delete(productMedia);
+
+            // Verify Cloudinary Deletion
+            verify(mediaUploadService, times(1)).deleteFile(publicId);
+
+            // Verify Kafka Event Published
+            verify(kafkaTemplate, times(1)).send(eq("media-deleted-topic"), any());
+        }
+
+        @Test
+        @DisplayName("Should delete Avatar Image successfully without publishing Kafka event")
+        void shouldDeleteAvatarMediaWithoutKafkaEvent() throws Exception {
+            // Given
+            String ownerId = "user123";
+            String imageUrl = "http://cloudinary.com/avatar.jpg";
+            String publicId = "pub_avatar1";
+
+            Media avatarMedia = new Media();
+            avatarMedia.setId("media_2");
+            avatarMedia.setOwnerId(ownerId);
+            avatarMedia.setImagePath(imageUrl);
+            avatarMedia.setPublicId(publicId);
+            avatarMedia.setProductId(null);
+            avatarMedia.setType(UploadType.AVATAR);
+
+            when(mediaRepository.findByImagePathAndOwnerId(imageUrl, ownerId))
+                    .thenReturn(Optional.of(avatarMedia));
+
+            // When
+            Map<String, String> response = mediaService.deleteImageByUrl(imageUrl, ownerId);
+
+            // Then
+            assertEquals(imageUrl, response.get("image"));
+            verify(mediaRepository, times(1)).delete(avatarMedia);
+            verify(mediaUploadService, times(1)).deleteFile(publicId);
+
+            // Kafka event must NOT be triggered when productId is null
+            verifyNoInteractions(kafkaTemplate);
+        }
+
+        @Test
+        @DisplayName("Should throw BadRequest when imageUrl is blank or null")
+        void shouldThrowBadRequestWhenImageUrlIsInvalid() {
+            assertThrows(ApiException.class, () -> mediaService.deleteImageByUrl("", "user123"));
+            assertThrows(ApiException.class, () -> mediaService.deleteImageByUrl(null, "user123"));
+            verifyNoInteractions(mediaRepository);
+        }
+
+        @Test
+        @DisplayName("Should throw NotFound when ownerId is blank or null")
+        void shouldThrowNotFoundWhenOwnerIdIsInvalid() {
+            assertThrows(ApiException.class, () -> mediaService.deleteImageByUrl("http://image.jpg", ""));
+            assertThrows(ApiException.class, () -> mediaService.deleteImageByUrl("http://image.jpg", null));
+            verifyNoInteractions(mediaRepository);
+        }
+
+        @Test
+        @DisplayName("Should throw NotFound when image is not found in database")
+        void shouldThrowNotFoundWhenMediaDoesNotExist() {
+            // Given
+            String imageUrl = "http://cloudinary.com/missing.jpg";
+            String ownerId = "user123";
+
+            when(mediaRepository.findByImagePathAndOwnerId(imageUrl, ownerId))
+                    .thenReturn(Optional.empty());
+
+            // When & Then
+            ApiException exception = assertThrows(
+                    ApiException.class,
+                    () -> mediaService.deleteImageByUrl(imageUrl, ownerId));
+
+            assertEquals("Media not found", exception.getMessage());
+            verify(mediaRepository, times(1)).findByImagePathAndOwnerId(imageUrl, ownerId);
+            verify(mediaRepository, never()).delete(any());
+            verifyNoInteractions(mediaUploadService);
+        }
+
+        @Test
+        @DisplayName("Should handle Cloudinary exception gracefully and proceed with database deletion")
+        void shouldHandleCloudinaryDeletionFailureGracefully() throws Exception {
+            // Given
+            String ownerId = "user123";
+            String imageUrl = "http://cloudinary.com/prod1.jpg";
+            String publicId = "pub_prod1";
+
+            Media media = new Media();
+            media.setOwnerId(ownerId);
+            media.setImagePath(imageUrl);
+            media.setPublicId(publicId);
+
+            when(mediaRepository.findByImagePathAndOwnerId(imageUrl, ownerId))
+                    .thenReturn(Optional.of(media));
+            doThrow(new RuntimeException("Cloudinary Error"))
+                    .when(mediaUploadService).deleteFile(publicId);
+
+            // When
+            Map<String, String> response = mediaService.deleteImageByUrl(imageUrl, ownerId);
+
+            // error
+            assertEquals(imageUrl, response.get("image"));
+            verify(mediaRepository, times(1)).delete(media);
+            verify(mediaUploadService, times(1)).deleteFile(publicId);
         }
     }
 }

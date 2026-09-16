@@ -56,6 +56,8 @@ export class Product {
     this.id.set(this.route.snapshot.paramMap.get('id'));
     this.http.get<Productdto>(`${environment.apiUrl}/api/products/${this.id()}`).subscribe({
       next: (p) => {
+        console.log(p);
+        
         this.products.set(p);
         this.productForm.patchValue({
           name: p.name,

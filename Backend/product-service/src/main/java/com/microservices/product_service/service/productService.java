@@ -9,7 +9,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import com.microservices.product_service.dto.FeingResponse;
 import com.microservices.product_service.dto.productRequest;
 import com.microservices.product_service.dto.productRspons;
 import com.microservices.product_service.exception.ApiException;
@@ -46,7 +45,7 @@ public class productService {
     }
 
     public Page<productRspons> getMyProducts(String sellerId, int size, int page) {
-System.err.println("111111110-----------------------");
+        System.err.println("111111110-----------------------");
         Pageable pageable = PageRequest.of(
                 page,
                 size,

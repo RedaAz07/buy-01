@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -45,6 +46,8 @@ class MediaServiceTest {
     private MediaService mediaService;
 
     private MockMultipartFile validFile;
+    private Media AvatarTest;
+    private Media MediaProductTest;
 
     @BeforeEach
     void setUp() {
@@ -52,8 +55,22 @@ class MediaServiceTest {
                 "files",
                 "test-image.jpg",
                 "image/jpeg",
-                "test-image-content".getBytes()
-        );
+                "test-image-content".getBytes());
+        AvatarTest = new Media();
+        AvatarTest.setId("123");
+        AvatarTest.setImagePath("https://cloudinary.image.png/123");
+        AvatarTest.setOwnerId("user123");
+        AvatarTest.setPublicId("123456789");
+        AvatarTest.setType(UploadType.AVATAR);
+
+        MediaProductTest = new Media();
+        MediaProductTest.setId("123");
+        MediaProductTest.setImagePath("https://cloudinary.image.png/123");
+        MediaProductTest.setOwnerId("user123");
+        MediaProductTest.setPublicId("123456789");
+        MediaProductTest.setType(UploadType.PRODUCT_IMAGE);
+        MediaProductTest.setProductId("123");
+
     }
 
     @Nested
@@ -65,53 +82,53 @@ class MediaServiceTest {
         void shouldThrowWhenUsernameIsInvalid() {
             List<MultipartFile> files = List.of(validFile);
 
-            assertThrows(ApiException.class, () ->
-                    mediaService.create(files, "prod-1", UploadType.PRODUCT_IMAGE, "", "user-1", "ROLE_SELLER"));
+            assertThrows(ApiException.class,
+                    () -> mediaService.create(files, "prod-1", UploadType.PRODUCT_IMAGE, "", "user-1", "ROLE_SELLER"));
 
-            assertThrows(ApiException.class, () ->
-                    mediaService.create(files, "prod-1", UploadType.PRODUCT_IMAGE, null, "user-1", "ROLE_SELLER"));
+            assertThrows(ApiException.class, () -> mediaService.create(files, "prod-1", UploadType.PRODUCT_IMAGE, null,
+                    "user-1", "ROLE_SELLER"));
         }
 
         @Test
         @DisplayName("Should throw BadRequest when files list is empty or null")
         void shouldThrowWhenFilesEmptyOrNull() {
-            assertThrows(ApiException.class, () ->
-                    mediaService.create(Collections.emptyList(), "prod-1", UploadType.PRODUCT_IMAGE, "seller", "user-1", "ROLE_SELLER"));
+            assertThrows(ApiException.class, () -> mediaService.create(Collections.emptyList(), "prod-1",
+                    UploadType.PRODUCT_IMAGE, "seller", "user-1", "ROLE_SELLER"));
 
-            assertThrows(ApiException.class, () ->
-                    mediaService.create(null, "prod-1", UploadType.PRODUCT_IMAGE, "seller", "user-1", "ROLE_SELLER"));
+            assertThrows(ApiException.class, () -> mediaService.create(null, "prod-1", UploadType.PRODUCT_IMAGE,
+                    "seller", "user-1", "ROLE_SELLER"));
         }
 
         @Test
         @DisplayName("Should throw BadRequest when UploadType is null")
         void shouldThrowWhenTypeIsNull() {
             List<MultipartFile> files = List.of(validFile);
-            assertThrows(ApiException.class, () ->
-                    mediaService.create(files, "prod-1", null, "seller", "user-1", "ROLE_SELLER"));
+            assertThrows(ApiException.class,
+                    () -> mediaService.create(files, "prod-1", null, "seller", "user-1", "ROLE_SELLER"));
         }
 
         @Test
         @DisplayName("Should throw BadRequest when uploading multiple files for AVATAR")
         void shouldThrowWhenMultipleFilesForAvatar() {
             List<MultipartFile> files = List.of(validFile, validFile);
-            assertThrows(ApiException.class, () ->
-                    mediaService.create(files, null, UploadType.AVATAR, "user1", "user-1", "ROLE_CLIENT"));
+            assertThrows(ApiException.class,
+                    () -> mediaService.create(files, null, UploadType.AVATAR, "user1", "user-1", "ROLE_CLIENT"));
         }
 
         @Test
         @DisplayName("Should throw BadRequest when AVATAR contains a productId")
         void shouldThrowWhenAvatarHasProductId() {
             List<MultipartFile> files = List.of(validFile);
-            assertThrows(ApiException.class, () ->
-                    mediaService.create(files, "product-123", UploadType.AVATAR, "user1", "user-1", "ROLE_CLIENT"));
+            assertThrows(ApiException.class, () -> mediaService.create(files, "product-123", UploadType.AVATAR, "user1",
+                    "user-1", "ROLE_CLIENT"));
         }
 
         @Test
         @DisplayName("Should throw BadRequest when PRODUCT_IMAGE has missing productId")
         void shouldThrowWhenProductIdIsMissingForProductImage() {
             List<MultipartFile> files = List.of(validFile);
-            assertThrows(ApiException.class, () ->
-                    mediaService.create(files, "", UploadType.PRODUCT_IMAGE, "seller", "user-1", "ROLE_SELLER"));
+            assertThrows(ApiException.class,
+                    () -> mediaService.create(files, "", UploadType.PRODUCT_IMAGE, "seller", "user-1", "ROLE_SELLER"));
         }
 
         @Test
@@ -120,8 +137,8 @@ class MediaServiceTest {
             List<MultipartFile> files = List.of(validFile);
             when(productClientInterface.GetUserProduct("prod-1", "user-1", "ROLE_SELLER")).thenReturn(false);
 
-            assertThrows(ApiException.class, () ->
-                    mediaService.create(files, "prod-1", UploadType.PRODUCT_IMAGE, "seller", "user-1", "ROLE_SELLER"));
+            assertThrows(ApiException.class, () -> mediaService.create(files, "prod-1", UploadType.PRODUCT_IMAGE,
+                    "seller", "user-1", "ROLE_SELLER"));
         }
 
         @Test
@@ -130,8 +147,8 @@ class MediaServiceTest {
             List<MultipartFile> files = List.of(validFile, validFile, validFile, validFile, validFile, validFile);
             when(productClientInterface.GetUserProduct("prod-1", "user-1", "ROLE_SELLER")).thenReturn(true);
 
-            assertThrows(ApiException.class, () ->
-                    mediaService.create(files, "prod-1", UploadType.PRODUCT_IMAGE, "seller", "user-1", "ROLE_SELLER"));
+            assertThrows(ApiException.class, () -> mediaService.create(files, "prod-1", UploadType.PRODUCT_IMAGE,
+                    "seller", "user-1", "ROLE_SELLER"));
         }
 
         @Test
@@ -141,8 +158,8 @@ class MediaServiceTest {
             when(productClientInterface.GetUserProduct("prod-1", "user-1", "ROLE_SELLER")).thenReturn(true);
             when(mediaRepository.countByProductIdAndType("prod-1", UploadType.PRODUCT_IMAGE)).thenReturn(3L);
 
-            assertThrows(ApiException.class, () ->
-                    mediaService.create(files, "prod-1", UploadType.PRODUCT_IMAGE, "seller", "user-1", "ROLE_SELLER"));
+            assertThrows(ApiException.class, () -> mediaService.create(files, "prod-1", UploadType.PRODUCT_IMAGE,
+                    "seller", "user-1", "ROLE_SELLER"));
         }
     }
 
@@ -152,12 +169,12 @@ class MediaServiceTest {
 
         @Test
         @DisplayName("Should successfully upload a new Avatar when no previous avatar exists")
-        void shouldUploadAvatarSuccessfully() throws Exception { // FIX: Added throws Exception
+        void shouldUploadAvatarSuccessfully() throws Exception {
             List<MultipartFile> files = List.of(validFile);
-            
-            // FIX: Using MediaUploadService.UploadResult instead of the DTO
-            MediaUploadService.UploadResult result = new MediaUploadService.UploadResult("pub_123", "http://cloudinary.com/avatar.jpg");
-            
+
+            MediaUploadService.UploadResult result = new MediaUploadService.UploadResult(
+                    "http://cloudinary.com/avatar.jpg", "pub_123");
+
             Media savedMedia = new Media();
             savedMedia.setOwnerId("user1");
             savedMedia.setImagePath("http://cloudinary.com/avatar.jpg");
@@ -178,11 +195,11 @@ class MediaServiceTest {
 
         @Test
         @DisplayName("Should upload new avatar and replace/delete old avatar if present")
-        void shouldReplaceExistingAvatarSuccessfully() throws Exception { // FIX: Added throws Exception
+        void shouldReplaceExistingAvatarSuccessfully() throws Exception {
             List<MultipartFile> files = List.of(validFile);
-            
-            // FIX: Using MediaUploadService.UploadResult
-            MediaUploadService.UploadResult newUpload = new MediaUploadService.UploadResult("pub_new", "http://cloudinary.com/new_avatar.jpg");
+
+            MediaUploadService.UploadResult newUpload = new MediaUploadService.UploadResult(
+                    "http://cloudinary.com/new_avatar.jpg", "pub_new");
 
             Media oldAvatar = new Media();
             oldAvatar.setOwnerId("user1");
@@ -201,7 +218,8 @@ class MediaServiceTest {
 
             assertEquals("http://cloudinary.com/new_avatar.jpg", urls.get(0));
             verify(mediaRepository, times(1)).delete(oldAvatar);
-            verify(mediaEventProducer, times(1)).sendAvatarUploadedEvent("user1", "http://cloudinary.com/new_avatar.jpg");
+            verify(mediaEventProducer, times(1)).sendAvatarUploadedEvent("user1",
+                    "http://cloudinary.com/new_avatar.jpg");
         }
     }
 
@@ -211,12 +229,13 @@ class MediaServiceTest {
 
         @Test
         @DisplayName("Should successfully upload multiple product images and produce Kafka events")
-        void shouldUploadProductImagesSuccessfully() throws Exception { // FIX: Added throws Exception
+        void shouldUploadProductImagesSuccessfully() throws Exception {
             List<MultipartFile> files = List.of(validFile, validFile);
-            
-            // FIX: Using MediaUploadService.UploadResult
-            MediaUploadService.UploadResult upload1 = new MediaUploadService.UploadResult("pub_1", "http://cloudinary.com/prod1.jpg");
-            MediaUploadService.UploadResult upload2 = new MediaUploadService.UploadResult("pub_2", "http://cloudinary.com/prod2.jpg");
+
+            MediaUploadService.UploadResult upload1 = new MediaUploadService.UploadResult(
+                    "http://cloudinary.com/prod1.jpg", "pub_1");
+            MediaUploadService.UploadResult upload2 = new MediaUploadService.UploadResult(
+                    "http://cloudinary.com/prod2.jpg", "pub_2");
 
             Media savedMedia1 = new Media();
             savedMedia1.setProductId("prod-123");
@@ -231,7 +250,8 @@ class MediaServiceTest {
             when(mediaUploadService.uploadFile(any(MultipartFile.class))).thenReturn(upload1).thenReturn(upload2);
             when(mediaRepository.save(any(Media.class))).thenReturn(savedMedia1).thenReturn(savedMedia2);
 
-            List<String> urls = mediaService.create(files, "prod-123", UploadType.PRODUCT_IMAGE, "seller", "user-1", "ROLE_SELLER");
+            List<String> urls = mediaService.create(files, "prod-123", UploadType.PRODUCT_IMAGE, "seller", "user-1",
+                    "ROLE_SELLER");
 
             assertEquals(2, urls.size());
             assertEquals("http://cloudinary.com/prod1.jpg", urls.get(0));
@@ -248,17 +268,70 @@ class MediaServiceTest {
 
         @Test
         @DisplayName("Should catch unexpected upload exception and cleanup uploaded files")
-        void shouldCleanupFilesWhenUploadFails() throws Exception { // FIX: Added throws Exception to handle IOException in signature
+        void shouldCleanupFilesWhenUploadFails() throws Exception {
             List<MultipartFile> files = List.of(validFile);
             when(productClientInterface.GetUserProduct("prod-1", "user-1", "ROLE_SELLER")).thenReturn(true);
             when(mediaRepository.countByProductIdAndType("prod-1", UploadType.PRODUCT_IMAGE)).thenReturn(0L);
-            
+
             when(mediaUploadService.uploadFile(any())).thenThrow(new RuntimeException("Cloudinary Down"));
 
-            assertThrows(ApiException.class, () ->
-                    mediaService.create(files, "prod-1", UploadType.PRODUCT_IMAGE, "seller", "user-1", "ROLE_SELLER"));
+            assertThrows(ApiException.class, () -> mediaService.create(files, "prod-1", UploadType.PRODUCT_IMAGE,
+                    "seller", "user-1", "ROLE_SELLER"));
 
             verify(mediaEventProducer, never()).sendMediaUploadedEvent(any(), any());
+        }
+    }
+
+    @Nested
+    @DisplayName("Get image Testing ")
+
+    public class GetMediaServiceTests {
+
+        @Test
+        @DisplayName("Should return Media succefully")
+        void ShouldGetMediaSuccefully() {
+            // given
+            String id = "123";
+            Map<String, String> res = Map.of("image", AvatarTest.getImagePath());
+            // then
+            when(mediaRepository.findById(id)).thenReturn(Optional.of(AvatarTest));
+            Map<String, String> response = mediaService.getImage(id);
+            assertNotNull(response);
+            assertEquals(res, response);
+            verify(mediaRepository, times(1)).findById(anyString());
+        }
+
+        @Test
+        @DisplayName("Should Return Bad Request When Id Is Null")
+        void shouldReturnBadRequestWhenIdIsNull() {
+
+            // Given
+            String id = null;
+
+            // When + Then
+            ApiException exception = assertThrows(
+                    ApiException.class,
+                    () -> mediaService.getImage(id));
+
+            assertEquals("Media ID is required", exception.getMessage());
+
+            verifyNoInteractions(mediaRepository);
+        }
+
+        @Test
+        @DisplayName("Should Return not found ")
+        void shouldReturnNotFound() {
+
+            // Given
+            String id = "---";
+
+            // When + Then
+            ApiException exception = assertThrows(
+                    ApiException.class,
+                    () -> mediaService.getImage(id));
+
+            assertEquals("Media not found", exception.getMessage());
+
         }
     }
 }

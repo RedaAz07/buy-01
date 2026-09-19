@@ -90,7 +90,6 @@ export class Dashboard implements OnInit {
 
 
 
-  // ===================== TAB TITLES =====================
 
   tabTitles = {
 
@@ -141,8 +140,10 @@ export class Dashboard implements OnInit {
       }
 
     });
+if (this.user()?.role==="ROLE_SELLER") {
 
-    this.loadMoreProducts();
+  this.loadMoreProducts();
+}
 
 
   }
@@ -284,7 +285,7 @@ export class Dashboard implements OnInit {
 
     input.value = '';
   }
- 
+
 
 
 

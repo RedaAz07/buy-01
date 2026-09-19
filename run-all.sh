@@ -1,12 +1,21 @@
 #!/usr/bin/env bash
+
 set -u
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 RUN_DIR="$ROOT/docs/.run"
 LOG_DIR="$ROOT/docs/logs"
+
 mkdir -p "$RUN_DIR" "$LOG_DIR"
 
-NAMES=(registry api-gateway product-service user-service media-service)
+SERVICES=(
+  registry
+  api-gateway
+  product-service
+  user-service
+  media-service
+)
+
 declare -A PORT=(
   [registry]=8761
   [api-gateway]=8443
@@ -14,127 +23,239 @@ declare -A PORT=(
   [user-service]=8081
   [media-service]=8083
 )
+
 declare -A DIR=(
-  [registry]=Backend/registry
-  [api-gateway]=Backend/api-gateway
-  [product-service]=Backend/product-service
-  [user-service]=Backend/user-service
-  [media-service]=Backend/media-Service
+  [registry]="Backend/registry"
+  [api-gateway]="Backend/api-gateway"
+  [product-service]="Backend/product-service"
+  [user-service]="Backend/user-service"
+  [media-service]="Backend/media-Service"
 )
 
-port_open() { timeout 1 bash -c "</dev/tcp/127.0.0.1/$1" 2>/dev/null; }
+port_open() {
+  timeout 1 bash -c "</dev/tcp/127.0.0.1/$1" 2>/dev/null
+}
 
-wait_port() {
-  local name=$1 port=$2 tries=${3:-60} i
-  for ((i = 1; i <= tries; i++)); do
+start_service() {
+  local name="$1"
+  local dir="${DIR[$name]}"
+  local log="$LOG_DIR/$name.log"
+  local pid_file="$RUN_DIR/$name.pid"
+
+  if port_open "${PORT[$name]}"; then
+    echo "[$name] already running on :${PORT[$name]}"
+    return 0
+  fi
+
+  echo "[$name] starting..."
+
+  (
+    cd "$ROOT/$dir" || exit 1
+
+    # Load .env if it exists
+    if [ -f .env ]; then
+      set -a
+      source .env
+      set +a
+    fi
+
+    echo ""
+    echo "=================================================="
+    echo "[$name] started at $(date)"
+    echo "=================================================="
+    echo ""
+
+    exec ./mvnw spring-boot:run
+  ) >"$log" 2>&1 &
+
+  echo $! >"$pid_file"
+
+  echo "[$name] started - log: $log"
+}
+
+stop_service() {
+  local name="$1"
+  local pid_file="$RUN_DIR/$name.pid"
+
+  if [ ! -f "$pid_file" ]; then
+    echo "[$name] not running"
+    return 0
+  fi
+
+  local pid
+  pid=$(cat "$pid_file")
+
+  if kill -0 "$pid" 2>/dev/null; then
+    echo "[$name] stopping..."
+    kill "$pid" 2>/dev/null
+
+    # Give Spring Boot a few seconds to shut down
+    for _ in {1..10}; do
+      if ! kill -0 "$pid" 2>/dev/null; then
+        break
+      fi
+      sleep 1
+    done
+
+    # Force kill if still running
+    if kill -0 "$pid" 2>/dev/null; then
+      echo "[$name] forcing shutdown..."
+      kill -9 "$pid" 2>/dev/null
+    fi
+
+    echo "[$name] stopped"
+  else
+    echo "[$name] already stopped"
+  fi
+
+  rm -f "$pid_file"
+}
+
+wait_for_service() {
+  local name="$1"
+  local port="${PORT[$name]}"
+  local timeout="${2:-60}"
+
+  echo "[$name] waiting for :$port..."
+
+  for ((i=1; i<=timeout; i++)); do
     if port_open "$port"; then
-      echo "[$name] up on :$port"
+      echo "[$name] UP on :$port"
       return 0
     fi
+
     sleep 1
   done
-  echo "[$name] NOT up on :$port after ${tries}s (check $LOG_DIR/$name.log)"
+
+  echo "[$name] FAILED to start on :$port"
+  echo "[$name] check: $LOG_DIR/$name.log"
+
   return 1
 }
 
-ensure_mongo() {
-  if docker ps --format '{{.Names}}' | grep -qx 'product-service'; then
-    echo "[mongo] container already running"
-  else
-    echo "[mongo] starting container..."
-    docker compose --env-file "$ROOT/Backend/product-service/.env" \
-      -f "$ROOT/Backend/product-service/docker-compose.yml" up -d
-  fi
-  if docker ps --format '{{.Names}}' | grep -qx 'mongodb_media'; then
-    echo "[media-db] container already running"
-  else
-    echo "[media-db] starting container..."
-    docker compose -f "$ROOT/docker-compose.yml" up -d media-db
-  fi
-}
+status() {
+  echo ""
+  echo "Backend services"
+  echo "----------------"
 
-start_one() {
-  local name=$1 port=${PORT[$1]}
-  if port_open "$port"; then
-    echo "[$name] already up on :$port"
-    return 0
-  fi
-  echo "[$name] starting..."
-  (
-    cd "$ROOT/${DIR[$name]}" || exit 1
-    if [ -f .env ]; then
-      set -a
-      . ./.env
-      set +a
+  for name in "${SERVICES[@]}"; do
+    local pid_file="$RUN_DIR/$name.pid"
+    local state="DOWN"
+
+    if port_open "${PORT[$name]}"; then
+      state="UP"
     fi
-    exec setsid ./mvnw spring-boot:run >"$LOG_DIR/$name.log" 2>&1
-  ) &
-  echo $! >"$RUN_DIR/$name.pid"
-}
 
-stop_one() {
-  local name=$1 port=${PORT[$1]} pf="$RUN_DIR/$1.pid" pid=""
-  [ -f "$pf" ] && pid=$(cat "$pf")
-  if [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null; then
-    kill -- "-$pid" 2>/dev/null || kill "$pid" 2>/dev/null
-    rm -f "$pf"
-    echo "[$name] stopped"
-    return 0
-  fi
-  if port_open "$port"; then
-    fuser -k -TERM "${port}/tcp" >/dev/null 2>&1
-    sleep 2
-    port_open "$port" && fuser -k "${port}/tcp" >/dev/null 2>&1
-    echo "[$name] killed process on :$port"
-  else
-    echo "[$name] not running"
-  fi
-}
-
-status_all() {
-  local name pid pf
-  printf '%-18s %-6s %s\n' SERVICE PORT STATUS
-  for name in "${NAMES[@]}"; do
-    pf="$RUN_DIR/$name.pid"
-    pid=""
-    [ -f "$pf" ] && pid=$(cat "$pf")
-    if port_open "${PORT[$name]}"; then st=UP; else st=DOWN; fi
-    printf '%-18s %-6s %s\n' "$name" ":${PORT[$name]}" "$st${pid:+ (pid $pid)}"
+    printf "%-20s :%-5s %s\n" \
+      "$name" \
+      "${PORT[$name]}" \
+      "$state"
   done
-  docker ps --format '{{.Names}}' | grep -qx 'product-service' &&
-    printf '%-18s %-6s %s\n' mongo-docker :27017 UP ||
-    printf '%-18s %-6s %s\n' mongo-docker :27017 DOWN
-  docker ps --format '{{.Names}}' | grep -qx 'mongodb_media' &&
-    printf '%-18s %-6s %s\n' media-db :27018 UP ||
-    printf '%-18s %-6s %s\n' media-db :27018 DOWN
+
+  echo ""
+}
+
+start_all() {
+  echo ""
+  echo "Starting backend services..."
+  echo ""
+
+  # Registry first
+  start_service registry
+
+  if ! wait_for_service registry 60; then
+    echo ""
+    echo "Registry failed to start."
+    echo "Check: $LOG_DIR/registry.log"
+    exit 1
+  fi
+
+  # Start remaining services
+  for name in api-gateway product-service user-service media-service; do
+    start_service "$name"
+  done
+
+  echo ""
+  echo "Backend services started."
+  echo ""
+  echo "Logs:"
+  echo "  $LOG_DIR/<service>.log"
+  echo ""
+}
+
+stop_all() {
+  echo ""
+  echo "Stopping backend services..."
+  echo ""
+
+  # Stop in reverse order
+  for name in media-service user-service product-service api-gateway registry; do
+    stop_service "$name"
+  done
+
+  echo ""
+  echo "All backend services stopped."
+}
+
+restart_all() {
+  stop_all
+  sleep 2
+  start_all
+}
+
+show_logs() {
+  local name="${1:-}"
+
+  if [ -z "$name" ]; then
+    echo "Usage: $0 logs <service>"
+    echo ""
+    echo "Available services:"
+    printf '  %s\n' "${SERVICES[@]}"
+    exit 1
+  fi
+
+  if [ ! -f "$LOG_DIR/$name.log" ]; then
+    echo "No log found for: $name"
+    exit 1
+  fi
+
+  tail -n 100 -F "$LOG_DIR/$name.log"
 }
 
 case "${1:-help}" in
+
   start)
-    ensure_mongo
-    start_one registry
-    wait_port registry 8761 60
-    for n in api-gateway product-service user-service media-service; do start_one "$n"; done
-    for n in api-gateway product-service user-service media-service; do wait_port "$n" "${PORT[$n]}" 120; done
-    echo "logs: $LOG_DIR/<service>.log"
+    start_all
     ;;
+
   stop)
-    for n in media-service user-service product-service api-gateway registry; do stop_one "$n"; done
+    stop_all
     ;;
+
   restart)
-    "$0" stop
-    sleep 2
-    "$0" start
+    restart_all
     ;;
+
   status)
-    status_all
+    status
     ;;
+
   logs)
-    [ -f "$LOG_DIR/$2.log" ] && tail -n 100 -F "$LOG_DIR/$2.log" ||
-      { echo "no log for '${2:-}' (available: ${NAMES[*]})"; exit 1; }
+    show_logs "$2"
     ;;
+
   *)
-    echo "usage: ./run-all.sh {start|stop|restart|status|logs <service>}"
-    echo "services: ${NAMES[*]}"
+    echo ""
+    echo "Usage:"
+    echo "  $0 start"
+    echo "  $0 stop"
+    echo "  $0 restart"
+    echo "  $0 status"
+    echo "  $0 logs <service>"
+    echo ""
+    echo "Services:"
+    printf '  %s\n' "${SERVICES[@]}"
+    echo ""
     ;;
+
 esac

@@ -57,16 +57,16 @@ public class MediaUploadService {
         }
     }
 
-    public void deleteOrphanedFiles(List<String> publicIds) {
-        for (String publicId : publicIds) {
-            try {
-                cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
-                log.info("Cleaned up orphaned file with public ID: {}", publicId);
-            } catch (Exception e) {
-                log.error("Failed to clean up Cloudinary file with public ID: {}", publicId, e);
+        public void deleteOrphanedFiles(List<String> publicIds) {
+            for (String publicId : publicIds) {
+                try {
+                    cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+                    log.info("Cleaned up orphaned file with public ID: {}", publicId);
+                } catch (Exception e) {
+                    log.error("Failed to clean up Cloudinary file with public ID: {}", publicId, e);
+                }
             }
         }
-    }
 
     public void deleteFile(String publicId) {
         try {

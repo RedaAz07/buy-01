@@ -6,7 +6,6 @@ import { Home } from './home/home';
 import { authGuard } from './core/guards/auth-guard';
 import { Product } from './product/product';
 import { Dashboard } from './dashboard/dashboard';
-import { roleGuard } from './core/guards/role-guard';
 import { MainLayout } from './core/layouts/main-layout/main-layout';
 
 export const routes: Routes = [

@@ -11,7 +11,6 @@ import { Router } from '@angular/router';
 export class User {
   private apiUrl = `${environment.apiUrl}/api/users/me`;
   private http = inject(HttpClient);
-  private router = inject(Router);
   updateProfile(userData: UpdateRequest): Observable<UpdateResponse> {
     return this.http.put<UpdateResponse>(`${this.apiUrl}`, userData);
   }

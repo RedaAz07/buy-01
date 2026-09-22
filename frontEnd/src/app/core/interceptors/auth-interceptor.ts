@@ -46,22 +46,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         return throwError(() => error);
       }
 
-      // Forbidden
-      if (error.status === 403) {
-
-        snackBar.open(
-          backendMessage,
-          'Close',
-          {
-            duration: 5000,
-            panelClass: ['error-snackbar'],
-            horizontalPosition: 'end',
-            verticalPosition: 'bottom'
-          }
-        );
-
-        return throwError(() => error);
-      }
+     
 
       // Other errors
       snackBar.open(

@@ -215,7 +215,7 @@ if (this.user()?.role==="ROLE_SELLER") {
   switchTab(
     tab: 'settings' | 'products'
   ): void {
-    if (this.user()?.role === "ROLE_CIENT" && tab === "products") {
+    if (this.user()?.role === "ROLE_CLIENT" && tab === "products") {
       this.activeTab.set("settings");
       return
     }

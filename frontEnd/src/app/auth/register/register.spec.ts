@@ -60,7 +60,7 @@ describe('register', () => {
       passwordControl?.setValue('123456');
       expect(passwordControl?.valid).toBe(true);
     });
-    it('should invalidate name  if shorter than 6 characters  and has exlude the [a-zA-Z0-9]', () => {
+    it("should invalidate name if it doesn't match length and alphanumeric constraints", () => {
       const NameControl = component.registerForm.get('name');
       NameControl?.setValue('azertyuiopqsdfgh');
       expect(NameControl?.valid).toBe(false);
@@ -144,7 +144,7 @@ describe('register', () => {
       });
     });
 
-    describe('When login fails', () => {
+    describe('When register fails', () => {
       beforeEach(() => {
         component.registerForm.patchValue({
           name: 'testUser',

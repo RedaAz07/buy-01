@@ -1,9 +1,9 @@
 <div class="owner-actions">
   <button class="btn-delete" (click)="deleteProduct()" title="Delete" [disabled]="deleteLoading()">
     @if (deleteLoading()) {
-      <span class="spinner btn-spinner"></span>
+    <span class="spinner btn-spinner"></span>
     } @else {
-      ✕
+    ✕
     }
   </button>
   <button class="btn-edit" (click)="show.set(!show())" title="Edit" [disabled]="updateLoading()">✎</button>
@@ -20,22 +20,57 @@
     <form [formGroup]="productForm" (ngSubmit)="updetProduct()">
       <div class="field-wrapper">
         <label class="field-label">Name</label>
-        <input matInput formControlName="name" placeholder="Product name" />
+        <mat-form-field appearance="outline" class="card-field">
+          <input matInput formControlName="name" placeholder="Product name" />
+          @if (hasError('name', 'required')) {
+          <mat-error>⛔ Name is required.</mat-error>
+          }
+          @if (hasError('name', 'minlength')) {
+          <mat-error>⛔ Name must be at least 3 characters long.</mat-error>
+          }
+          @if (hasError('name', 'maxlength')) {
+          <mat-error>⛔ Name must not exceed 20 characters.</mat-error>
+          }
+        </mat-form-field>
       </div>
 
       <div class="field-wrapper">
         <label class="field-label">Description</label>
-        <textarea matInput formControlName="description" placeholder="Product description" rows="3"></textarea>
+        <mat-form-field appearance="outline" class="card-field">
+          <textarea matInput formControlName="description" placeholder="Product description" rows="3"></textarea>
+          @if (hasError('description', 'required')) {
+          <mat-error>⛔ Description is required.</mat-error>
+          }
+          @if (hasError('description', 'maxlength')) {
+          <mat-error>⛔ Description must not exceed 1000 characters.</mat-error>
+          }
+        </mat-form-field>
       </div>
 
       <div class="field-row">
         <div class="field-wrapper1">
           <label class="field-label">Price</label>
-          <input matInput type="number" formControlName="price" placeholder="0.00" />
+          <mat-form-field appearance="outline" class="card-field">
+            <input matInput type="number" formControlName="price" placeholder="0.00" />
+            @if (hasError('price', 'required')) {
+            <mat-error>Price is required.</mat-error>
+            }
+            @if (hasError('price', 'min')) {
+            <mat-error>Price must be positive.</mat-error>
+            }
+          </mat-form-field>
         </div>
         <div class="field-wrapper1">
           <label class="field-label">Quantity</label>
-          <input matInput type="number" formControlName="quantity" placeholder="0" />
+          <mat-form-field appearance="outline" class="card-field">
+            <input matInput type="number" formControlName="quantity" placeholder="0" />
+            @if (hasError('quantity', 'required')) {
+            <mat-error>Quantity is required.</mat-error>
+            }
+            @if (hasError('quantity', 'min')) {
+            <mat-error>Quantity must be at least 1.</mat-error>
+            }
+          </mat-form-field>
         </div>
       </div>
 
@@ -50,12 +85,12 @@
             <img class="preview-img" [src]="url" [alt]="'Product image ' + (i + 1)" />
             <div class="preview-meta">
               <span class="preview-name">Saved Image</span>
-              <button type="button" class="preview-remove" (click)="removeExistingImage(url.toString())" title="Delete image"
-                [disabled]="imageDeleteLoading()">
+              <button type="button" class="preview-remove" (click)="removeExistingImage(url.toString())"
+                title="Delete image" [disabled]="imageDeleteLoading()">
                 @if (imageDeleteLoading()) {
-                  <span class="spinner inline-spinner"></span>
+                <span class="spinner inline-spinner"></span>
                 } @else {
-                  &times;
+                &times;
                 }
               </button>
             </div>
@@ -92,10 +127,10 @@
 
       <button class="submit-btn" type="submit" [disabled]="updateLoading()">
         @if (updateLoading()) {
-          <span class="spinner btn-spinner"></span>
-          Updating…
+        <span class="spinner btn-spinner"></span>
+        Updating…
         } @else {
-          Update Product
+        Update Product
         }
       </button>
     </form>

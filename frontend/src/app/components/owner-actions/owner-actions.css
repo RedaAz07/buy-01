@@ -3,7 +3,11 @@
     gap: 8px;
     flex: none;
 }
-
+mat-error{
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--error);
+}
 .btn-delete,
 .btn-edit {
     width: 30px;
@@ -58,27 +62,25 @@
 /* ─── Update card — a fresh ledger page in the modal ────── */
 .update-card {
     position: fixed;
-    inset: 0;
-    background: rgba(32, 40, 58, 0.55);
-    backdrop-filter: blur(2px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 50;
-    padding: 24px;
-}
-
-.card-inner {
+    top: 50vh;
+    left: 50vw;
+    transform: translate(-50%, -50%);
+    width: min(92vw, 520px);
+    max-height: 90vh;
+    overflow-y: auto;
+    z-index: 9999;
     background-color: var(--kraft-soft);
     background-image: repeating-linear-gradient(to bottom,
             var(--line) 0 1px,
             transparent 1px 28px);
     border: 2px solid var(--ink);
     border-radius: 3px;
-    width: 100%;
-    max-width: 460px;
-    padding: 28px 30px;
-    box-shadow: 10px 10px 0 rgba(20, 25, 38, 0.25);
+    box-shadow: 12px 12px 0 rgba(20, 25, 38, 0.25);
+    font-family: var(--font-body);
+}
+
+.card-inner {
+    padding: 26px 30px;
 }
 
 .card-header {
@@ -112,6 +114,33 @@
 
 .close-btn:hover {
     color: var(--stamp);
+}
+
+/* retheme Material's outlined field to the ledger's lines */
+.card-field {
+    width: 100%;
+    font-family: var(--font-body);
+    --mat-form-field-container-height: 46px;
+    --mdc-outlined-text-field-outline-color: var(--line-strong);
+    --mdc-outlined-text-field-hover-outline-color: var(--ink);
+    --mdc-outlined-text-field-focus-outline-color: var(--stamp);
+    --mdc-outlined-text-field-container-shape: 2px;
+    --mdc-outlined-text-field-label-text-color: var(--ink-soft);
+    --mdc-outlined-text-field-focus-label-text-color: var(--stamp);
+    --mdc-outlined-text-field-input-text-color: var(--ink);
+    --mdc-outlined-text-field-caret-color: var(--stamp);
+    --mdc-outlined-text-field-error-outline-color: var(--error);
+    --mdc-outlined-text-field-error-focus-outline-color: var(--error);
+    --mdc-outlined-text-field-error-hover-outline-color: var(--error);
+    --mdc-outlined-text-field-supporting-text-color: var(--error);
+}
+
+.card-field .mdc-notched-outline__notch {
+    border-right: none;
+}
+
+.card-field .mat-mdc-form-field-flex {
+    background: var(--paper-raised);
 }
 
 .field-wrapper {

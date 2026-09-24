@@ -3,7 +3,6 @@ package com.api.api_gateway;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
@@ -18,7 +18,7 @@ import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.web.server.ServerWebExchange;
 
 import com.api.api_gateway.security.Filter;
-import com.api.api_gateway.security.JwtUtil;
+import com.api.api_gateway.security.jwtUtil;
 
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -30,14 +30,13 @@ class ApiGatewayApplicationTests {
     private GatewayFilterChain chain;
 
     @Mock
-    private JwtUtil jwtUtil;
+    private jwtUtil jwtUtil;
 
     private Filter filter;
 
     @BeforeEach
     void setUp() {
-        filter = new AuthenticationFilter(jwtUtil);
-        when(chain.filter(any())).thenReturn(Mono.empty());
+        filter = new Filter(jwtUtil);
     }
 
     @Test

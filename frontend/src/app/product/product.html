@@ -3,7 +3,7 @@
 
   <div class="detail-container">
     <div class="gallery">
-      <img class="main-image" [src]="product.imageUrls[i()] || 'http://localhost:4200/assets/noProducts.png'"
+      <img class="main-image" [src]="product.imageUrls[i()] || '/assets/noProducts.png'"
         [alt]="product.name" />
       @if (product.imageUrls.length > 1) {
       <div class="thumbnails">

@@ -191,7 +191,7 @@ export class OwnerActions {
     this.http.delete(`${environment.apiUrl}/api/products/${this.product().id}`).subscribe({
       next: () => {
         this.deleteLoading.set(false);
-        if (window.location.href == `http://localhost:4200/product/${this.product().id}`) {
+        if (window.location.href == `https://localhost:8444/product/${this.product().id}`) {
           this.router.navigate(['/home']);
 
         }

@@ -38,11 +38,9 @@
   overflow-y: auto;
   z-index: 9999;
   background-color: var(--kraft-soft);
-  background-image: repeating-linear-gradient(
-    to bottom,
-    var(--line) 0 1px,
-    transparent 1px 28px
-  );
+  background-image: repeating-linear-gradient(to bottom,
+      var(--line) 0 1px,
+      transparent 1px 28px);
   border: 2px solid var(--ink);
   border-radius: 3px;
   box-shadow: 12px 12px 0 rgba(20, 25, 38, 0.25);

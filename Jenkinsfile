@@ -56,7 +56,7 @@ pipeline {
 
     post {
         success {
-            script {
+            catchError(buildResult: 'SUCCESS', stageResult: 'SUCCESS') {
                 mail(
                     to: 'zdine30@gmail.com',
                     subject: "SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
@@ -70,7 +70,7 @@ Logs: ${env.BUILD_URL}"""
         }
 
         failure {
-            script {
+            catchError(buildResult: 'SUCCESS', stageResult: 'SUCCESS') {
                 mail(
                     to: 'zdine30@gmail.com',
                     subject: "FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",

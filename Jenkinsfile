@@ -14,11 +14,17 @@ pipeline {
             steps {
                 withCredentials([
                     file(credentialsId: 'buy01-env', variable: 'ENV_FILE'),
-                    file(credentialsId: 'gateway-keystore.p12', variable: 'SSL_FILE')
+                    file(credentialsId: 'gateway-keystore.p12', variable: 'BACKEND_SSL'),
+                    file(credentialsId: 'buy01-frontend-cert', variable: 'FRONTEND_CERT'),
+                    file(credentialsId: 'buy01-frontend-key', variable: 'FRONTEND_KEY')
                 ]) {
                     sh '''
                         cp "$ENV_FILE" .env
-                        cp "$SSL_FILE" Backend/api-gateway/src/main/resources/gateway-keystore.p12
+                         cp "$BACKEND_SSL" \
+                                    Backend/api-gateway/src/main/resources/gateway-keystore.p12
+                        mkdir -p frontend/certs
+                            cp "$FRONTEND_CERT" frontend/certs/cert.pem
+                            cp "$FRONTEND_KEY" frontend/certs/key.pem
                     '''
                 }
             }

@@ -14,7 +14,7 @@ pipeline {
             steps {
                 withCredentials([
                     file(credentialsId: 'buy01-env', variable: 'ENV_FILE'),
-                    file(credentialsId: 'buy01-ssl', variable: 'SSL_FILE')
+                    file(credentialsId: 'gateway-keystore.p12', variable: 'SSL_FILE')
                 ]) {
                     sh '''
                         cp "$ENV_FILE" .env

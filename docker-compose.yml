@@ -1,16 +1,20 @@
 services:
   # CI/CD & AUTOMATION
   jenkins:
-    image: jenkins/jenkins:lts-jdk21
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: jenkins
     restart: unless-stopped
     user: root
     ports:
       - "8090:8080"
       - "50000:50000"
+    environment:
+      - DOCKER_HOST=unix:///var/run/docker.sock
     volumes:
       - jenkins_home:/var/jenkins_home
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /run/user/68568/docker.sock:/var/run/docker.sock
 
   # MONGODB SERVICES
   user-db:

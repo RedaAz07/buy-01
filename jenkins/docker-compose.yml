@@ -1,17 +1,21 @@
 services:
   jenkins:
-    image: jenkins/jenkins:lts
+    build:
+      context: .
+      dockerfile: Dockerfile
 
     container_name: jenkins-controller
     restart: unless-stopped
+
     ports:
       - "8090:8080"
       - "50000:50000"
+
     volumes:
       - jenkins_home:/var/jenkins_home
-      - /run/user/68568/docker.sock:/var/run/docker.sock 
-    user: root 
-   
-    
+      - /run/user/68568/docker.sock:/var/run/docker.sock
+
+    user: root
+
 volumes:
   jenkins_home:

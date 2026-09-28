@@ -4,8 +4,10 @@ services:
     image: mongo:7.0
     container_name: mongodb_user
     restart: always
-    env_file:
-      - ./Backend/user-service/.env
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${USER_MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${USER_MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${USER_MONGO_INITDB_DATABASE}
     ports:
       - "27017:27017"
     volumes:
@@ -15,8 +17,10 @@ services:
     image: mongo:7.0
     container_name: mongodb_media
     restart: always
-    env_file:
-      - ./Backend/media-Service/.env
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MEDIA_MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MEDIA_MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MEDIA_MONGO_INITDB_DATABASE}
     ports:
       - "27018:27017"
     volumes:
@@ -26,8 +30,10 @@ services:
     image: mongo:7.0
     container_name: mongodb_product
     restart: always
-    env_file:
-      - ./Backend/product-service/.env
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${PRODUCT_MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${PRODUCT_MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${PRODUCT_MONGO_INITDB_DATABASE}
     ports:
       - "27019:27017"
     volumes:
@@ -88,9 +94,13 @@ services:
       context: ./Backend/user-service
     container_name: user-service
     restart: unless-stopped
-    env_file:
-      - ./Backend/user-service/.env
     environment:
+      MONGO_INITDB_ROOT_USERNAME: ${USER_MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${USER_MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${USER_MONGO_INITDB_DATABASE}
+      SERVER_PORT: ${USER_SERVER_PORT}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION}
       SPRING_MONGODB_HOST: user-db
       SPRING_MONGODB_PORT: 27017
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
@@ -105,10 +115,10 @@ services:
       context: ./Backend/product-service
     container_name: product-service
     restart: unless-stopped
-    env_file:
-      - ./Backend/product-service/.env
     environment:
-      MONGODB_URI: mongodb://admin:password@product-db:27017/product-service?authSource=admin
+      MONGODB_URI: ${PRODUCT_MONGODB_URI}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION}
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://registry:8761/eureka/
     depends_on:
@@ -121,9 +131,16 @@ services:
       context: ./Backend/media-Service
     container_name: media-service
     restart: unless-stopped
-    env_file:
-      - ./Backend/media-Service/.env
     environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MEDIA_MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MEDIA_MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MEDIA_MONGO_INITDB_DATABASE}
+      SERVER_PORT: ${MEDIA_SERVER_PORT}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION}
+      CLOUDINARY_CLOUD_NAME: ${MEDIA_CLOUDINARY_CLOUD_NAME}
+      CLOUDINARY_API_KEY: ${MEDIA_CLOUDINARY_API_KEY}
+      CLOUDINARY_API_SECRET: ${MEDIA_CLOUDINARY_API_SECRET}
       SPRING_DATA_MONGODB_HOST: media-db
       SPRING_DATA_MONGODB_PORT: 27017
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
@@ -138,9 +155,10 @@ services:
       context: ./Backend/api-gateway
     container_name: api-gateway
     restart: unless-stopped
-    env_file:
-      - ./Backend/api-gateway/.env
     environment:
+      SSL_Pass: ${API_GATEWAY_SSL_PASS}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION}
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://registry:8761/eureka/
     depends_on:
       - registry

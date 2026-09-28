@@ -2,3 +2,4 @@ logs/
 docs/logs/
 .run/
 docs/.run/
+.env

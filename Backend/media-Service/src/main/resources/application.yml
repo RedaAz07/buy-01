@@ -22,9 +22,6 @@ spring:
 
   application:
     name: media-service
-  config:
-    import: optional:file:./.env[.properties]
-  
   data:
     mongodb:
       host: localhost

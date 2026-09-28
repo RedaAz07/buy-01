@@ -15,8 +15,6 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
   application:
     name: user-service
-  config:
-    import: optional:file:./.env[.properties]
   mongodb:
     host: localhost
     port: 27017

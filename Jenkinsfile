@@ -1,12 +1,26 @@
-
 pipeline {
     agent any
 
     stages {
+
         stage('Checkout') {
             steps {
                 git branch: 'main',
                     url: 'https://github.com/RedaAz07/buy-01.git'
+            }
+        }
+
+        stage('Prepare Secrets') {
+            steps {
+                withCredentials([
+                    file(credentialsId: 'buy01-env', variable: 'ENV_FILE'),
+                    file(credentialsId: 'buy01-ssl', variable: 'SSL_FILE')
+                ]) {
+                    sh '''
+                        cp "$ENV_FILE" .env
+                        cp "$SSL_FILE" Backend/api-gateway/src/main/resources/gateway-keystore.p12
+                    '''
+                }
             }
         }
 

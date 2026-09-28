@@ -2,6 +2,7 @@ pipeline {
     agent any
 
     stages {
+
         stage('Checkout') {
             steps {
                 git branch: 'main',
@@ -40,11 +41,9 @@ pipeline {
             }
         }
 
-        stage('Docker Info') {
+        stage('Docker Build') {
             steps {
-                sh 'docker version'
-                sh 'docker compose version'
-                sh 'docker buildx version'
+                sh 'docker compose up -d'
             }
         }
     }

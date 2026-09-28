@@ -3,13 +3,6 @@ pipeline {
 
     stages {
 
-        stage('Checkout') {
-            steps {
-                git branch: 'main',
-                    url: 'https://github.com/RedaAz07/buy-01.git'
-            }
-        }
-
         stage('Prepare Secrets') {
             steps {
                 withCredentials([
@@ -20,11 +13,14 @@ pipeline {
                 ]) {
                     sh '''
                         cp "$ENV_FILE" .env
-                         cp "$BACKEND_SSL" \
-                                    Backend/api-gateway/src/main/resources/gateway-keystore.p12
+
+                        cp "$BACKEND_SSL" \
+                            Backend/api-gateway/src/main/resources/gateway-keystore.p12
+
                         mkdir -p frontend/certs
-                            cp "$FRONTEND_CERT" frontend/certs/cert.pem
-                            cp "$FRONTEND_KEY" frontend/certs/key.pem
+
+                        cp "$FRONTEND_CERT" frontend/certs/cert.pem
+                        cp "$FRONTEND_KEY" frontend/certs/key.pem
                     '''
                 }
             }

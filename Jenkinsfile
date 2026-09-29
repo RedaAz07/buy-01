@@ -28,17 +28,50 @@ pipeline {
 
         stage('Build') {
             steps {
-                dir('Backend/api-gateway') {
-                    sh 'chmod +x mvnw'
-                    sh './mvnw clean package -DskipTests'
+                script {
+                    def backendServices = [
+                        'registry',
+                        'user-service',
+                        'product-service',
+                        'media-Service',
+                        'api-gateway'
+                    ]
+
+                    backendServices.each { service ->
+                        dir("Backend/${service}") {
+                            sh 'chmod +x mvnw'
+                            sh './mvnw clean package -DskipTests'
+                        }
+                    }
+
+                    dir('frontend') {
+                        sh 'npm ci --legacy-peer-deps'
+                        sh 'npm run build -- --configuration production'
+                    }
                 }
             }
         }
 
         stage('Test') {
             steps {
-                dir('Backend/api-gateway') {
-                    sh './mvnw test'
+                script {
+                    def backendServices = [
+                        'registry',
+                        'user-service',
+                        'product-service',
+                        'media-Service',
+                        'api-gateway'
+                    ]
+
+                    backendServices.each { service ->
+                        dir("Backend/${service}") {
+                            sh './mvnw test'
+                        }
+                    }
+
+                    dir('frontend') {
+                        sh 'npm test -- --watch=false'
+                    }
                 }
             }
         }

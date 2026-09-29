@@ -11,16 +11,17 @@ RUN apt-get update \
 # Docker Compose
 RUN mkdir -p /usr/local/lib/docker/cli-plugins \
     && curl -SL https://github.com/docker/compose/releases/download/v2.40.3/docker-compose-linux-x86_64 \
-       -o /usr/local/lib/docker/cli-plugins/docker-compose \
+    -o /usr/local/lib/docker/cli-plugins/docker-compose \
     && chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
 
 # Docker Buildx
 RUN mkdir -p /usr/local/lib/docker/cli-plugins \
     && curl -SL https://github.com/docker/buildx/releases/download/v0.29.1/buildx-v0.29.1.linux-amd64 \
-       -o /usr/local/lib/docker/cli-plugins/docker-buildx \
+    -o /usr/local/lib/docker/cli-plugins/docker-buildx \
     && chmod +x /usr/local/lib/docker/cli-plugins/docker-buildx
 
 RUN docker buildx version \
     && docker compose version \
     && node --version \
     && npm --version
+

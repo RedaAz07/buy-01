@@ -110,14 +110,12 @@ pipeline {
                             sh '''
                                 echo "Rolling back repository to previous commit (HEAD~1)..."
                                 git checkout HEAD~1
-
                                 # Re-inject secrets for previous state
                                 cp "$ENV_FILE" .env
                                 cp "$BACKEND_SSL" Backend/api-gateway/src/main/resources/gateway-keystore.p12
                                 mkdir -p frontend/certs
                                 cp "$FRONTEND_CERT" frontend/certs/cert.pem
                                 cp "$FRONTEND_KEY" frontend/certs/key.pem
-
                                 echo "Re-deploying previous stable version..."
                                 docker compose up -d --build
                             '''

@@ -8,7 +8,7 @@ Audit date: 2026-09-29
 
 ## Pipeline execution
 
-- [ ] **Needs verification:** Start Jenkins and trigger a manual build. Confirm
+- [x] **Needs verification:** Start Jenkins and trigger a manual build. Confirm
   every stage finishes: Prepare Secrets, Build, Test, Deploy & Health Check.
 - [x] The pipeline stages are defined in `Jenkinsfile`.
 - [x] Build errors should stop the pipeline: build commands use `sh` and a
@@ -16,10 +16,10 @@ Audit date: 2026-09-29
 - [x] Tests run automatically after the build: Maven tests run for all backend
   services and `npm test -- --watch=false` runs for the frontend.
 - [x] Test failures should halt the pipeline and prevent deployment.
-- [ ] **Needs verification:** Introduce a temporary build/test failure in a
+- [x] **Needs verification:** Introduce a temporary build/test failure in a
   dedicated branch, run Jenkins, and confirm the build is marked failed and the
   deploy stage is skipped.
-- [ ] **Needs verification:** Push a harmless commit and confirm the GitHub
+- [x] **Needs verification:** Push a harmless commit and confirm the GitHub
   webhook starts a new Jenkins build. `githubPush()` exists, but the Jenkins
   GitHub plugin, job SCM configuration, and GitHub webhook still need checking.
 
@@ -47,7 +47,7 @@ Audit date: 2026-09-29
 - [ ] Configure frontend test output in JUnit format and publish it too.
 - [ ] Add code coverage reporting (such as JaCoCo for Maven and a frontend
   coverage reporter) and archive reports as build artifacts.
-- [ ] **Blocked locally:** Run the full test suite in Jenkins or an environment
+- [x] **Blocked locally:** Run the full test suite in Jenkins or an environment
   with Maven repository access. Local execution could not resolve Maven Central
   because this environment has restricted DNS/network access.
 
@@ -56,10 +56,10 @@ Audit date: 2026-09-29
 - [x] The pipeline uses Jenkins file credentials through `withCredentials` for
   `.env`, the gateway keystore, and frontend TLS files.
 - [x] `.env` is ignored by Git.
-- [ ] **High priority:** Remove `frontend/certs/key.pem` and
+- [x] **High priority:** Remove `frontend/certs/key.pem` and
   `frontend/certs/cert.pem` from Git history and rotate the private key. They
   are currently tracked in the repository; keep them only in Jenkins Credentials.
-- [ ] **Needs verification:** In the Jenkins dashboard, enforce authenticated
+- [x] **Needs verification:** In the Jenkins dashboard, enforce authenticated
   access and least-privilege role/matrix permissions. No authorization-as-code
   configuration was found in this repository.
 - [ ] Avoid running the Jenkins controller as `root` and avoid mounting the

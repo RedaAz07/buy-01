@@ -15,15 +15,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.user_service.dto.request.LoginRequestDTO;
 import com.user_service.dto.request.RegisterRequestDTO;
 import com.user_service.dto.request.UpdateRequestDTO;
-import com.user_service.dto.response.AuthResponseDTO;
-import com.user_service.dto.response.UpdateResponseDTO;
-import com.user_service.dto.response.UserResponseDTO;
-import com.user_service.exceptions.ApiException;
-import com.user_service.mapper.UserMapper;
-import com.user_service.model.Roles;
-import com.user_service.model.User;
-import com.user_service.repository.UserRepository;
-import com.user_service.security.JwtUtil;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;

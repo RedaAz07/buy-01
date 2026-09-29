@@ -3,7 +3,9 @@ FROM jenkins/jenkins:lts-jdk21
 USER root
 
 RUN apt-get update \
-    && apt-get install -y docker.io curl \
+    && apt-get install -y docker.io curl ca-certificates \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
 
 # Docker Compose
@@ -19,4 +21,6 @@ RUN mkdir -p /usr/local/lib/docker/cli-plugins \
     && chmod +x /usr/local/lib/docker/cli-plugins/docker-buildx
 
 RUN docker buildx version \
-    && docker compose version
+    && docker compose version \
+    && node --version \
+    && npm --version

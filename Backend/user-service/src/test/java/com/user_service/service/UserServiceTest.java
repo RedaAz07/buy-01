@@ -101,7 +101,7 @@ public class UserServiceTest {
             verify(passwordEncoder, times(1)).encode(registerReqTest.password());
             verify(userRepository, times(1))
                     .save(argThat(u -> u.getName().equals(mockClientUser.getName())
-                            && u.getPassword().equals("khaltek")));
+                            && u.getPassword().equals("hashed_password")));
         }
 
         @Test

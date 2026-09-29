@@ -191,7 +191,6 @@ volumes:
   product_mongodb_data:
   kafka_data:
   redis_data:
-  jenkins_home:
 
 networks:
   default:

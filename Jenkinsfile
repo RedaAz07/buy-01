@@ -76,9 +76,9 @@ pipeline {
             }
         }
 
-        stage('Docker Build') {
+        stage('Deploy') {
             steps {
-                sh 'docker compose up -d'
+                sh 'docker compose up -d --build'
             }
         }
     }
@@ -87,7 +87,7 @@ pipeline {
         success {
             catchError(buildResult: 'SUCCESS', stageResult: 'SUCCESS') {
                 mail(
-                    to: 'zdine30@gmail.com',
+                    to: 'zdine30@gmail.com, annizreda07@gmail.com',
                     subject: "SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                     body: """Build succeeded.
 
@@ -101,7 +101,7 @@ Logs: ${env.BUILD_URL}"""
         failure {
             catchError(buildResult: 'SUCCESS', stageResult: 'SUCCESS') {
                 mail(
-                    to: 'zdine30@gmail.com',
+                    to: 'zdine30@gmail.com,annizreda07@gmail.com',
                     subject: "FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                     body: """Build failed.
 

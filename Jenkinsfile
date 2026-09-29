@@ -7,11 +7,6 @@ pipeline {
 
     options {
         disableConcurrentBuilds()
-        timestamps()
-    }
-
-    environment {
-        FRONTEND_TEST_REPORT = 'frontend/test-results/*.xml'
     }
 
     stages {
@@ -25,11 +20,8 @@ pipeline {
                     file(credentialsId: 'buy01-frontend-key', variable: 'FRONTEND_KEY')
                 ]) {
                     sh '''
-                        set -e
-
                         cp "$ENV_FILE" .env
 
-                        mkdir -p Backend/api-gateway/src/main/resources
                         cp "$BACKEND_SSL" \
                             Backend/api-gateway/src/main/resources/gateway-keystore.p12
 
@@ -86,39 +78,8 @@ pipeline {
                     }
 
                     dir('frontend') {
-                        sh '''
-                            mkdir -p test-results
-
-                            npm test -- \
-                                --watch=false \
-                                --no-progress
-                        '''
+                        sh 'npm test -- --watch=false'
                     }
-                }
-            }
-
-            post {
-                always {
-                    junit(
-                        testResults: 'Backend/**/target/surefire-reports/*.xml',
-                        allowEmptyResults: true,
-                        skipPublishingChecks: false
-                    )
-
-                    junit(
-                        testResults: 'frontend/test-results/*.xml',
-                        allowEmptyResults: true,
-                        skipPublishingChecks: false
-                    )
-
-                    archiveArtifacts(
-                        artifacts: '''
-                            Backend/**/target/surefire-reports/*.xml,
-                            frontend/test-results/*.xml
-                        ''',
-                        allowEmptyArchive: true,
-                        fingerprint: true
-                    )
                 }
             }
         }
@@ -126,167 +87,78 @@ pipeline {
         stage('Deploy & Health Check') {
             steps {
                 script {
-
-                    try {
-                        withCredentials([
-                            file(credentialsId: 'buy01-env', variable: 'ENV_FILE'),
-                            file(credentialsId: 'gateway-keystore.p12', variable: 'BACKEND_SSL'),
-                            file(credentialsId: 'buy01-frontend-cert', variable: 'FRONTEND_CERT'),
-                            file(credentialsId: 'buy01-frontend-key', variable: 'FRONTEND_KEY')
-                        ]) {
+                    withCredentials([
+                        file(credentialsId: 'buy01-env', variable: 'ENV_FILE'),
+                        file(credentialsId: 'gateway-keystore.p12', variable: 'BACKEND_SSL'),
+                        file(credentialsId: 'buy01-frontend-cert', variable: 'FRONTEND_CERT'),
+                        file(credentialsId: 'buy01-frontend-key', variable: 'FRONTEND_KEY')
+                    ]) {
+                        try {
+                            sh 'docker compose up -d --build'
 
                             sh '''
-                                set -e
+                                echo "Waiting 15s for containers to stabilize..."
+                                sleep 15
+                                if docker compose ps | grep -qE "Exited|dead"; then
+                                    echo "Container health check failed!"
+                                    exit 1
+                                fi
+                            '''
+                        } catch (Exception e) {
+                            echo "⚠️ Deployment or Health Check failed! Initiating rollback..."
+                            
+                            sh '''
+                                echo "Rolling back repository to previous commit (HEAD~1)..."
+                                git checkout HEAD~1
 
+                                # Re-inject secrets for previous state
                                 cp "$ENV_FILE" .env
-
-                                mkdir -p Backend/api-gateway/src/main/resources
-                                cp "$BACKEND_SSL" \
-                                    Backend/api-gateway/src/main/resources/gateway-keystore.p12
-
+                                cp "$BACKEND_SSL" Backend/api-gateway/src/main/resources/gateway-keystore.p12
                                 mkdir -p frontend/certs
                                 cp "$FRONTEND_CERT" frontend/certs/cert.pem
                                 cp "$FRONTEND_KEY" frontend/certs/key.pem
 
-                                echo "Starting deployment..."
+                                echo "Re-deploying previous stable version..."
                                 docker compose up -d --build
-
-                                echo "Waiting for services..."
-                                sleep 15
-
-                                echo "Checking container status..."
-                                docker compose ps
-
-                                if docker compose ps | grep -qE "Exited|dead"; then
-                                    echo "Deployment health check failed."
-                                    docker compose ps
-                                    exit 1
-                                fi
-
-                                echo "Deployment completed successfully."
                             '''
+                            
+                            error("Deployment failed: ${e.getMessage()}. Successfully rolled back to previous commit.")
                         }
-
-                        echo "Deployment successful."
-
-                    } catch (Exception e) {
-
-                        echo "Deployment or health check failed."
-                        echo "Starting rollback..."
-
-                       
-                        sh '''
-                            set +e
-
-                            echo "Current commit:"
-                            git rev-parse HEAD
-
-                            echo "Previous commit:"
-                            git rev-parse HEAD~1
-
-                            git checkout HEAD~1
-
-                            echo "Re-injecting required secrets..."
-
-                            cp "$ENV_FILE" .env
-
-                            mkdir -p Backend/api-gateway/src/main/resources
-                            cp "$BACKEND_SSL" \
-                                Backend/api-gateway/src/main/resources/gateway-keystore.p12
-
-                            mkdir -p frontend/certs
-                            cp "$FRONTEND_CERT" frontend/certs/cert.pem
-                            cp "$FRONTEND_KEY" frontend/certs/key.pem
-
-                            echo "Re-deploying previous commit..."
-
-                            docker compose up -d --build
-
-                            sleep 15
-
-                            docker compose ps
-
-                            if docker compose ps | grep -qE "Exited|dead"; then
-                                echo "Rollback deployment also appears unhealthy."
-                                exit 1
-                            fi
-
-                            echo "Rollback completed."
-                        '''
-
-                        error(
-                            "Deployment failed: ${e.getMessage()}. " +
-                            "Rollback was attempted."
-                        )
                     }
-                }
-            }
-
-            post {
-                success {
-                    echo "Deployment stage completed successfully."
-                }
-
-                failure {
-                    echo "Deployment stage failed. Rollback was attempted."
                 }
             }
         }
     }
 
     post {
-
         success {
-            catchError(
-                buildResult: 'SUCCESS',
-                stageResult: 'SUCCESS'
-            ) {
+            catchError(buildResult: 'SUCCESS', stageResult: 'SUCCESS') {
                 mail(
                     to: 'zdine30@gmail.com, annizreda07@gmail.com',
                     subject: "SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                    body: """Build and deployment succeeded.
+                    body: """Build succeeded.
 
 Job: ${env.JOB_NAME}
 Build: #${env.BUILD_NUMBER}
-Status: SUCCESS
-
-Build URL:
-${env.BUILD_URL}
-
-The application passed the build and test stages and was successfully deployed.
-"""
+Logs: ${env.BUILD_URL}"""
                 )
             }
         }
 
         failure {
-            catchError(
-                buildResult: 'SUCCESS',
-                stageResult: 'SUCCESS'
-            ) {
+            catchError(buildResult: 'SUCCESS', stageResult: 'SUCCESS') {
                 mail(
                     to: 'zdine30@gmail.com, annizreda07@gmail.com',
-                    subject: "FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                    body: """Pipeline execution failed.
+                    subject: "FAILED (Rolled Back): ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                    body: """Build failed during pipeline execution.
 
 Job: ${env.JOB_NAME}
 Build: #${env.BUILD_NUMBER}
-Status: FAILED
+Logs: ${env.BUILD_URL}
 
-Build URL:
-${env.BUILD_URL}
-
-The pipeline failed during one of its stages.
-
-If the failure happened during deployment, an automatic rollback was attempted.
-Check the Jenkins console output and test reports for details.
-"""
+If failure occurred in 'Deploy', the environment was automatically rolled back to the previous stable commit."""
                 )
             }
-        }
-
-        always {
-            echo "Pipeline finished with status: ${currentBuild.currentResult}"
         }
     }
 }

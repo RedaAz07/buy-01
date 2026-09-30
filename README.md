@@ -34,6 +34,68 @@ flowchart LR
 		Gateway --> Redis[(Redis)]
 ```
 
+
+### CI/CD
+```mermaid
+flowchart TD
+    subgraph DevEnv["1. Local Development"]
+        Dev["Developer\n(ranniz / RedaAz07)"] -->|git push origin main| GitHub["GitHub Repository\n(RedaAz07/buy-01)"]
+    end
+
+    subgraph TriggerLayer["2. Trigger & Tunneling"]
+        GitHub -->|Webhook Payload| Ngrok["ngrok Tunnel\n(Port 8090)"]
+        Ngrok -->|/github-webhook/| JenkinsController["Jenkins Controller\n(Jenkins Docker Container)"]
+    end
+
+    subgraph PipelineExecution["3. Jenkins CI/CD Pipeline (Jenkinsfile)"]
+        JenkinsController --> S1
+
+        subgraph S1["Stage 1: Prepare Secrets"]
+            Vault[("Jenkins Vault\nCredentials")] -.->|Inject| Secrets["Copy .env & SSL Certs\n- gateway-keystore.p12\n- cert.pem & key.pem"]
+        end
+
+        S1 --> S2
+
+        subgraph S2["Stage 2: Build Stage"]
+            B1["Spring Boot Microservices\n./mvnw clean package -DskipTests\n(registry, user, product, media, gateway)"]
+            B2["Angular Frontend\nnpm ci && npm run build"]
+        end
+
+        S2 --> S3
+
+        subgraph S3["Stage 3: Test Stage (Quality Gate)"]
+            T1["Backend Tests\n./mvnw test"]
+            T2["Frontend Tests\nnpm test"]
+        end
+
+        S3 --> S4
+
+        subgraph S4["Stage 4: Deploy & Health Check"]
+            D1["docker compose up -d --build"]
+            D2{"Health Check\n(Containers Running?)"}
+            D1 --> D2
+        end
+
+        subgraph Rollback["Automated Rollback (On Failure)"]
+            R1["git checkout HEAD~1"]
+            R2["Re-inject Secrets & Re-build"]
+            R3["docker compose up -d"]
+            R1 --> R2 --> R3
+        end
+
+        D2 -->|Exited / Crash| Rollback
+    end
+
+    subgraph TargetHost["4. Deployment Target (Docker Host)"]
+        D1 -->|via /var/run/docker.sock| HostDocker["Docker Engine (Rootless)"]
+        HostDocker --> Containers["Active Stack:\n- Microservices & Gateway\n- Angular Frontend (Nginx)\n- Databases & Infra (Mongo, Kafka, Redis)"]
+    end
+
+    subgraph PostExecution["5. Post-Build Notifications"]
+        D2 -->|All Passed| MailSuccess["Email: SUCCESS\n(smtp.gmail.com:587 TLS)"]
+        Rollback --> MailFail["Email: FAILED & Rolled Back\n(smtp.gmail.com:587 TLS)"]
+    end
+```
 ### How the services work together
 
 The normal request path is synchronous. The browser sends one request to the

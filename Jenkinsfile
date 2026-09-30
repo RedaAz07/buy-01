@@ -21,12 +21,8 @@ pipeline {
                 ]) {
                     sh '''
                         cp "$ENV_FILE" .env
-
-                        cp "$BACKEND_SSL" \
-                            Backend/api-gateway/src/main/resources/gateway-keystore.p12
-
+                        cp "$BACKEND_SSL" Backend/api-gateway/src/main/resources/gateway-keystore.p12
                         mkdir -p frontend/certs
-
                         cp "$FRONTEND_CERT" frontend/certs/cert.pem
                         cp "$FRONTEND_KEY" frontend/certs/key.pem
                     '''
@@ -37,13 +33,7 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    def backendServices = [
-                        'registry',
-                        'user-service',
-                        'product-service',
-                        'media-Service',
-                        'api-gateway'
-                    ]
+                    def backendServices = ['registry', 'user-service', 'product-service', 'media-Service', 'api-gateway']
 
                     backendServices.each { service ->
                         dir("Backend/${service}") {
@@ -63,13 +53,7 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    def backendServices = [
-                        'registry',
-                        'user-service',
-                        'product-service',
-                        'media-Service',
-                        'api-gateway'
-                    ]
+                    def backendServices = ['registry', 'user-service', 'product-service', 'media-Service', 'api-gateway']
 
                     backendServices.each { service ->
                         dir("Backend/${service}") {
@@ -100,122 +84,45 @@ pipeline {
                         file(credentialsId: 'buy01-frontend-cert', variable: 'FRONTEND_CERT'),
                         file(credentialsId: 'buy01-frontend-key', variable: 'FRONTEND_KEY')
                     ]) {
-
                         try {
-
-                            echo "Deploying commit: ${env.GIT_COMMIT}"
+                            echo "🚀 Deploying commit: ${env.GIT_COMMIT}"
 
                             sh '''
                                 docker compose up -d --build
-
-                                echo "Waiting 15 seconds for containers to stabilize..."
-                                sleep 15
-
-                                echo "Checking container status..."
+                                
+                                echo "Waiting 10s for containers to stabilize..."
+                                sleep 10
 
                                 if docker compose ps | grep -qE "Exited|dead"; then
-                                    echo "Container health check failed!"
-                                    docker compose ps
+                                    echo "❌ Health check failed: One or more containers crashed!"
                                     exit 1
                                 fi
-
-                                docker compose ps
+                                
+                                echo "✅ All containers are up and running!"
                             '''
 
                         } catch (Exception deployError) {
+                            echo "⚠️ Deployment failed! Checking rollback availability..."
 
-                            echo "Deployment failed."
-
-                           
-                            if (!env.GIT_PREVIOUS_SUCCESSFUL_COMMIT) {
-                                error(
-                                    "Deploy failed and no previous successful commit " +
-                                    "exists to roll back to. Manual intervention required."
-                                )
-                            }
-
-                            echo """
-                            Deploy failed — rolling back to:
-                            ${env.GIT_PREVIOUS_SUCCESSFUL_COMMIT}
-                            """
-
-                            try {
-
+                            if (env.GIT_PREVIOUS_SUCCESSFUL_COMMIT) {
                                 sh '''
-                                    echo "Stopping failed deployment..."
-
+                                    echo "Rolling back to commit: ${GIT_PREVIOUS_SUCCESSFUL_COMMIT}"
                                     docker compose down
-
-                                    echo "Checking out previous successful commit..."
-
                                     git checkout --force ${GIT_PREVIOUS_SUCCESSFUL_COMMIT}
 
-                                    echo "Re-injecting secrets..."
-
+                                    # Re-inject secrets & rebuild stable release
                                     cp "$ENV_FILE" .env
-
-                                    cp "$BACKEND_SSL" \
-                                        Backend/api-gateway/src/main/resources/gateway-keystore.p12
-
+                                    cp "$BACKEND_SSL" Backend/api-gateway/src/main/resources/gateway-keystore.p12
                                     mkdir -p frontend/certs
-
                                     cp "$FRONTEND_CERT" frontend/certs/cert.pem
                                     cp "$FRONTEND_KEY" frontend/certs/key.pem
 
-                                    echo "Rebuilding previous successful version..."
-
                                     docker compose up -d --build
-
-                                    echo "Waiting 15 seconds for rollback deployment..."
-
-                                    sleep 15
-
-                                    echo "Checking rollback containers..."
-
-                                    if docker compose ps | grep -qE "Exited|dead"; then
-                                        echo "Rollback health check failed!"
-                                        docker compose ps
-                                        exit 1
-                                    fi
-
-                                    docker compose ps
-
-                                    echo "Rollback completed successfully."
                                 '''
-
-                            } catch (Exception rollbackError) {
-
-                                error("""
-Deployment failed AND rollback failed.
-
-Failed deployment commit:
-${env.GIT_COMMIT}
-
-Previous successful commit:
-${env.GIT_PREVIOUS_SUCCESSFUL_COMMIT}
-
-Rollback error:
-${rollbackError.getMessage()}
-
-Manual intervention is required.
-""")
+                                error("Deployment failed. Rolled back to commit ${env.GIT_PREVIOUS_SUCCESSFUL_COMMIT}")
+                            } else {
+                                error("Deployment failed and no previous successful commit exists to roll back to.")
                             }
-
-                            error(
-                                "Deployment failed. " +
-                                "Successfully rolled back to previous successful commit " +
-                                "${env.GIT_PREVIOUS_SUCCESSFUL_COMMIT}"
-                            )
-
-                        } finally {
-
-                         
-                            sh '''
-                                rm -f .env
-                                rm -f Backend/api-gateway/src/main/resources/gateway-keystore.p12
-                                rm -f frontend/certs/cert.pem
-                                rm -f frontend/certs/key.pem
-                            '''
                         }
                     }
                 }
@@ -224,7 +131,6 @@ Manual intervention is required.
     }
 
     post {
-
         always {
             cleanWs()
         }
@@ -239,7 +145,6 @@ Manual intervention is required.
 Job: ${env.JOB_NAME}
 Build: #${env.BUILD_NUMBER}
 Commit: ${env.GIT_COMMIT}
-
 Logs: ${env.BUILD_URL}"""
                 )
             }
@@ -255,10 +160,7 @@ Logs: ${env.BUILD_URL}"""
 Job: ${env.JOB_NAME}
 Build: #${env.BUILD_NUMBER}
 Failed commit: ${env.GIT_COMMIT}
-
-Previous successful commit:
-${env.GIT_PREVIOUS_SUCCESSFUL_COMMIT ?: 'Not available'}
-
+Previous stable commit: ${env.GIT_PREVIOUS_SUCCESSFUL_COMMIT ?: 'N/A'}
 Logs: ${env.BUILD_URL}"""
                 )
             }

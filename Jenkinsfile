@@ -84,6 +84,7 @@ pipeline {
             post {
                 always {
                     junit 'Backend/**/target/surefire-reports/*.xml'
+                    junit 'frontend/test-results/*.xml'
                 }
             }
         }

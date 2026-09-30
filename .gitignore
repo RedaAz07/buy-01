@@ -3,3 +3,5 @@ docs/logs/
 .run/
 docs/.run/
 .env
+*.tgz
+ngrok.sh

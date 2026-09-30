@@ -499,3 +499,6 @@ full implementation audit, see `docs/project-docs/todolist.md`.
 7. Keep secrets in environment variables and never commit credentials.
 8. Prefer observable, independently deployable services over shared database
 	 coupling.
+
+
+ngrok config add-authtoken YOUR_TOKEN

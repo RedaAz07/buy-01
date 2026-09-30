@@ -62,12 +62,12 @@ pipeline {
             steps {
                 script {
                     def backendServices = [
-                        'registry',
-                        'user-service',
-                        'product-service',
-                        'media-Service',
-                        'api-gateway'
-                    ]
+                'registry',
+                'user-service',
+                'product-service',
+                'media-Service',
+                'api-gateway'
+            ]
 
                     backendServices.each { service ->
                         dir("Backend/${service}") {
@@ -80,9 +80,10 @@ pipeline {
                     }
                 }
             }
+
             post {
                 always {
-                    junit 'target/surefire-reports/*.xml'
+                    junit 'Backend/**/target/surefire-reports/*.xml'
                 }
             }
         }

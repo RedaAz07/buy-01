@@ -46,7 +46,7 @@ describe('Login Component', () => {
   describe('Form Initialization & Validation', () => {
     it('should initialize with empty inputs and an invalid form', () => {
       expect(component.loginForm.valid).toBe(false);
-      expect(component.loginForm.get('name1')?.value).toBe('');
+      expect(component.loginForm.get('name')?.value).toBe('');
       expect(component.loginForm.get('password')?.value).toBe('');
     });
 

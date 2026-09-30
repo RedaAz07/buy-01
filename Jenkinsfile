@@ -84,7 +84,7 @@ pipeline {
                         file(credentialsId: 'buy01-frontend-key', variable: 'FRONTEND_KEY')
                     ]) {
                         try {
-                            echo "🚀 Deploying commit: ${env.GIT_COMMIT}"
+                            echo " Deploying commit: ${env.GIT_COMMIT}"
 
                                 sh '''
                                         docker compose up -d --build
@@ -94,13 +94,13 @@ pipeline {
                                         docker compose ps
                                         # Exited, dead, Restarting, أو unhealthy
                                         if docker compose ps | grep -qE "Exited|dead|Restarting|unhealthy"; then
-                                            echo "❌ Health check failed: One or more containers crashed or are stuck restarting!"
+                                            echo " Health check failed: One or more containers crashed or are stuck restarting!"
                                             exit 1
                                         fi
-                                        echo "✅ All containers are healthy and running!"
+                                        echo " All containers are healthy and running!"
                                         '''
                         } catch (Exception deployError) {
-                            echo '⚠️ Deployment failed! Checking rollback availability...'
+                            echo ' Deployment failed! Checking rollback availability...'
 
                             if (env.GIT_PREVIOUS_SUCCESSFUL_COMMIT) {
                                 sh '''

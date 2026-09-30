@@ -19,7 +19,7 @@ Audit date: 2026-09-29
 - [x] **Needs verification:** Introduce a temporary build/test failure in a
   dedicated branch, run Jenkins, and confirm the build is marked failed and the
   deploy stage is skipped.
-- [x] **Needs verification:** Push a harmless commit and confirm the GitHub
+- [ ] **Needs verification:** Push a harmless commit and confirm the GitHub
   webhook starts a new Jenkins build. `githubPush()` exists, but the Jenkins
   GitHub plugin, job SCM configuration, and GitHub webhook still need checking.
 

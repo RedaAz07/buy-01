@@ -10,7 +10,6 @@ pipeline {
     }
 
     stages {
-
         stage('Prepare Secrets') {
             steps {
                 withCredentials([
@@ -87,22 +86,21 @@ pipeline {
                         try {
                             echo "🚀 Deploying commit: ${env.GIT_COMMIT}"
 
-                            sh '''
-                                docker compose up -d --build
-                                
-                                echo "Waiting 10s for containers to stabilize..."
-                                sleep 10
-
-                                if docker compose ps | grep -qE "Exited|dead"; then
-                                    echo "❌ Health check failed: One or more containers crashed!"
-                                    exit 1
-                                fi
-                                
-                                echo "✅ All containers are up and running!"
-                            '''
-
+                                sh '''
+                                        docker compose up -d --build
+                                        echo "Waiting 25 seconds for microservices to initialize..."
+                                        sleep 25
+                                        echo "Current Container Status:"
+                                        docker compose ps
+                                        # Exited, dead, Restarting, أو unhealthy
+                                        if docker compose ps | grep -qE "Exited|dead|Restarting|unhealthy"; then
+                                            echo "❌ Health check failed: One or more containers crashed or are stuck restarting!"
+                                            exit 1
+                                        fi
+                                        echo "✅ All containers are healthy and running!"
+                                        '''
                         } catch (Exception deployError) {
-                            echo "⚠️ Deployment failed! Checking rollback availability..."
+                            echo '⚠️ Deployment failed! Checking rollback availability...'
 
                             if (env.GIT_PREVIOUS_SUCCESSFUL_COMMIT) {
                                 sh '''
@@ -121,7 +119,7 @@ pipeline {
                                 '''
                                 error("Deployment failed. Rolled back to commit ${env.GIT_PREVIOUS_SUCCESSFUL_COMMIT}")
                             } else {
-                                error("Deployment failed and no previous successful commit exists to roll back to.")
+                                error('Deployment failed and no previous successful commit exists to roll back to.')
                             }
                         }
                     }

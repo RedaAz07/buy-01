@@ -10,7 +10,6 @@ pipeline {
     }
 
     stages {
-
         stage('Prepare Secrets') {
             steps {
                 withCredentials([
@@ -21,7 +20,6 @@ pipeline {
                 ]) {
                     sh '''
                         cp "$ENV_FILE" .env
-
                         cp "$BACKEND_SSL" \
                             Backend/api-gateway/src/main/resources/gateway-keystore.p12
 
@@ -82,6 +80,11 @@ pipeline {
                     }
                 }
             }
+            post {
+                always {
+                    junit 'target/surefire-reports/*.xml'
+                }
+            }
         }
 
         stage('Deploy & Health Check') {
@@ -105,8 +108,8 @@ pipeline {
                                 fi
                             '''
                         } catch (Exception e) {
-                            echo "⚠️ Deployment or Health Check failed! Initiating rollback..."
-                            
+                            echo ' Deployment or Health Check failed! Initiating rollback...'
+
                             sh '''
                                 echo "Rolling back repository to previous commit (HEAD~1)..."
                                 git checkout HEAD~1
@@ -119,7 +122,7 @@ pipeline {
                                 echo "Re-deploying previous stable version..."
                                 docker compose up -d --build
                             '''
-                            
+
                             error("Deployment failed: ${e.getMessage()}. Successfully rolled back to previous commit.")
                         }
                     }
@@ -129,6 +132,9 @@ pipeline {
     }
 
     post {
+        always {
+            cleanWs()
+        }
         success {
             catchError(buildResult: 'SUCCESS', stageResult: 'SUCCESS') {
                 mail(

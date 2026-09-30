@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="73" failures="0" errors="0" time="2.049195149">
+    <testsuite name="src/app/app.spec.ts" timestamp="2026-09-30T14:29:03.806Z" hostname="talentMachine" tests="1" failures="0" errors="0" skipped="0" time="0.050076832">
+        <testcase classname="src/app/app.spec.ts" name="App &gt; should create the app" time="0.048489659">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/app/dashboard/dashboard.spec.ts" timestamp="2026-09-30T14:29:03.807Z" hostname="talentMachine" tests="12" failures="0" errors="0" skipped="0" time="0.369407952">
+        <testcase classname="src/app/dashboard/dashboard.spec.ts" name="Dashboard Component &gt; Initialization &amp; User Subscription &gt; should patch form and NOT load products if user is ROLE_CLIENT" time="0.126556619">
+        </testcase>
+        <testcase classname="src/app/dashboard/dashboard.spec.ts" name="Dashboard Component &gt; Initialization &amp; User Subscription &gt; should patch form and load products if user is ROLE_SELLER" time="0.03321381">
+        </testcase>
+        <testcase classname="src/app/dashboard/dashboard.spec.ts" name="Dashboard Component &gt; Tab Switching &gt; should prevent ROLE_CLIENT from accessing products tab" time="0.023526601">
+        </testcase>
+        <testcase classname="src/app/dashboard/dashboard.spec.ts" name="Dashboard Component &gt; Tab Switching &gt; should allow ROLE_SELLER to access products tab" time="0.02362969">
+        </testcase>
+        <testcase classname="src/app/dashboard/dashboard.spec.ts" name="Dashboard Component &gt; Settings Form &amp; Update Profile &gt; should not call update API if form is invalid" time="0.019520565">
+        </testcase>
+        <testcase classname="src/app/dashboard/dashboard.spec.ts" name="Dashboard Component &gt; Settings Form &amp; Update Profile &gt; should call update API, update tokens, and show toast on success" time="0.027446396">
+        </testcase>
+        <testcase classname="src/app/dashboard/dashboard.spec.ts" name="Dashboard Component &gt; Avatar Upload &gt; should reject non-image files" time="0.017001758">
+        </testcase>
+        <testcase classname="src/app/dashboard/dashboard.spec.ts" name="Dashboard Component &gt; Avatar Upload &gt; should reject files larger than 2MB" time="0.026439951">
+        </testcase>
+        <testcase classname="src/app/dashboard/dashboard.spec.ts" name="Dashboard Component &gt; Avatar Upload &gt; should upload valid image and update user signal" time="0.018519322">
+        </testcase>
+        <testcase classname="src/app/dashboard/dashboard.spec.ts" name="Dashboard Component &gt; Product List Management &gt; should add a new product" time="0.014851385">
+        </testcase>
+        <testcase classname="src/app/dashboard/dashboard.spec.ts" name="Dashboard Component &gt; Product List Management &gt; should update an existing product" time="0.016490506">
+        </testcase>
+        <testcase classname="src/app/dashboard/dashboard.spec.ts" name="Dashboard Component &gt; Product List Management &gt; should delete a product" time="0.020090845">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/app/product/product.spec.ts" timestamp="2026-09-30T14:29:03.808Z" hostname="talentMachine" tests="13" failures="0" errors="0" skipped="0" time="0.393873678">
+        <testcase classname="src/app/product/product.spec.ts" name="ProductComponent &gt; should create the component" time="0.095197742">
+        </testcase>
+        <testcase classname="src/app/product/product.spec.ts" name="ProductComponent &gt; should load the product and populate the form on init" time="0.041916402">
+            <system-out>
+{
+  id: [32m&apos;abc123&apos;[39m,
+  name: [32m&apos;Wireless Mouse&apos;[39m,
+  description: [32m&apos;A great mouse&apos;[39m,
+  price: [33m29.99[39m,
+  quantity: [33m5[39m,
+  sellerId: [32m&apos;seller-1&apos;[39m,
+  imageUrls: [ [32m&apos;img1.jpg&apos;[39m, [32m&apos;img2.jpg&apos;[39m, [32m&apos;img3.jpg&apos;[39m ]
+}
+
+            </system-out>
+        </testcase>
+        <testcase classname="src/app/product/product.spec.ts" name="ProductComponent &gt; should render the product details in the template" time="0.036840717">
+            <system-out>
+{
+  id: [32m&apos;abc123&apos;[39m,
+  name: [32m&apos;Wireless Mouse&apos;[39m,
+  description: [32m&apos;A great mouse&apos;[39m,
+  price: [33m29.99[39m,
+  quantity: [33m5[39m,
+  sellerId: [32m&apos;seller-1&apos;[39m,
+  imageUrls: [ [32m&apos;img1.jpg&apos;[39m, [32m&apos;img2.jpg&apos;[39m, [32m&apos;img3.jpg&apos;[39m ]
+}
+
+            </system-out>
+        </testcase>
+        <testcase classname="src/app/product/product.spec.ts" name="ProductComponent &gt; should navigate to /home when the product is not found (404)" time="0.017825275">
+        </testcase>
+        <testcase classname="src/app/product/product.spec.ts" name="ProductComponent &gt; should switch the displayed image when a thumbnail is clicked" time="0.024729196">
+            <system-out>
+{
+  id: [32m&apos;abc123&apos;[39m,
+  name: [32m&apos;Wireless Mouse&apos;[39m,
+  description: [32m&apos;A great mouse&apos;[39m,
+  price: [33m29.99[39m,
+  quantity: [33m5[39m,
+  sellerId: [32m&apos;seller-1&apos;[39m,
+  imageUrls: [ [32m&apos;img1.jpg&apos;[39m, [32m&apos;img2.jpg&apos;[39m, [32m&apos;img3.jpg&apos;[39m ]
+}
+
+            </system-out>
+        </testcase>
+        <testcase classname="src/app/product/product.spec.ts" name="ProductComponent &gt; should show out of stock and disable add to cart when quantity is zero" time="0.029590582">
+            <system-out>
+{
+  id: [32m&apos;abc123&apos;[39m,
+  name: [32m&apos;Wireless Mouse&apos;[39m,
+  description: [32m&apos;A great mouse&apos;[39m,
+  price: [33m29.99[39m,
+  quantity: [33m0[39m,
+  sellerId: [32m&apos;seller-1&apos;[39m,
+  imageUrls: [ [32m&apos;img1.jpg&apos;[39m, [32m&apos;img2.jpg&apos;[39m, [32m&apos;img3.jpg&apos;[39m ]
+}
+
+            </system-out>
+        </testcase>
+        <testcase classname="src/app/product/product.spec.ts" name="ProductComponent &gt; should show the coming soon message when add to cart is clicked and hide it on second click" time="0.028755209">
+            <system-out>
+{
+  id: [32m&apos;abc123&apos;[39m,
+  name: [32m&apos;Wireless Mouse&apos;[39m,
+  description: [32m&apos;A great mouse&apos;[39m,
+  price: [33m29.99[39m,
+  quantity: [33m5[39m,
+  sellerId: [32m&apos;seller-1&apos;[39m,
+  imageUrls: [ [32m&apos;img1.jpg&apos;[39m, [32m&apos;img2.jpg&apos;[39m, [32m&apos;img3.jpg&apos;[39m ]
+}
+
+            </system-out>
+        </testcase>
+        <testcase classname="src/app/product/product.spec.ts" name="ProductComponent &gt; should render owner actions when the current user is the seller" time="0.027373171">
+            <system-out>
+{
+  id: [32m&apos;abc123&apos;[39m,
+  name: [32m&apos;Wireless Mouse&apos;[39m,
+  description: [32m&apos;A great mouse&apos;[39m,
+  price: [33m29.99[39m,
+  quantity: [33m5[39m,
+  sellerId: [32m&apos;seller-1&apos;[39m,
+  imageUrls: [ [32m&apos;img1.jpg&apos;[39m, [32m&apos;img2.jpg&apos;[39m, [32m&apos;img3.jpg&apos;[39m ]
+}
+
+            </system-out>
+        </testcase>
+        <testcase classname="src/app/product/product.spec.ts" name="ProductComponent &gt; should not render owner actions or buy actions when no user is logged in" time="0.024277688">
+            <system-out>
+{
+  id: [32m&apos;abc123&apos;[39m,
+  name: [32m&apos;Wireless Mouse&apos;[39m,
+  description: [32m&apos;A great mouse&apos;[39m,
+  price: [33m29.99[39m,
+  quantity: [33m5[39m,
+  sellerId: [32m&apos;seller-1&apos;[39m,
+  imageUrls: [ [32m&apos;img1.jpg&apos;[39m, [32m&apos;img2.jpg&apos;[39m, [32m&apos;img3.jpg&apos;[39m ]
+}
+
+            </system-out>
+        </testcase>
+        <testcase classname="src/app/product/product.spec.ts" name="ProductComponent &gt; should hide owner actions but show add to cart for a non-seller user" time="0.025626014">
+            <system-out>
+{
+  id: [32m&apos;abc123&apos;[39m,
+  name: [32m&apos;Wireless Mouse&apos;[39m,
+  description: [32m&apos;A great mouse&apos;[39m,
+  price: [33m29.99[39m,
+  quantity: [33m5[39m,
+  sellerId: [32m&apos;seller-1&apos;[39m,
+  imageUrls: [ [32m&apos;img1.jpg&apos;[39m, [32m&apos;img2.jpg&apos;[39m, [32m&apos;img3.jpg&apos;[39m ]
+}
+
+            </system-out>
+        </testcase>
+        <testcase classname="src/app/product/product.spec.ts" name="ProductComponent &gt; lotNo &gt; should return 000 for empty ids" time="0.012655897">
+        </testcase>
+        <testcase classname="src/app/product/product.spec.ts" name="ProductComponent &gt; lotNo &gt; should return 000 when no hex digits remain" time="0.015760175">
+        </testcase>
+        <testcase classname="src/app/product/product.spec.ts" name="ProductComponent &gt; lotNo &gt; should compute a serial from the last hex digits" time="0.011989226">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/app/home/home.spec.ts" timestamp="2026-09-30T14:29:03.809Z" hostname="talentMachine" tests="2" failures="0" errors="0" skipped="0" time="0.120450647">
+        <testcase classname="src/app/home/home.spec.ts" name="Home &gt; creates and loads products on init" time="0.096599975">
+        </testcase>
+        <testcase classname="src/app/home/home.spec.ts" name="Home &gt; reloads products when a product is created" time="0.021913782">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/app/auth/login/login.spec.ts" timestamp="2026-09-30T14:29:03.810Z" hostname="talentMachine" tests="8" failures="0" errors="0" skipped="0" time="0.330904735">
+        <testcase classname="src/app/auth/login/login.spec.ts" name="Login Component &gt; should create the login component" time="0.158323234">
+        </testcase>
+        <testcase classname="src/app/auth/login/login.spec.ts" name="Login Component &gt; Form Initialization &amp; Validation &gt; should initialize with empty inputs and an invalid form" time="0.028239405">
+        </testcase>
+        <testcase classname="src/app/auth/login/login.spec.ts" name="Login Component &gt; Form Initialization &amp; Validation &gt; should invalidate password if shorter than 6 characters" time="0.02415614">
+        </testcase>
+        <testcase classname="src/app/auth/login/login.spec.ts" name="Login Component &gt; Form Initialization &amp; Validation &gt; should mark form as valid when name and password meet constraints" time="0.027309474">
+        </testcase>
+        <testcase classname="src/app/auth/login/login.spec.ts" name="Login Component &gt; onSubmit() &gt; should stop execution and not call Auth service if form is invalid" time="0.022707181">
+        </testcase>
+        <testcase classname="src/app/auth/login/login.spec.ts" name="Login Component &gt; onSubmit() &gt; When login succeeds &gt; should store JWT token, navigate to home, and open success snackbar" time="0.02334556">
+        </testcase>
+        <testcase classname="src/app/auth/login/login.spec.ts" name="Login Component &gt; onSubmit() &gt; When login fails &gt; should display the specific error message provided by backend API" time="0.019475505">
+        </testcase>
+        <testcase classname="src/app/auth/login/login.spec.ts" name="Login Component &gt; onSubmit() &gt; When login fails &gt; should display fallback error message if backend payload contains no message" time="0.025327439">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/app/auth/register/register.spec.ts" timestamp="2026-09-30T14:29:03.810Z" hostname="talentMachine" tests="11" failures="0" errors="0" skipped="0" time="0.36951539">
+        <testcase classname="src/app/auth/register/register.spec.ts" name="register &gt; should create register component" time="0.118226842">
+        </testcase>
+        <testcase classname="src/app/auth/register/register.spec.ts" name="register &gt; Form Initialization &amp; Validation &gt; should initialize with empty inputs and an invalid form" time="0.034601138">
+        </testcase>
+        <testcase classname="src/app/auth/register/register.spec.ts" name="register &gt; Form Initialization &amp; Validation &gt; should invalidate password if shorter than 6 characters" time="0.032667173">
+        </testcase>
+        <testcase classname="src/app/auth/register/register.spec.ts" name="register &gt; Form Initialization &amp; Validation &gt; should invalidate name if it doesn&apos;t match length and alphanumeric constraints" time="0.029178269">
+        </testcase>
+        <testcase classname="src/app/auth/register/register.spec.ts" name="register &gt; Form Initialization &amp; Validation &gt; should validate  email" time="0.034864228">
+        </testcase>
+        <testcase classname="src/app/auth/register/register.spec.ts" name="register &gt; Form Initialization &amp; Validation &gt; should validate  role" time="0.023541845">
+        </testcase>
+        <testcase classname="src/app/auth/register/register.spec.ts" name="register &gt; Form Initialization &amp; Validation &gt; should mark form as valid when  constraints" time="0.019865004">
+        </testcase>
+        <testcase classname="src/app/auth/register/register.spec.ts" name="register &gt; onSubmit() &gt; should stop execution and not call Auth service if form is invalid" time="0.019533588">
+        </testcase>
+        <testcase classname="src/app/auth/register/register.spec.ts" name="register &gt; onSubmit() &gt; When register succeeds &gt; should store JWT token, navigate to home, and open success snackbar" time="0.018375393">
+        </testcase>
+        <testcase classname="src/app/auth/register/register.spec.ts" name="register &gt; onSubmit() &gt; When register fails &gt; should display the specific error message provided by backend API" time="0.018551441">
+        </testcase>
+        <testcase classname="src/app/auth/register/register.spec.ts" name="register &gt; onSubmit() &gt; When register fails &gt; should display fallback error message if backend payload contains no message" time="0.018584617">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/app/core/guards/auth-guard.spec.ts" timestamp="2026-09-30T14:29:03.811Z" hostname="talentMachine" tests="2" failures="0" errors="0" skipped="0" time="0.011602887">
+        <testcase classname="src/app/core/guards/auth-guard.spec.ts" name="authGuard &gt; should allow navigation and return true if token exists" time="0.006254392">
+        </testcase>
+        <testcase classname="src/app/core/guards/auth-guard.spec.ts" name="authGuard &gt; should deny navigation, show snackbar, and redirect to login if no token" time="0.00500195">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/app/core/guards/guest-guard.spec.ts" timestamp="2026-09-30T14:29:03.811Z" hostname="talentMachine" tests="2" failures="0" errors="0" skipped="0" time="0.007811659">
+        <testcase classname="src/app/core/guards/guest-guard.spec.ts" name="guestGuard &gt; should allow navigation and return false if token exists" time="0.004157285">
+        </testcase>
+        <testcase classname="src/app/core/guards/guest-guard.spec.ts" name="guestGuard &gt; should deny navigation, show snackbar, and redirect to login if there is a token" time="0.003302235">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/app/core/interceptors/auh-interceptor.spec.ts" timestamp="2026-09-30T14:29:03.811Z" hostname="talentMachine" tests="4" failures="0" errors="0" skipped="0" time="0.040816004">
+        <testcase classname="src/app/core/interceptors/auh-interceptor.spec.ts" name="authInterceptor &gt; Request Modification &gt; should add Authorization header if token exists" time="0.021629122">
+        </testcase>
+        <testcase classname="src/app/core/interceptors/auh-interceptor.spec.ts" name="authInterceptor &gt; Request Modification &gt; should NOT add Authorization header if no token exists" time="0.004521125">
+        </testcase>
+        <testcase classname="src/app/core/interceptors/auh-interceptor.spec.ts" name="authInterceptor &gt; Error Handling &gt; should remove token and navigate to login on 401 with existing token" time="0.004989573">
+        </testcase>
+        <testcase classname="src/app/core/interceptors/auh-interceptor.spec.ts" name="authInterceptor &gt; Error Handling &gt; should show snackbar for other generic errors (e.g., 500)" time="0.007941194">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/app/core/services/auth.spec.ts" timestamp="2026-09-30T14:29:03.812Z" hostname="talentMachine" tests="5" failures="0" errors="0" skipped="0" time="0.067619193">
+        <testcase classname="src/app/core/services/auth.spec.ts" name="Auth Service &gt; Constructor Initialization &gt; should NOT attempt to fetch user if no token exists in localStorage" time="0.026069902">
+        </testcase>
+        <testcase classname="src/app/core/services/auth.spec.ts" name="Auth Service &gt; Constructor Initialization &gt; should auto-load current user if token exists in localStorage" time="0.007490634">
+        </testcase>
+        <testcase classname="src/app/core/services/auth.spec.ts" name="Auth Service &gt; login() &gt; should post login credentials, store JWT, and load current user on success" time="0.022645976">
+        </testcase>
+        <testcase classname="src/app/core/services/auth.spec.ts" name="Auth Service &gt; logout() &gt; should remove token, clear state, and navigate to /login" time="0.004292895">
+        </testcase>
+        <testcase classname="src/app/core/services/auth.spec.ts" name="Auth Service &gt; loadCurrentUser() &gt; should fetch user from API and update currentUserSubject" time="0.005572806">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/app/core/services/media.service.spec.ts" timestamp="2026-09-30T14:29:03.812Z" hostname="talentMachine" tests="3" failures="0" errors="0" skipped="0" time="0.010449319">
+        <testcase classname="src/app/core/services/media.service.spec.ts" name="Media Service &gt; setAvatar() &gt; should send a POST request with FormData containing files and default type" time="0.004101786">
+        </testcase>
+        <testcase classname="src/app/core/services/media.service.spec.ts" name="Media Service &gt; setAvatar() &gt; should allow custom media type parameter" time="0.002209763">
+        </testcase>
+        <testcase classname="src/app/core/services/media.service.spec.ts" name="Media Service &gt; deleteAvatar() &gt; should send a DELETE request with image ID in path" time="0.003826312">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/app/core/services/product.service.spec.ts" timestamp="2026-09-30T14:29:03.812Z" hostname="talentMachine" tests="4" failures="0" errors="0" skipped="0" time="0.052753911">
+        <testcase classname="src/app/core/services/product.service.spec.ts" name="Product Service &gt; getMyproduct() &gt; should send GET request with page and size parameters and append results to products$" time="0.026292831">
+        </testcase>
+        <testcase classname="src/app/core/services/product.service.spec.ts" name="Product Service &gt; getMyproduct() &gt; should append newly fetched page items to existing items in products$" time="0.005140683">
+        </testcase>
+        <testcase classname="src/app/core/services/product.service.spec.ts" name="Product Service &gt; createProduct() &gt; should send POST request to create a new product" time="0.012376387">
+        </testcase>
+        <testcase classname="src/app/core/services/product.service.spec.ts" name="Product Service &gt; notifyProductCreated() &gt; should emit product through productCreated$ observable stream" time="0.007057208">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/app/core/services/user.service.spec.ts" timestamp="2026-09-30T14:29:03.812Z" hostname="talentMachine" tests="1" failures="0" errors="0" skipped="0" time="0.004868739">
+        <testcase classname="src/app/core/services/user.service.spec.ts" name="User Service &gt; updateProfile() &gt; should send a PUT request to update profile data" time="0.004656946">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/app/core/layouts/main-layout/main-layout.spec.ts" timestamp="2026-09-30T14:29:03.813Z" hostname="talentMachine" tests="1" failures="0" errors="0" skipped="0" time="0.072462727">
+        <testcase classname="src/app/core/layouts/main-layout/main-layout.spec.ts" name="main-layout &gt; should create" time="0.071534197">
+            <system-out>
+[1mnull[22m
+
+            </system-out>
+        </testcase>
+    </testsuite>
+    <testsuite name="src/app/core/layouts/navbar/navbar.spec.ts" timestamp="2026-09-30T14:29:03.813Z" hostname="talentMachine" tests="4" failures="0" errors="0" skipped="0" time="0.146581476">
+        <testcase classname="src/app/core/layouts/navbar/navbar.spec.ts" name="Navbar &gt; should create the navbar" time="0.097565393">
+            <system-out>
+[1mnull[22m
+
+            </system-out>
+        </testcase>
+        <testcase classname="src/app/core/layouts/navbar/navbar.spec.ts" name="Navbar &gt; ngOnInit (User State) &gt; should update the &quot;user&quot; signal when currentUser$ emits a new value" time="0.019361656">
+            <system-out>
+[1mnull[22m
+
+{ id: [33m1[39m, name: [32m&apos;Reda&apos;[39m, role: [32m&apos;ROLE_SELLER&apos;[39m }
+
+            </system-out>
+        </testcase>
+        <testcase classname="src/app/core/layouts/navbar/navbar.spec.ts" name="Navbar &gt; Component Methods &gt; should call authService.logout() when logout is clicked" time="0.014200837">
+            <system-out>
+[1mnull[22m
+
+            </system-out>
+        </testcase>
+        <testcase classname="src/app/core/layouts/navbar/navbar.spec.ts" name="Navbar &gt; Component Methods &gt; should navigate to dashboard when route() is called" time="0.013820791">
+            <system-out>
+[1mnull[22m
+
+            </system-out>
+        </testcase>
+    </testsuite>
+</testsuites>

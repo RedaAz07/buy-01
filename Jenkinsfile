@@ -140,11 +140,11 @@ pipeline {
                     subject: "SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                     body: """Build succeeded.
 
-Job: ${env.JOB_NAME}
-Build: #${env.BUILD_NUMBER}
-Commit: ${env.GIT_COMMIT}
-Logs: ${env.BUILD_URL}"""
-                )
+                    Job: ${env.JOB_NAME}
+                    Build: #${env.BUILD_NUMBER}
+                    Commit: ${env.GIT_COMMIT}
+                    Logs: ${env.BUILD_URL}"""
+                                    )
             }
         }
 
@@ -155,11 +155,11 @@ Logs: ${env.BUILD_URL}"""
                     subject: "FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                     body: """Build failed during pipeline execution.
 
-Job: ${env.JOB_NAME}
-Build: #${env.BUILD_NUMBER}
-Failed commit: ${env.GIT_COMMIT}
-Previous stable commit: ${env.GIT_PREVIOUS_SUCCESSFUL_COMMIT ?: 'N/A'}
-Logs: ${env.BUILD_URL}"""
+                    Job: ${env.JOB_NAME}
+                    Build: #${env.BUILD_NUMBER}
+                    Failed commit: ${env.GIT_COMMIT}
+                    Previous stable commit: ${env.GIT_PREVIOUS_SUCCESSFUL_COMMIT ?: 'N/A'}
+                    Logs: ${env.BUILD_URL}"""
                 )
             }
         }

@@ -91,9 +91,9 @@ pipeline {
                                         echo "Waiting 25 seconds for microservices to initialize..."
                                         sleep 25
                                         echo "Current Container Status:"
-                                        docker compose ps
+                                        docker compose ps -a
                                         # Exited, dead, Restarting, أو unhealthy
-                                        if docker compose ps | grep -qE "Exited|dead|Restarting|unhealthy"; then
+                                        if docker compose ps  -a | grep -qE "Exited|dead|Restarting|unhealthy"; then
                                             echo " Health check failed: One or more containers crashed or are stuck restarting!"
                                             exit 1
                                         fi

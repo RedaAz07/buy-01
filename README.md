@@ -35,7 +35,14 @@ flowchart LR
 ```
 
 
-### CI/CD
+## CI/CD: Jenkins, Docker, and ngrok
+
+The repository includes a Jenkins controller definition in `jenkins/` and the
+pipeline definition in `Jenkinsfile`. Jenkins receives a GitHub push webhook
+through an ngrok HTTPS tunnel, checks out the repository, builds and tests the
+application, then deploys the root Docker Compose stack through the mounted
+container-engine socket.
+
 ```mermaid
 flowchart TD
     subgraph DevEnv["1. Local Development"]
@@ -96,6 +103,140 @@ flowchart TD
         Rollback --> MailFail["Email: FAILED & Rolled Back\n(smtp.gmail.com:587 TLS)"]
     end
 ```
+
+### What each component does
+
+| Component | Location / port | Purpose |
+| --- | --- | --- |
+| Jenkins controller | `jenkins/docker-compose.yml`, `http://localhost:8090` | Runs the pipeline and exposes the GitHub webhook endpoint. |
+| Jenkins image | `jenkins/Dockerfile` | Adds Docker CLI, Docker Compose, Buildx, Node.js, and npm to the Jenkins LTS image. |
+| Jenkins state | `jenkins_home` Docker volume | Persists Jenkins configuration, plugins, jobs, and build metadata. |
+| Container-engine socket | Mounted at `/var/run/docker.sock` | Lets pipeline commands create and manage the deployment containers on the host engine. |
+| ngrok | `https://<public-id>.ngrok...` → local port `8090` | Gives GitHub a public HTTPS route to Jenkins while developing from a local machine. |
+| GitHub webhook | `POST /github-webhook/` | Triggers the Jenkins job after a push. |
+
+The Jenkins Compose file currently maps host ports `8090:8080` and
+`50000:50000`. Its socket source is configured for a rootless Podman socket:
+`/run/user/67984/podman/podman.sock`. If the host uses Docker or a different
+rootless user, update only that source path before starting Jenkins.
+
+### One-time Jenkins setup
+
+1. Start the controller from the repository root:
+
+   ```bash
+   cd jenkins
+   docker compose up -d --build
+   docker compose ps
+   ```
+
+2. Open `http://localhost:8090` and complete the Jenkins setup wizard. To get
+   the initial administrator password:
+
+   ```bash
+   docker compose exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
+   ```
+
+3. Install the plugins required by this pipeline: Pipeline, Git, GitHub,
+   Credentials Binding, and a mail plugin configured for the `mail` pipeline
+   step. Configure SMTP before relying on build emails.
+
+4. Add these **Secret file** credentials in Jenkins. The IDs must match the
+   `Jenkinsfile` exactly; do not commit any of these files.
+
+   | Credential ID | File to upload | Used for |
+   | --- | --- | --- |
+   | `buy01-env` | Deployment `.env` file | MongoDB, JWT, Cloudinary, service ports, and gateway password values. |
+   | `gateway-keystore.p12` | Gateway PKCS12 keystore | HTTPS for the API gateway. |
+   | `buy01-frontend-cert` | `cert.pem` | HTTPS certificate for the frontend container. |
+   | `buy01-frontend-key` | `key.pem` | Private key for the frontend certificate. |
+
+5. Create a Pipeline job that uses Pipeline script from SCM, points to this
+   repository and branch, and uses `Jenkinsfile` as the script path. Enable
+   **GitHub hook trigger for GITScm polling**. The pipeline itself also declares
+   `githubPush()`.
+
+The deployment `.env` needs the variables referenced by the root
+`docker-compose.yml`: `API_GATEWAY_SSL_PASS`, `JWT_SECRET`, `JWT_EXPIRATION`,
+the `USER_*`, `MEDIA_*`, and `PRODUCT_*` MongoDB values, service-port values,
+and the three `MEDIA_CLOUDINARY_*` values. Keep this file in Jenkins
+credentials, not in Git.
+
+### Connect GitHub with ngrok
+
+1. Install ngrok and authenticate it once on the machine running Jenkins:
+
+   ```bash
+   ngrok config add-authtoken YOUR_TOKEN
+   ```
+
+2. In another terminal, publish the Jenkins HTTP port:
+
+   ```bash
+   ngrok http 8090
+   ```
+
+3. Copy the HTTPS forwarding URL shown by ngrok. In the GitHub repository go
+   to **Settings → Webhooks → Add webhook** and set:
+
+   | Setting | Value |
+   | --- | --- |
+   | Payload URL | `https://<ngrok-host>/github-webhook/` |
+   | Content type | `application/json` |
+   | Events | `Just the push event` |
+   | Active | Enabled |
+
+4. Save the webhook, use GitHub's **Recent Deliveries** to confirm a `2xx`
+   response, then push a commit. Jenkins should start one build for that push.
+
+ngrok URLs change whenever a free tunnel is restarted. Update the GitHub
+webhook when that happens, or use a reserved domain if the ngrok plan supports
+one. Treat the public URL as an ingress point: do not expose Jenkins without
+authentication, and restrict the webhook with a GitHub webhook secret if the
+Jenkins GitHub integration is configured to verify one.
+
+### Pipeline behavior
+
+For each push, Jenkins runs the following sequence:
+
+1. **Prepare Secrets** — copies the Jenkins secret files into the checked-out
+   workspace for the build.
+2. **Build** — packages the five Spring Boot services with Maven and creates
+   the production Angular build.
+3. **Test** — runs Maven tests for every backend service and the frontend test
+   command; JUnit reports are published when available.
+4. **Deploy & Health Check** — runs `docker compose up -d --build` from the
+   repository root, waits 25 seconds, and fails when Compose reports an exited,
+   dead, restarting, or unhealthy container.
+5. **Rollback on deployment failure** — if Jenkins knows a previous successful
+   commit, it stops the stack, checks out that commit, restores the secret
+   files, and rebuilds the stable version.
+6. **Notification and cleanup** — sends a success or failure email, then
+   removes the Jenkins workspace with `cleanWs()`.
+
+`disableConcurrentBuilds()` prevents two deployments from running at the same
+time. The controller runs Docker commands through the mounted socket; whoever
+can administer Jenkins can therefore control containers on that host. Limit
+Jenkins administrator access and keep the host dedicated to trusted builds.
+
+### Day-to-day commands
+
+```bash
+# Jenkins lifecycle
+cd jenkins
+docker compose logs -f jenkins
+docker compose restart jenkins
+docker compose down                 # preserves the jenkins_home volume
+
+# Application deployment status (run from repository root)
+cd ..
+docker compose ps
+docker compose logs -f api-gateway
+curl -k https://localhost:8443/actuator/health
+```
+
+Use `docker compose down -v` only when intentionally discarding Jenkins
+configuration and build history, because it deletes the `jenkins_home` volume.
 ### How the services work together
 
 The normal request path is synchronous. The browser sends one request to the
@@ -473,30 +614,22 @@ services:
 docker compose up --build
 ```
 
-The gateway is exposed at `https://localhost:8443`. Kafka UI is available at
-`http://localhost:8085`. The frontend still runs separately:
+The gateway is exposed at `https://localhost:8443`, Kafka UI at
+`http://localhost:8085`, and the containerized frontend at
+`http://localhost:8080` (or `https://localhost:8444`). Before building, place
+the gateway PKCS12 keystore and `frontend/certs/cert.pem` and
+`frontend/certs/key.pem` in the workspace; the frontend Dockerfile requires
+those certificate files even when using the HTTP port. The root Compose file
+reads its interpolated values from a root `.env` file. For a local frontend
+development server instead, run:
 
 ```bash
-cd frontEnd
+cd frontend
 npm install
 npm start
 ```
 
-The compose setup expects the service `.env` files referenced in
-`docker-compose.yml`, plus the gateway PKCS12 keystore configured by the
-gateway properties.
-
 ### Option B: local Spring Boot processes
-
-The helper script starts the registry and backend processes, creates logs under
-`docs/logs`, and manages PID files under `docs/.run`:
-
-```bash
-./run-all.sh start
-./run-all.sh status
-./run-all.sh logs api-gateway
-./run-all.sh stop
-```
 
 Each service can also be run independently from its directory with its Maven
 wrapper, for example:
@@ -508,9 +641,7 @@ cd Backend/product-service
 
 When running outside Docker, update environment values and Kafka/MongoDB host
 names as needed. The default local backend ports are 8761, 8081, 8082, and
-8083. Note that `run-all.sh` currently expects the gateway on port 8080 while
-the gateway configuration and Docker Compose expose it on 8443; align these
-values before using the script for a complete local run.
+8083; the gateway configuration exposes HTTPS on 8443.
 
 ## Project structure
 
@@ -522,10 +653,12 @@ buy-01/
 │   ├── product-service/   # Product operations and ownership
 │   ├── registry/          # Eureka server
 │   └── user-service/      # Authentication and profiles
-├── frontEnd/              # Angular application
+├── frontend/              # Angular application
 ├── docs/project-docs/     # Database, Kafka, and project audit documents
+├── jenkins/               # Jenkins controller image and Compose definition
+├── Jenkinsfile            # CI/CD pipeline executed by Jenkins
 ├── docker-compose.yml     # Containerized local environment
-└── run-all.sh             # Local process lifecycle helper
+└── README.md
 ```
 
 ## Current implementation status
@@ -561,6 +694,3 @@ full implementation audit, see `docs/project-docs/todolist.md`.
 7. Keep secrets in environment variables and never commit credentials.
 8. Prefer observable, independently deployable services over shared database
 	 coupling.
-
-
-ngrok config add-authtoken YOUR_TOKEN

@@ -92,11 +92,27 @@ pipeline {
                                         sleep 25
                                         echo "Current Container Status:"
                                         docker compose ps
-                                        # Exited, dead, Restarting, أو unhealthy
-                                        if docker compose ps | grep -qE "Exited|dead|Restarting|unhealthy"; then
-                                            echo " Health check failed: One or more containers crashed or are stuck restarting!"
-                                            exit 1
-                                        fi
+                                       echo "Checking containers..."
+                                        REQUIRED_SERVICES="
+                                        frontend
+                                        kafka
+                                        kafka-ui
+                                        media-service
+                                        mongodb_media
+                                        mongodb_product
+                                        mongodb_user
+                                        product-service
+                                        redis
+                                        service-registry
+                                        user-service
+                                        "
+
+                                        for service in $REQUIRED_SERVICES; do
+                                            if ! docker compose ps --services --filter status=running | grep -qx "$service"; then
+                                                echo "❌ Service '$service' is not running!"
+                                                exit 1
+                                            fi
+                                        done
                                         echo " All containers are healthy and running!"
                                         '''
                         } catch (Exception deployError) {
